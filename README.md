@@ -1,0 +1,1 @@
+# WebResearcherJS-extension
