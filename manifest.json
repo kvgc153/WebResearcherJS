@@ -1,0 +1,60 @@
+{
+	"manifest_version": 2,
+	"name": "TiddlyMarker",
+	"version": "0.3.2",
+
+	"default_locale": "en",
+	"description": "__MSG_extensionDescription__",
+
+	"permissions": [
+		"<all_urls>", "tabs", "webRequest", "storage", "alarms", "downloads"
+	],
+	"icons": {
+		"48": "icons/48.png",
+		"96": "icons/96.png"
+	},
+
+	"background": {
+		"page": "background.html",
+		"persistent": true
+	},
+
+	"options_ui": {
+		"page": "options.html",
+		"open_in_tab": true
+	},
+
+	"browser_action": {
+		"default_icon": {
+			"19": "icons/19.png",
+			"38": "icons/38.png"
+		},
+		"default_title": "__MSG_browserActionHover__",
+		"default_popup": "popup.html",
+		"browser_style": true
+	},
+
+	"applications": {
+		"gecko": {
+			"id": "tiddlymarker@ylh.io"
+		}
+	},
+	"sidebar_action": {
+		"default_title" : "Tiddlywiki",
+		"default_panel": "notes.html"
+	},
+	"commands": {
+		"_execute_sidebar_action": {
+			"suggested_key": {
+				"default": "Ctrl+Alt+U"
+			}
+		}
+	},
+	"content_scripts": [
+	{
+		"matches": ["*://*/"],
+		"js": ["jquery.min.js","jquery-ui.min.js","jquery.cookie.min.js","popper.js","pell.min.js","notify.min.js","webresearcher.js"],
+		"css":["pell.css","jquery-ui.min.css"]
+	}
+]
+}
