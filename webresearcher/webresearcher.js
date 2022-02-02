@@ -14,6 +14,7 @@ var saveAnnotationsKeyCode= 50; // corresponds to 2 on keyboard
 var loadAnnotationsKeyCode=51 ; // corresponds to 3 on keyboard
 var startmqttKeyCode=52 ; // corresponds to 4 on keyboard
 var saveAllNotes = 53; // correspodns to 5 on keyboard
+var displayNotes = 48; // correspodns to 0 on keyboard
 
 // controls the specs of the notes
 var defaultNoteColor = "#ffffcc";
@@ -25,7 +26,62 @@ var defaultOpacity = "80%";
 var note_count=1;
 var webPageUrl = window.location.href.replace(/(^\w+:|^)\/\//, '');
 var url_window = window.location.href;
+var pageTitle = document.title;
 
+
+
+document.addEventListener('keydown', displayAllNotes);
+function displayAllNotes(e){
+  if(e.ctrlKey){
+      if(e.keyCode==displayNotes){
+
+        $("#notesHTML").remove();
+
+        // grab all notes
+       var allNotes=document.getElementsByClassName("ui-widget-content");
+       var allNotes1=document.getElementsByClassName("pell-content");
+       var allNotes_html1 = '<h3>Text:</h3>';
+
+       var dates = $('[id^="tooltip"]');
+
+
+       for(var i=0;i<allNotes.length;i++){
+
+           allNotes_html1+=  '<a href="'+url_window+"#"+dates[i].id+ '"">' +url_window+"#"+dates[i].id+ "</a><br>";
+           allNotes_html1+= "<blockquote>"+allNotes1[i].innerHTML+"</blockquote>";
+
+       }
+       var parseTiddlywiki =  {
+         "rawtitle":pageTitle,
+         "link": url_window,
+         "title": pageTitle,
+         "tags": "web",
+         "text": allNotes_html1.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+       };
+
+
+
+           $("body").append ( '                                           \
+               <div id="notesHTML" style="left: 10%; height: 80%; \
+           position: fixed; width: 100%; bottom: 5%;background-color:#d9ffcc; border-style: double;  border-radius: 10px; opacity:80%; overflow-y: scroll; \
+           display: inline-block; max-width: 80%;overflow-x: hidden;"> This is a test </div>                                                      \
+           ');
+           $("#notesHTML").html(
+             '<h1> Page notes : ' + url_window + '</h1><br>'
+             +allNotes_html1
+             +" <hr><h3>HTML:</h3><code><pre>"
+             +allNotes_html1.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+             +"</pre></code>"
+             +" <hr><h3>Tiddlywiki-JSON:</h3><code><pre>"
+             +  JSON.stringify(parseTiddlywiki, null, 4)
+             +"</pre></code>"
+
+         );
+           $('#notesHTML').delay(15000).fadeOut('slow');
+
+      }
+    }
+  }
 
 
 
@@ -64,29 +120,6 @@ function workerFunction(e){
 
 
 
-         // grab all notes
-        var allNotes=document.getElementsByClassName("ui-widget-content");
-        var allNotes1=document.getElementsByClassName("pell-content");
-        var allNotes_html1 = '<h1> Page notes : ' + url_window + '</h1><br>';
-
-        var dates = $('[id^="tooltip"]');
-
-
-        for(var i=0;i<allNotes.length;i++){
-
-            allNotes_html1+=  '<a href="'+url_window+"#"+dates[i].id+ '"">' +url_window+"#"+dates[i].id+ "</a><br>";
-            allNotes_html1+= "<blockquote>"+allNotes1[i].innerHTML+"</blockquote>";
-
-        }
-
-
-            $("body").append ( '                                           \
-                <div id="notesHTML" style="left: 70%; height: 50%; \
-            position: fixed; width: 25%; bottom: 45%;background-color:#d9ffcc; border-style: double;  border-radius: 10px; opacity:80%; overflow-y: scroll; \
-            display: inline-block; max-width: 80%;overflow-x: hidden;"> This is a test </div>                                                      \
-            ');
-            $("#notesHTML").html(allNotes_html1);
-            $('#notesHTML').delay(15000).fadeOut('slow');
 
 
             // add note to local storage
