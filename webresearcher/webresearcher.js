@@ -50,7 +50,7 @@ function displayAllNotes(e){
 
        for(var i=0;i<allNotes.length;i++){
 
-           allNotes_html1+=  '<a href="'+url_window+"#"+dates[i].id+ '"">'  +"Note: "+ i+  "</a><br>";
+           allNotes_html1+=  '<a href="'+url_window+"#"+dates[i].id+ '"">'  +"Note: "+ i+    "</a><br>";
            allNotes_html1+= "<blockquote>"+allNotes1[i].innerHTML+"</blockquote>";
 
        }
