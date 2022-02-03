@@ -4,30 +4,30 @@
 	"version": "0.1",
 
 	"default_locale": "en",
-	"description": "__MSG_extensionDescription__",
+	"description": "Web annotation tool.",
 
 	"permissions": [
-		"<all_urls>", "tabs", "webRequest", "storage", "alarms", "downloads"
+		"<all_urls>", "tabs", "storage"
 	],
 	"icons": {
-		"48": "icons/48.png",
-		"96": "icons/96.png"
+		"48": "icons/logo.png",
+		"96": "icons/logo.png"
 	},
 
 
 	"browser_action": {
 		"default_icon": {
-			"19": "icons/19.png",
-			"38": "icons/38.png"
+			"19": "icons/logo.png",
+			"38": "icons/logo.png"
 		},
-		"default_title": "__MSG_browserActionHover__",
+		"default_title": "WebResearcherJS",
 		"default_popup": "popup.html",
 		"browser_style": true
 	},
 
 	"applications": {
 		"gecko": {
-			"id": "tiddlymarker@ylh.io"
+			"id": "webresearcher@webresearcher.io"
 		}
 	},
 	"sidebar_action": {
@@ -40,12 +40,5 @@
 				"default": "Ctrl+Alt+U"
 			}
 		}
-	},
-		"content_scripts": [
-	{
-		"matches": ["*://*/*"],
-		"js": ["ext_libs/jquery.min.js","ext_libs/jquery-ui.min.js","ext_libs/jquery.cookie.min.js","ext_libs/popper.js","ext_libs/pell.min.js","ext_libs/notify.min.js","webresearcher/webresearcher.js","ext_libs/bootstrap.min.js"],
-		"css":["ext_libs/pell.css","ext_libs/jquery-ui.min.css","ext_libs/bootstrap.min.css"]
 	}
-]
 }
