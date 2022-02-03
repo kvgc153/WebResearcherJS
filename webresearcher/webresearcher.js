@@ -20,7 +20,7 @@ var displayNotes = 48; // correspodns to 0 on keyboard
 var defaultNoteColor = "#ffffcc";
 var defaultFont= "13px";
 var defaultOpacity = "80%";
-var sidebarWidth    = "20%";
+var sidebarWidth    = "30%";
 
 
 /////// variables used /////////
@@ -33,16 +33,6 @@ var pageTitle = document.title;
 // Displays all the notes in a bigger window for the user to copy
 // Formats shown:  Text, HTML, JSON
 
-function downloadObjectAsJson(exportObj, exportName){
-  var dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(exportObj));
-  var downloadAnchorNode = document.createElement('a');
-  downloadAnchorNode.setAttribute("href",     dataStr);
-  downloadAnchorNode.setAttribute("download", exportName + ".json");
-  document.body.appendChild(downloadAnchorNode); // required for firefox
-  downloadAnchorNode.click();
-  downloadAnchorNode.remove();
-}
-
 document.addEventListener('keydown', displayAllNotes);
 function displayAllNotes(e){
   if(e.ctrlKey){
@@ -53,7 +43,7 @@ function displayAllNotes(e){
         // grab all notes
        var allNotes=document.getElementsByClassName("ui-widget-content");
        var allNotes1=document.getElementsByClassName("pell-content");
-       var allNotes_html1 = '<h3>Text:</h3>';
+       var allNotes_html1 = '<blockquote class="blockquote text-center"><button type="button" class="class="btn btn-primary"><h3><a id="TEXT-export">Text:</a></h3></button></blockquote>';
 
        var dates = $('[id^="tooltip"]');
 
@@ -88,12 +78,12 @@ function displayAllNotes(e){
            display: inline-block; max-width: 80%;overflow-x: hidden;"> This is a test </div>                                                      \
            ');
            $("#notesHTML").html(
-             '<h1> Page notes : ' + url_window + '</h1><br>'
+             '<blockquote class="blockquote text-center"><h1> Page notes : ' + url_window + '</h1></blockquote><br>'
              +  allNotes_html1
-             +' <hr><h3><a id="HTML-export">HTML (right click to save):</a></h3><code><pre>'
+             +' <hr><blockquote class="blockquote text-center"><button type="button" class="class="btn btn-primary"><h3><a id="HTML-export">HTML (right click to save):</a></h3></button></blockquote><code><pre>'
              +allNotes_html1.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
              +"</pre></code>"
-             +' <hr><h3><a id="JSON-export">JSON (right click to save):</a></h3><code><pre>'
+             +' <hr><blockquote class="blockquote text-center"><button type="button" class="class="btn btn-primary"><h3><a id="JSON-export">JSON (right click to save):</a></h3></button></blockquote><code><pre>'
              +  JSON.stringify(parseTiddlywiki, null, 4)
              +"</pre></code>"
 
@@ -360,32 +350,17 @@ function workerFunction(e){
               const editor = pell.init({
                 element: document.getElementById("tooltip"+note_count),
                 onChange: html => {
-        //           document.getElementById('markdown-output').innerHTML = turndown(html)
                 },
                 defaultParagraphSeparator: 'p',
                 styleWithCSS: true,
                 actions: [
                   'bold',
-                  'quote',
+                  // 'quote',
                   'olist',
                   'ulist',
                   'code',
                   'link',
                   'image'
-
-//                   {
-//                     icon: '&#128247;',
-//                     title: 'Image',
-//                     result: () => {
-//                       const url = window.prompt('Enter the image URL')
-//                       //this implemention is different from the pell documentation to account for resizing
-//                       if (url) document.execCommand('insertHTML',false, `
-//                       <div style=" resize: both; overflow:auto;">
-//                         <img width=100% height=100% src=`+url+"></div><br><br> ")
-//                     }
-//                   },
-
-
                 ],
                 classes: {
                   actionbar: 'pell-actionbar',
@@ -395,7 +370,7 @@ function workerFunction(e){
                 }
               })
 
-              editor.content.innerHTML = '<br><br><br><br><br><br>'
+              editor.content.innerHTML = '<br>'
 
              ////// popper js block ///////////////////////
               const popcorn = document.querySelector("#"+"popcorn"+note_count);
@@ -456,8 +431,8 @@ function workerFunction(e){
 // script to add sidebar with all the notes
 
 $("body").append ( '                                           \
-    <div id="allNotes" style="display: inline-block;resize:both;left: 80%; height: 100%; \
-position: fixed; width: 19.5%; bottom: 0%;background-color:#d9ffcc; border-style: double;  border-radius: 10px; opacity:80%; overflow-y: scroll; \
+    <div id="allNotes" style="display: inline-block;resize:both;left: 70%; height: 100%; \
+position: fixed; width: 29.5%; bottom: 0%;background-color:white; border-style: double;  border-radius: 10px; opacity:80%; overflow-y: scroll; \
 display: inline-block; max-width: 80%;overflow-x: hidden;">  If you see this, something is not working </div>                                                     \
 ' );
 
@@ -465,16 +440,16 @@ function addNotes(){
      // grab all notes
     var allNotes=document.getElementsByClassName("ui-widget-content");
     var allNotes1=document.getElementsByClassName("pell-content");
-    var allNotes_html = '<h1> Page notes </h1><br>';
+    var allNotes_html = '<blockquote class="blockquote text-center"><h1 > Page notes  </h1></blockquote><br>';
 
     var dates = $('[id^="tooltip"]');
 
 
     for(var i=0;i<allNotes.length;i++){
-
-        allNotes_html+=  '<a href="'+url_window+"#"+dates[i].id+ '"">' +url_window+"#"+dates[i].id+ "</a><br>";
-        allNotes_html+= "<blockquote>"+allNotes1[i].innerHTML+"</blockquote>";
-
+        allNotes_html+= '<div class="card border-dark mb-3" > <div class="card-body"> ';
+        allNotes_html+=  '<button type="button" class="class="btn btn-link card-title"><a href="'+url_window+"#"+dates[i].id+ '"">' +url_window+"#"+dates[i].id+ "</a></button><br>";
+        allNotes_html+= '<blockquote class="blockquote"><small class="text-mute card-text">'+allNotes1[i].innerHTML+'</small></blockquote>';
+        allNotes_html+= ' </div></div> ';
 
     }
 
@@ -488,8 +463,9 @@ addNotes();
 
 
 
-$("html").css ( {
+$("html").css (
+{
     position:   "relative",
     width:      "calc(100% - " + sidebarWidth + ")",
-    zoom: "85%"
-} );
+}
+);

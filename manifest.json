@@ -44,8 +44,8 @@
 		"content_scripts": [
 	{
 		"matches": ["*://*/*"],
-		"js": ["ext_libs/jquery.min.js","ext_libs/jquery-ui.min.js","ext_libs/jquery.cookie.min.js","ext_libs/popper.js","ext_libs/pell.min.js","ext_libs/notify.min.js","webresearcher/webresearcher.js"],
-		"css":["ext_libs/pell.css","ext_libs/jquery-ui.min.css"]
+		"js": ["ext_libs/jquery.min.js","ext_libs/jquery-ui.min.js","ext_libs/jquery.cookie.min.js","ext_libs/popper.js","ext_libs/pell.min.js","ext_libs/notify.min.js","webresearcher/webresearcher.js","ext_libs/bootstrap.min.js"],
+		"css":["ext_libs/pell.css","ext_libs/jquery-ui.min.css","ext_libs/bootstrap.min.css"]
 	}
 ]
 }
