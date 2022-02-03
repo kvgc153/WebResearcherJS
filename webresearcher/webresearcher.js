@@ -20,6 +20,7 @@ var displayNotes = 48; // correspodns to 0 on keyboard
 var defaultNoteColor = "#ffffcc";
 var defaultFont= "13px";
 var defaultOpacity = "80%";
+var sidebarWidth    = "20%";
 
 
 /////// variables used /////////
@@ -29,6 +30,18 @@ var url_window = window.location.href;
 var pageTitle = document.title;
 
 
+// Displays all the notes in a bigger window for the user to copy
+// Formats shown:  Text, HTML, JSON
+
+function downloadObjectAsJson(exportObj, exportName){
+  var dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(exportObj));
+  var downloadAnchorNode = document.createElement('a');
+  downloadAnchorNode.setAttribute("href",     dataStr);
+  downloadAnchorNode.setAttribute("download", exportName + ".json");
+  document.body.appendChild(downloadAnchorNode); // required for firefox
+  downloadAnchorNode.click();
+  downloadAnchorNode.remove();
+}
 
 document.addEventListener('keydown', displayAllNotes);
 function displayAllNotes(e){
@@ -52,31 +65,52 @@ function displayAllNotes(e){
 
        }
        var parseTiddlywiki =  {
+         "type":"text/html",
          "rawtitle":pageTitle,
          "link": url_window,
          "title": pageTitle,
          "tags": "web",
          "text": allNotes_html1.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
        };
-
-
+       var parseTiddlywiki_raw =  {
+         "type":"text/html",
+         "rawtitle":pageTitle,
+         "link": url_window,
+         "title": pageTitle,
+         "tags": "web",
+         "text": allNotes_html1
+       };
+       // downloadObjectAsJson(parseTiddlywiki,"parseTiddlywiki");
 
            $("body").append ( '                                           \
                <div id="notesHTML" style="left: 10%; height: 80%; \
-           position: fixed; width: 100%; bottom: 5%;background-color:#d9ffcc; border-style: double;  border-radius: 10px; opacity:80%; overflow-y: scroll; \
+           position: fixed; width: 100%; bottom: 5%;background-color:white; border-style: double;  border-radius: 10px; opacity:100%; overflow-y: scroll; \
            display: inline-block; max-width: 80%;overflow-x: hidden;"> This is a test </div>                                                      \
            ');
            $("#notesHTML").html(
              '<h1> Page notes : ' + url_window + '</h1><br>'
-             +allNotes_html1
-             +" <hr><h3>HTML:</h3><code><pre>"
+             +  allNotes_html1
+             +' <hr><h3><a id="HTML-export">HTML (right click to save):</a></h3><code><pre>'
              +allNotes_html1.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
              +"</pre></code>"
-             +" <hr><h3>Tiddlywiki-JSON:</h3><code><pre>"
+             +' <hr><h3><a id="JSON-export">JSON (right click to save):</a></h3><code><pre>'
              +  JSON.stringify(parseTiddlywiki, null, 4)
              +"</pre></code>"
 
          );
+
+        function saveNotestoDisk(saveFormat,saveObj,objID){
+          var data = "data:text/"+saveFormat+";charset=utf-8," + encodeURIComponent(JSON.stringify(saveObj));
+          document.getElementById(objID).setAttribute("href",     data);
+          document.getElementById(objID).setAttribute("download",  "notes."+saveFormat);
+        }
+        saveNotestoDisk("html",allNotes_html1,"HTML-export");
+        saveNotestoDisk("json",parseTiddlywiki_raw,"JSON-export");
+
+
+
+
+
            $('#notesHTML').delay(15000).fadeOut('slow');
 
       }
@@ -319,7 +353,7 @@ function workerFunction(e){
               </div>
               `;
 
-              document.getElementById("tooltip"+note_count).setAttribute("style","height: 130px; width: 250px;\
+              document.getElementById("tooltip"+note_count).setAttribute("style","height: 130px; width: 300px;\
               border: none;color: black;  padding: 15px 15px; text-align: enter;\
               text-decoration: none;  display: inline-block; overflow:auto;resize:both;background-color:"+defaultNoteColor+";font-size:"+ defaultFont +";opacity:"+defaultOpacity)
 
@@ -336,7 +370,9 @@ function workerFunction(e){
                   'olist',
                   'ulist',
                   'code',
-//                   'image'
+                  'link',
+                  'image'
+
 //                   {
 //                     icon: '&#128247;',
 //                     title: 'Image',
@@ -420,9 +456,9 @@ function workerFunction(e){
 // script to add sidebar with all the notes
 
 $("body").append ( '                                           \
-    <div id="allNotes" style="left: 70%; height: 50%; \
-position: fixed; width: 25%; bottom:  5px;background-color:#d9ffcc; border-style: double;  border-radius: 10px; opacity:80%; overflow-y: scroll; \
-display: inline-block; max-width: 80%;overflow-x: hidden;"> This is a test </div>                                                      \
+    <div id="allNotes" style="display: inline-block;resize:both;left: 80%; height: 100%; \
+position: fixed; width: 19.5%; bottom: 0%;background-color:#d9ffcc; border-style: double;  border-radius: 10px; opacity:80%; overflow-y: scroll; \
+display: inline-block; max-width: 80%;overflow-x: hidden;">  If you see this, something is not working </div>                                                     \
 ' );
 
 function addNotes(){
@@ -448,3 +484,12 @@ function addNotes(){
 
 }
 addNotes();
+
+
+
+
+$("html").css ( {
+    position:   "relative",
+    width:      "calc(100% - " + sidebarWidth + ")",
+    zoom: "85%"
+} );
