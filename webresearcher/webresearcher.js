@@ -130,22 +130,6 @@ function workerFunction(e){
                 allNotes_html+= allNotes[i].outerHTML; // getting all notes
             }
 
-            dict[webPageUrl] = allNotes_html;
-            var encode_obj= encodeURIComponent(JSON.stringify(dict));
-            var makeNewID = Number(new Date());
-            var encode_obj1 = encode_obj.replaceAll("tooltip","tooltip"+ makeNewID);
-
-            // save note  as text file
-            var hiddenElement = document.createElement('a');
-            hiddenElement.href = 'data:text/txt;charset=utf-8,' + encode_obj1;
-            hiddenElement.target = '_blank';
-            hiddenElement.download = webPageUrl +'.txt';
-            hiddenElement.click();
-
-
-
-
-
             // add note to local storage
             var currentAnnotations = localStorage.getItem("annotations");
             localStorage.setItem("annotations",currentAnnotations +  "\n " + webPageUrl + "," + makeNewID);
@@ -170,7 +154,6 @@ function workerFunction(e){
             hiddenElement.target = '_blank';
             hiddenElement.download = 'all_annotations.csv';
             hiddenElement.click();
-
          }
 
 
@@ -185,7 +168,6 @@ function workerFunction(e){
             console.log(cat);
 
             $.notify('Loaded notes from local storage', "success");
-
 
 
             var AnnotationsBlock = document.createElement('div');
@@ -210,13 +192,6 @@ function workerFunction(e){
                   return false;
                 }}, false);
               }
-
-
-
-
-
-
-
 
 
             function uploadText() {
