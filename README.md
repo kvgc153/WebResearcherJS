@@ -1,3 +1,3 @@
 # WebResearcherJS-extension
 
-<img width="75%" src="1.png">
+<img width="100%" src="1.png">
