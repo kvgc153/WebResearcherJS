@@ -50,7 +50,7 @@ function displayAllNotes(e){
 
        for(var i=0;i<allNotes.length;i++){
 
-           allNotes_html1+=  '<a href="'+url_window+"#"+dates[i].id+ '"">' +url_window+"#"+dates[i].id+ "</a><br>";
+           allNotes_html1+=  '<a href="'+url_window+"#"+dates[i].id+ '"">'  +"Note: "+ i+  "</a><br>";
            allNotes_html1+= "<blockquote>"+allNotes1[i].innerHTML+"</blockquote>";
 
        }
@@ -131,8 +131,7 @@ function workerFunction(e){
             }
 
             // add note to local storage
-            var currentAnnotations = localStorage.getItem("annotations");
-            localStorage.setItem("annotations",currentAnnotations +  "\n " + webPageUrl + "," + makeNewID);
+            var makeNewID  = Number(new Date());
             localStorage.setItem(webPageUrl, allNotes_html.replaceAll("tooltip","tooltip"+ makeNewID));
 
 
@@ -422,7 +421,7 @@ function addNotes(){
 
     for(var i=0;i<allNotes.length;i++){
         allNotes_html+= '<div class="card border-dark mb-3" > <div class="card-body"> ';
-        allNotes_html+=  '<button type="button" class="class="btn btn-link card-title"><a href="'+url_window+"#"+dates[i].id+ '"">' +url_window+"#"+dates[i].id+ "</a></button><br>";
+        allNotes_html+=  '<button type="button" class="class="card-title"><h5><a href="'+url_window+"#"+dates[i].id+ '"">' +"Note: "+ i+ "</a></h5></button><br>";
         allNotes_html+= '<blockquote class="blockquote"><small class="text-mute card-text">'+allNotes1[i].innerHTML+'</small></blockquote>';
         allNotes_html+= ' </div></div> ';
 
