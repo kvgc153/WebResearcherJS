@@ -1,24 +1,21 @@
 {
 	"manifest_version": 2,
-	"name": "webresearcher",
+	"name": "WebResearcherJS",
 	"version": "0.1",
-
-	"default_locale": "en",
-	"description": "Web annotation tool.",
+	"description": "https://github.com/kvgc/WebResearcherJS-extension",
 
 	"permissions": [
 		"<all_urls>", "tabs", "storage"
 	],
 	"icons": {
-		"48": "icons/logo.png",
-		"96": "icons/logo.png"
+		"48": "logo.png",
+		"96": "logo.png"
 	},
-
 
 	"browser_action": {
 		"default_icon": {
-			"19": "icons/logo.png",
-			"38": "icons/logo.png"
+			"19": "logo.png",
+			"38": "logo.png"
 		},
 		"default_title": "WebResearcherJS",
 		"default_popup": "popup.html",
@@ -37,7 +34,7 @@
 	"commands": {
 		"_execute_sidebar_action": {
 			"suggested_key": {
-				"default": "Ctrl+Alt+U"
+				"default": "Ctrl+Alt+Y"
 			}
 		}
 	}
