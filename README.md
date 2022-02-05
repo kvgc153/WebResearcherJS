@@ -5,6 +5,7 @@
 
 WebResearcherJS is a Firefox web extension which allows users to annotate webpages on the internet.
 
+Try out the extension by downloading from the Firefox add-on page: https://addons.mozilla.org/en-US/firefox/addon/webresearcherjs/
 
 ### Features
 Enable the extension on any webpage by clicking on the button in the extension popup
@@ -21,6 +22,8 @@ The following video runs through all these features in detail.
 
 
 ### Usage
+<img width="100%" src="demo.gif">
+
 - **Ctrl + 1**: Create note near selection
   - Hold on the shift key and drag the note anywhere on the webpage
   - Resize as needed
@@ -28,9 +31,12 @@ The following video runs through all these features in detail.
 - **Ctrl + 2**: Save all annotations in current webpage to browser storage.
 - **Ctrl + 3**: Load annotations from browser storage.
 - **Ctrl + 0**: Open Export note dialog box.
+- **Ctrl + Alt + Y**: Open Sidebar.
+
 
 ### JS modules that this extension uses
 - jQuery: https://jquery.com/
 - jQuery-UI: https://jqueryui.com/
 - Pell: https://github.com/jaredreich/pell
 - Notify: https://notifyjs.jpillora.com/
+- Bootstrap: https://getbootstrap.com/
