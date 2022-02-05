@@ -18,11 +18,15 @@ Enable the extension on any webpage by clicking on the button in the extension p
 <img width="90%" src="2.png">
 - Export notes to as Text, HTML or JSON.
 
-The following video runs through all these features in detail.
 
+### Video demo of features
+
+https://youtu.be/ON_1rjPh_Ak.
 
 ### Usage
 <img width="100%" src="demo.gif">
+
+Select some text on the webpage (this acts as an anchor) and press Ctrl+1. This will create a note near the selected text. Hold down the shift key and drag the note across the webpage.
 
 - **Ctrl + 1**: Create note near selection
   - Hold on the shift key and drag the note anywhere on the webpage
@@ -32,6 +36,8 @@ The following video runs through all these features in detail.
 - **Ctrl + 3**: Load annotations from browser storage.
 - **Ctrl + 0**: Open Export note dialog box.
 - **Ctrl + Alt + Y**: Open Sidebar.
+
+
 
 
 ### JS modules that this extension uses
