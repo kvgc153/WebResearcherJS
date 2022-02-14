@@ -5,7 +5,7 @@
 	"description": "https://github.com/kvgc/WebResearcherJS-extension",
 
 	"permissions": [
-		"<all_urls>", "tabs", "storage"
+		"<all_urls>", "tabs", "storage","contextMenus"
 	],
 
 	"browser_action": {
@@ -29,5 +29,8 @@
 				"default": "Ctrl+Alt+Y"
 			}
 		}
-	}
+	},
+	"background": {
+	"scripts": ["webresearcher/background.js"]
+  }
 }

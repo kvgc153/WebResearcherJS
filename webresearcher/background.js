@@ -1,5 +1,10 @@
-// following code injects the following js and css code when button in popup.html is clicked
+browser.contextMenus.create({
+  id: "eat-page",
+  title: "Start WebResearcherJS"
+});
 
+
+////////////////////////////////////////////////////////////
 var jsFiles = ["ext_libs/jquery.min.js",
 "ext_libs/jquery-ui.min.js",
 "ext_libs/popper.js",
@@ -59,21 +64,11 @@ function loadOtherModules(){
          }
 
 }
+////////////////////////////////////////////////////////////
 
 
-
-document.addEventListener('DOMContentLoaded', function() {
-    var link = document.getElementById('go');
-
-    link.addEventListener('click', function() {
-
+browser.contextMenus.onClicked.addListener(function(info, tab) {
+  if (info.menuItemId == "eat-page") {
       loadJQuery();
-      link.setAttribute("style","background-color:#4CAF50; border: none; color: white; padding: 15px 32px; text-align: center;");
-      link.innerHTML = "<h3> Extension active on webpage </h3>";
-
-
-    });
-
-
-
+  }
 });

@@ -1,3 +1,4 @@
+
 document.addEventListener('keydown', workerFunction);
 function workerFunction(e){
     var toggleHighlight= false;
@@ -142,7 +143,7 @@ function workerFunction(e){
                 var newNode = document.createElement("span");
                 newNode.id = "popcorn"+note_count;
     //               newNode.setAttribute("style", "background-color:#d9ffcc;");
-                newNode.appendChild(range.extractContents());``
+                newNode.appendChild(range.extractContents());
                 range.insertNode(newNode);
             }
 
@@ -188,12 +189,55 @@ function workerFunction(e){
                         styleWithCSS: true,
                         actions: [
                           'bold',
-                          // 'quote',
                           'olist',
                           'ulist',
-                          'code',
                           'link',
-                          'image'
+                          {
+                              icon: '&#128247;',
+                              title: 'Image',
+                              result: () => {
+                                const url = window.prompt('Enter the image URL')
+                                //this implemention is different from the pell documentation to account for resizing
+                                if (url) document.execCommand('insertHTML',false, `
+                                <div style=" resize: both; overflow:auto;">
+                                  <img width=100% height=100% src=`+url+"></div><br><br> ")
+                              }
+                          },
+                          {
+                            icon: '&#9998;',
+                            title: 'Insert HTML',
+                            result: () => {
+                              const url = window.prompt('Enter HTML');
+                              if (url) document.execCommand('insertHTML',false, url)
+                            }
+                          },
+                          {
+                            icon: '&#10066;',
+                            title: 'Change note color',
+                            result: () => {
+                              const url = window.prompt('Enter color of note: [e.g., #ffffcc(default color), gray, purple,...]');
+
+                              if (url){
+                                document.getElementById(event.target.parentNode.parentNode.id).style.backgroundColor = url
+                              }
+                            }
+                          },
+                          {
+                            icon: '&#9997;',
+                            title: 'Insert selected text into note',
+                            result: () => {
+                              var sel = window.getSelection();
+                              var cont = document.createElement("blockquote");
+
+                              for (var i = 0, len = sel.rangeCount; i < len; ++i) {
+                                              cont.appendChild(sel.getRangeAt(i).cloneContents());
+                                         }
+
+                              editor.content.innerHTML += cont.outerHTML + "<div><br></div>" ;
+                            }
+                          }
+
+
                         ],
                         classes: {
                           actionbar: 'pell-actionbar',

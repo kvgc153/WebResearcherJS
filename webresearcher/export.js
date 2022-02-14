@@ -12,7 +12,7 @@ function displayAllNotes(e){
         // grab all notes
        var allNotes=document.getElementsByClassName("ui-widget-content");
        var allNotes1=document.getElementsByClassName("pell-content");
-       var allNotes_html1 = '<blockquote class="blockquote text-center"><button type="button" class="class="btn btn-primary"><h3><a id="TEXT-export">Text:</a></h3></button></blockquote>';
+       var allNotes_html1 = '<blockquote class="blockquote text-center"><button type="button" class="btn btn-primary btn-lg btn-block bg-dark text-white "><h3><a id="TEXT-export">Text:</a></h3></button></blockquote>';
 
        var dates = $('[id^="tooltip"]');
 
@@ -39,8 +39,6 @@ function displayAllNotes(e){
          "tags": "web",
          "text": allNotes_html1
        };
-       // downloadObjectAsJson(parseTiddlywiki,"parseTiddlywiki");
-
            $("body").append ( '                                           \
                <div id="notesHTML" style="left: 10%; height: 80%; \
            position: fixed; width: 100%; bottom: 5%;background-color:white; border-style: double;  border-radius: 10px; opacity:100%; overflow-y: scroll; \
@@ -49,10 +47,10 @@ function displayAllNotes(e){
            $("#notesHTML").html(
              '<blockquote class="blockquote text-center"><h1> Page notes : ' + url_window + '</h1></blockquote><br>'
              +  allNotes_html1
-             +' <hr><blockquote class="blockquote text-center"><button type="button" class="class="btn btn-primary"><h3><a id="HTML-export">HTML (right click to save):</a></h3></button></blockquote><code><pre>'
+             +' <hr><blockquote class="blockquote text-center"><button type="button" class="btn btn-primary btn-lg btn-block bg-dark text-white " ><h3><a id="HTML-export">HTML :</a></h3></button></blockquote><code><pre>'
              +allNotes_html1.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
              +"</pre></code>"
-             +' <hr><blockquote class="blockquote text-center"><button type="button" class="class="btn btn-primary"><h3><a id="JSON-export">JSON (right click to save):</a></h3></button></blockquote><code><pre>'
+             +' <hr><blockquote class="blockquote text-center"><button type="button" class="btn btn-primary btn-lg btn-block bg-dark text-white "><h3><a id="JSON-export">JSON :</a></h3></button></blockquote><code><pre>'
              +  JSON.stringify(parseTiddlywiki, null, 4)
              +"</pre></code>"
 
