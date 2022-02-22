@@ -35,6 +35,6 @@ function addNotes(){
 
     $("#allNotes").html(allNotes_html);
     const timer=setTimeout(addNotes, 2000);
-
+    renderMathInElement(document.getElementById("allNotes"));
 }
 addNotes();

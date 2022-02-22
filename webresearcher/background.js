@@ -11,6 +11,9 @@ var jsFiles = ["ext_libs/jquery.min.js",
 "ext_libs/pell.min.js",
 "ext_libs/notify.min.js",
 "ext_libs/bootstrap.min.js",
+"ext_libs/tex-chtml.js",
+"ext_libs/katex.min.js",
+"ext_libs/auto-render.min.js",
 "webresearcher/init.js",
 "webresearcher/webresearcher.js",
 "webresearcher/sidebar.js",
@@ -19,7 +22,8 @@ var jsFiles = ["ext_libs/jquery.min.js",
 
 var cssFiles = ["ext_libs/pell.css",
 "ext_libs/jquery-ui.min.css",
-"ext_libs/bootstrap.min.css"];
+"ext_libs/bootstrap.min.css",
+"ext_libs/katex.min.css"];
 
 // error catching functions
 function onExecuted(result) {
