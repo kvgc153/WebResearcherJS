@@ -38,6 +38,10 @@ Select some text on the webpage (this acts as an anchor) and press Ctrl+1. This 
 - **Ctrl + Alt + Y**: Open Sidebar.
 
 
+#### Important: Always backup your browser storage!!
+In order to prevent any data loss, always backup your browser's localStorage. This is typically stored in webappsstore.sqlite under your local firefox profile folder. Check out: [Where does Firefox store javascript/HTML localStorage?](https://stackoverflow.com/questions/7079075/where-does-firefox-store-javascript-html-localstorage).
+
+
 
 
 ### JS modules that this extension uses

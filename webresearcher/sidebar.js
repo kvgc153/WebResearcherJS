@@ -1,19 +1,13 @@
 
 // script to add sidebar containing all the notes
 
-
 $("body").append ( '                                           \
     <div id="allNotes" style="display: inline-block;resize:both;left: 70%; height: 100%; \
 position: fixed; width: 29.5%; bottom: 0%;background-color:white; border-style: double;  border-radius: 10px; opacity:80%; overflow-y: scroll; \
 display: inline-block; max-width: 80%;overflow-x: hidden;">  If you see this, something is not working </div>                                                     \
 ' );
 
-$("html").css (
-{
-    position:   "relative",
-    width:      "calc(100% - " + sidebarWidth + ")",
-}
-);
+
 function addNotes(){
      // grab all notes
     var allNotes=document.getElementsByClassName("ui-widget-content");
@@ -31,10 +25,10 @@ function addNotes(){
         allNotes_html+= ' </div></div> ';
 
     }
-
-
     $("#allNotes").html(allNotes_html);
     const timer=setTimeout(addNotes, 2000);
     renderMathInElement(document.getElementById("allNotes"));
 }
 addNotes();
+// hide sidebar during startup
+$("#allNotes").hide();

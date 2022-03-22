@@ -7,6 +7,8 @@ browser.contextMenus.create({
 ////////////////////////////////////////////////////////////
 var jsFiles = ["ext_libs/jquery.min.js",
 "ext_libs/jquery-ui.min.js",
+"ext_libs/annotator/annotator-full.min.js",
+"ext_libs/annotator/scripts.js",
 "ext_libs/popper.js",
 "ext_libs/pell.min.js",
 "ext_libs/notify.min.js",
@@ -22,6 +24,7 @@ var jsFiles = ["ext_libs/jquery.min.js",
 
 var cssFiles = ["ext_libs/pell.css",
 "ext_libs/jquery-ui.min.css",
+"ext_libs/annotator/annotator.min.css",
 "ext_libs/bootstrap.min.css",
 "ext_libs/katex.min.css"];
 
@@ -35,7 +38,7 @@ function onError(error) {
   console.log(`Error: ${error}`);
 }
 
-// first wait for jquery and jquery-ui to load
+// first wait for jquery, jquery-ui and annotator to load
 function loadJQuery(){
     const executing = browser.tabs.executeScript({
     file: jsFiles[0]
@@ -50,6 +53,7 @@ function loadJQueryUI(){
     executing.then(loadOtherModules, onError);
 
 }
+
 // load all other modules
 function loadOtherModules(){
 

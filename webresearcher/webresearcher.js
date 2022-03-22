@@ -134,6 +134,37 @@ function workerFunction(e){
 
         /// End of upload-annotation block///
 
+        /// open notes
+        if(e.keyCode==56){ // 8 key
+          //show notes
+          $("#allNotes").show();
+          //Reset css
+          $("html").css (
+          {
+              position:   "relative",
+              width:      "calc(100% - " + sidebarWidth + ")",
+          }
+          );
+
+        }
+
+
+
+
+
+        if(e.keyCode==57){
+          //Hide notes - 9 key
+          $("#allNotes").hide();
+          //Reset css
+
+          $("html").css (
+          {
+              position:   "relative",
+              width:      "100%",
+          }
+          );
+        }
+
         /////////////// Hightlight + Annotate block //////////////////////
         // highlight and annotate  when Ctrl+1 key is pressed
 
