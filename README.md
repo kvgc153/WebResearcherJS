@@ -34,6 +34,8 @@ Select some text on the webpage (this acts as an anchor) and press Ctrl+1. This 
   - Right click on any note to destroy it.
 - **Ctrl + 2**: Save all annotations in current webpage to browser storage.
 - **Ctrl + 3**: Load annotations from browser storage.
+- **Ctrl + 8**: Open 'Page notes' sidebar. This will display all the notes made in the page.
+- **Ctrl + 9**: Close 'Page notes' sidebar.
 - **Ctrl + 0**: Open Export note dialog box.
 - **Ctrl + Alt + Y**: Open Sidebar.
 
