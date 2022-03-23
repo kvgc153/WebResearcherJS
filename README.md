@@ -8,9 +8,7 @@ WebResearcherJS is a Firefox web extension which allows users to annotate webpag
 Try out the extension by downloading from the Firefox add-on page: https://addons.mozilla.org/en-US/firefox/addon/webresearcherjs/
 
 ### Features
-Enable the extension on any webpage by clicking on the button in the extension popup
-
-<img width="40%" src="3.png">
+Enable the extension on any webpage by opening the context menu (Right-mouse-click) and pressing 'Start WebResearcherJS'.
 
 - Note taking.
 <img width="90%" src="1.png">
