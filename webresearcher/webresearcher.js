@@ -134,6 +134,7 @@ function workerFunction(e){
 
         /// End of upload-annotation block///
 
+
         /// open notes
         if(e.keyCode==56){ // 8 key
           //show notes
@@ -168,7 +169,7 @@ function workerFunction(e){
         /////////////// Hightlight + Annotate block //////////////////////
         // highlight and annotate  when Ctrl+1 key is pressed
 
-        if(e.keyCode ==createNoteKeyCode){
+        if(e.keyCode ==createNoteKeyCode || e.keyCode==55){
              ////////// Create Note block ///////////
             function createHighlight(range){
                 var newNode = document.createElement("span");
@@ -201,84 +202,108 @@ function workerFunction(e){
                 }}, false);
 
                 ///////// annotation using pell note ///////////
+                if(e.keyCode==createNoteKeyCode){
                 newNode1.innerHTML= `
-                <div id=`+"tooltip"
-                + note_count
-                +` class="pell" >
+                  <div id=`+"tooltip"
+                  + note_count
+                  +` class="pell" >
+                  </div>
+                  `;
+               }
+               if(e.keyCode==55){
+                  /// DO Not change the innerHTML unless you know what you are doing.. ///
+                 newNode1.innerHTML= `
+                 <div id=`+"tooltip"
+                 + note_count
+                 +` >
+                <div class="pell-actionbar">
                 </div>
-                `;
+                <div class="pell-content" contenteditable="false"></div>
+                 </div>
+                 `;
+                   }
+                ///////////////////////
+                if(e.keyCode==createNoteKeyCode){
+                    document.getElementById("tooltip"+note_count).setAttribute("style","height: 130px; width: 300px;\
+                    border: none;color: black;  padding: 15px 15px; text-align: enter;\
+                    text-decoration: none;  display: inline-block; overflow:auto;resize:both;background-color:"+defaultNoteColor+";font-size:"+ defaultFont +";opacity:"+defaultOpacity);
 
-                document.getElementById("tooltip"+note_count).setAttribute("style","height: 130px; width: 300px;\
-                border: none;color: black;  padding: 15px 15px; text-align: enter;\
-                text-decoration: none;  display: inline-block; overflow:auto;resize:both;background-color:"+defaultNoteColor+";font-size:"+ defaultFont +";opacity:"+defaultOpacity)
 
-                const editor = pell.init({
-                        element: document.getElementById("tooltip"+note_count),
-                        onChange: html => {
-                        },
-                        defaultParagraphSeparator: 'p',
-                        styleWithCSS: true,
-                        actions: [
-                          'bold',
-                          'olist',
-                          'ulist',
-                          'link',
-                          {
-                              icon: '&#128247;',
-                              title: 'Image',
-                              result: () => {
-                                const url = window.prompt('Enter the image URL')
-                                //this implemention is different from the pell documentation to account for resizing
-                                if (url) document.execCommand('insertHTML',false, `
-                                <div style=" resize: both; overflow:auto;">
-                                  <img width=100% height=100% src=`+url+"></div><br><br> ")
+                    const editor = pell.init({
+                            element: document.getElementById("tooltip"+note_count),
+                            onChange: html => {
+                            },
+                            defaultParagraphSeparator: 'p',
+                            styleWithCSS: true,
+                            actions: [
+                              'bold',
+                              'olist',
+                              'ulist',
+                              'link',
+                              {
+                                  icon: '&#128247;',
+                                  title: 'Image',
+                                  result: () => {
+                                    const url = window.prompt('Enter the image URL')
+                                    //this implemention is different from the pell documentation to account for resizing
+                                    if (url) document.execCommand('insertHTML',false, `
+                                    <div style=" resize: both; overflow:auto;">
+                                      <img width=100% height=100% src=`+url+"></div><br><br> ")
+                                  }
+                              },
+                              {
+                                icon: '&#9998;',
+                                title: 'Insert HTML',
+                                result: () => {
+                                  const url = window.prompt('Enter HTML');
+                                  if (url) document.execCommand('insertHTML',false, url)
+                                }
+                              },
+                              {
+                                icon: '&#10066;',
+                                title: 'Change note color',
+                                result: () => {
+                                  const url = window.prompt('Enter color of note: [e.g., #ffffcc(default color), gray, purple,...]');
+
+                                  if (url){
+                                    document.getElementById(event.target.parentNode.parentNode.id).style.backgroundColor = url
+                                  }
+                                }
+                              },
+                              {
+                                icon: '&#9997;',
+                                title: 'Insert selected text into note',
+                                result: () => {
+                                  var sel = window.getSelection();
+                                  var cont = document.createElement("blockquote");
+
+                                  for (var i = 0, len = sel.rangeCount; i < len; ++i) {
+                                                  cont.appendChild(sel.getRangeAt(i).cloneContents());
+                                             }
+
+                                  editor.content.innerHTML += cont.outerHTML + "<div><br></div>" ;
+                                }
                               }
-                          },
-                          {
-                            icon: '&#9998;',
-                            title: 'Insert HTML',
-                            result: () => {
-                              const url = window.prompt('Enter HTML');
-                              if (url) document.execCommand('insertHTML',false, url)
+
+
+                            ],
+                            classes: {
+                              actionbar: 'pell-actionbar',
+                              button: 'pell-button',
+                              content: 'pell-content',
+                              selected: 'pell-button-selected'
                             }
-                          },
-                          {
-                            icon: '&#10066;',
-                            title: 'Change note color',
-                            result: () => {
-                              const url = window.prompt('Enter color of note: [e.g., #ffffcc(default color), gray, purple,...]');
+                    })
 
-                              if (url){
-                                document.getElementById(event.target.parentNode.parentNode.id).style.backgroundColor = url
-                              }
-                            }
-                          },
-                          {
-                            icon: '&#9997;',
-                            title: 'Insert selected text into note',
-                            result: () => {
-                              var sel = window.getSelection();
-                              var cont = document.createElement("blockquote");
+                    editor.content.innerHTML = '<br>'
+              }
 
-                              for (var i = 0, len = sel.rangeCount; i < len; ++i) {
-                                              cont.appendChild(sel.getRangeAt(i).cloneContents());
-                                         }
+              if(e.keyCode==55){
+                  document.getElementById("tooltip"+note_count).setAttribute("style","height: 50px; width: 400px;\
+                  border: none;  display: inline-block; overflow:auto;resize:both;background-color:"+defaultRectColor+";font-size:"+ defaultFont +";opacity:"+defaultRectOpacity);
+                    }
+              ///////////////
 
-                              editor.content.innerHTML += cont.outerHTML + "<div><br></div>" ;
-                            }
-                          }
-
-
-                        ],
-                        classes: {
-                          actionbar: 'pell-actionbar',
-                          button: 'pell-button',
-                          content: 'pell-content',
-                          selected: 'pell-button-selected'
-                        }
-                })
-
-                editor.content.innerHTML = '<br>'
 
                ////// popper js block ///////////////////////
                 const popcorn = document.querySelector("#"+"popcorn"+note_count);

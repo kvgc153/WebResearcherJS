@@ -14,6 +14,9 @@ var defaultFont= "13px";
 var defaultOpacity = "80%";
 var sidebarWidth    = "30%";
 
+// controls the specs of the highlighting rectangle
+var defaultRectColor = 'green';
+var defaultRectOpacity = '10%';
 
 /////// variables used /////////
 var note_count = 1;
