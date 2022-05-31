@@ -27,7 +27,7 @@ Select some text on the webpage (this acts as an anchor) and press Ctrl+1. This 
 - **Ctrl + 2**: Save all annotations in current webpage to browser storage.
 - **Ctrl + 3**: Load annotations from browser storage.
 
-<img width="60%" src="highlight.gif">
+<img width="80%" src="highlight.gif">
 
 Select some text on the webpage  and press Ctrl+7. This will create a green box near the selected text. Hold down the shift key and drag the box across the webpage to highlight important elements.
 
@@ -36,12 +36,12 @@ Select some text on the webpage  and press Ctrl+7. This will create a green box 
   - Resize as needed
   - Right click on box to destroy it.
 
-<img width="60%" src="sidebar.gif">
+<img width="80%" src="sidebar.gif">
 
 - **Ctrl + 8**: Open 'Page notes' sidebar. This will display all the notes made in the page.
 - **Ctrl + 9**: Close 'Page notes' sidebar.
 - 
-<img width="60%" src="export.gif">
+<img width="80%" src="export.gif">
 - **Ctrl + 0**: Open Export note dialog box.
 - **Ctrl + Alt + Y**: Open Sidebar.
 
