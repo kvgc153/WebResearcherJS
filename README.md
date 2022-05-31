@@ -32,6 +32,10 @@ Select some text on the webpage (this acts as an anchor) and press Ctrl+1. This 
   - Right click on any note to destroy it.
 - **Ctrl + 2**: Save all annotations in current webpage to browser storage.
 - **Ctrl + 3**: Load annotations from browser storage.
+- **Ctrl + 7**: Green higlight box. (allows you to draw a rectangle around important elements on a webpage) 
+  - Hold on the shift key and drag the box anywhere on the webpage
+  - Resize as needed
+  - Right click on box to destroy it.
 - **Ctrl + 8**: Open 'Page notes' sidebar. This will display all the notes made in the page.
 - **Ctrl + 9**: Close 'Page notes' sidebar.
 - **Ctrl + 0**: Open Export note dialog box.
