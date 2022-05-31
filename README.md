@@ -40,8 +40,9 @@ Select some text on the webpage  and press Ctrl+7. This will create a green box 
 
 - **Ctrl + 8**: Open 'Page notes' sidebar. This will display all the notes made in the page.
 - **Ctrl + 9**: Close 'Page notes' sidebar.
-- 
+
 <img width="80%" src="export.gif">
+
 - **Ctrl + 0**: Open Export note dialog box.
 - **Ctrl + Alt + Y**: Open Sidebar.
 
