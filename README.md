@@ -7,18 +7,15 @@ WebResearcherJS is a Firefox web extension which allows users to annotate webpag
 
 Try out the extension by downloading from the Firefox add-on page: https://addons.mozilla.org/en-US/firefox/addon/webresearcherjs/
 
-### Features
-Enable the extension on any webpage by opening the context menu (Right-mouse-click) and pressing 'Start WebResearcherJS'.
 
-- Note taking.
-- Export notes to as Text, HTML or JSON.
-
-
-### Video demo of features
+#### Video demo
 
 https://youtu.be/ON_1rjPh_Ak.
 
-### Usage
+
+### How to use extension?
+Enable the extension on any webpage by opening the context menu (Right-mouse-click) and pressing 'Start WebResearcherJS'.
+
 <img width="100%" src="demo.gif">
 
 Select some text on the webpage (this acts as an anchor) and press Ctrl+1. This will create a note near the selected text. Hold down the shift key and drag the note across the webpage.
@@ -32,7 +29,9 @@ Select some text on the webpage (this acts as an anchor) and press Ctrl+1. This 
 
 <img width="60%" src="highlight.gif">
 
-- **Ctrl + 7**: Green higlight box. (allows you to draw a rectangle around important elements on a webpage) 
+Select some text on the webpage  and press Ctrl+7. This will create a green box near the selected text. Hold down the shift key and drag the box across the webpage to highlight important elements.
+
+- **Ctrl + 7**: Green higlight box. 
   - Hold on the shift key and drag the box anywhere on the webpage
   - Resize as needed
   - Right click on box to destroy it.
