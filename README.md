@@ -11,9 +11,6 @@ Try out the extension by downloading from the Firefox add-on page: https://addon
 Enable the extension on any webpage by opening the context menu (Right-mouse-click) and pressing 'Start WebResearcherJS'.
 
 - Note taking.
-<img width="90%" src="1.png">
-- Sidebar with a custom URL loader
-<img width="90%" src="2.png">
 - Export notes to as Text, HTML or JSON.
 
 
@@ -32,12 +29,20 @@ Select some text on the webpage (this acts as an anchor) and press Ctrl+1. This 
   - Right click on any note to destroy it.
 - **Ctrl + 2**: Save all annotations in current webpage to browser storage.
 - **Ctrl + 3**: Load annotations from browser storage.
+
+<img width="60%" src="highlight.gif">
+
 - **Ctrl + 7**: Green higlight box. (allows you to draw a rectangle around important elements on a webpage) 
   - Hold on the shift key and drag the box anywhere on the webpage
   - Resize as needed
   - Right click on box to destroy it.
+
+<img width="60%" src="sidebar.gif">
+
 - **Ctrl + 8**: Open 'Page notes' sidebar. This will display all the notes made in the page.
 - **Ctrl + 9**: Close 'Page notes' sidebar.
+- 
+<img width="60%" src="export.gif">
 - **Ctrl + 0**: Open Export note dialog box.
 - **Ctrl + Alt + Y**: Open Sidebar.
 
