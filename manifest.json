@@ -31,5 +31,9 @@
 	},
 	"background": {
 	"scripts": ["webresearcher/background.js"]
-  }
+},
+	"options_ui": {
+  "page": "options.html",
+  "browser_style": true
+}
 }

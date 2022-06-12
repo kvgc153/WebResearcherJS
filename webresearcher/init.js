@@ -1,6 +1,5 @@
 /// customizable variables
 /// Go to https://keycode.info/ to find keycodes
-
 var createNoteKeyCode = 49 ;  // corresponds to 1 on keyboard
 var saveAnnotationsKeyCode= 50; // corresponds to 2 on keyboard
 var loadAnnotationsKeyCode=51 ; // corresponds to 3 on keyboard
@@ -213,7 +212,7 @@ document.getElementById('exportNotes').addEventListener('click', ()=>{
   }
   console.log("User asked to export notes to TW. Opening new window...");
 
-  window.open("http://0.0.0.0:8001/tiddlyroam3.html?action=createtid&name="+ encodeURIComponent(pageTitle)  +"&content="+encodeURIComponent(exportHTML.join('')));
+  window.open(TWFilepath+"?action=createtid&name="+ encodeURIComponent(pageTitle)  +"&content="+encodeURIComponent(exportHTML.join('')));
 
 
 });

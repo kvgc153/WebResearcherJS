@@ -1,5 +1,11 @@
 
 
+function handleClick() {
+  browser.runtime.openOptionsPage();
+}
+
+browser.browserAction.onClicked.addListener(handleClick);
+
 console.log("inside background.js");
 browser.contextMenus.create({
   id: "eat-page",
@@ -36,6 +42,8 @@ function onError(error) {
   console.log(`Error: ${error}`);
 }
 
+
+
 // first wait for jquery, jquery-ui and others to load and then load all the small ones.. very poorly written code...
 function loadJQuery(){
     const executing = browser.tabs.executeScript({
@@ -56,11 +64,21 @@ function loadEditor(){
     const executing = browser.tabs.executeScript({
     file: jsFiles[2]
     });
-    executing.then(loadOtherModules, onError);
+    executing.then(loadTWFilePath, onError);
 
 }
 
-
+function loadTWFilePath(){
+    //Tiddlywiki file path obtained from user
+    var gettingItem = browser.storage.sync.get('TWFilepath');
+    gettingItem.then((res) => {
+      var foo_res = JSON.parse(res.TWFilepath);
+      const executing = browser.tabs.executeScript({
+          code:`var TWFilepath="`+ foo_res + `";`
+      });
+      executing.then(loadOtherModules, onError);
+    });
+}
 
 // load all other modules
 function loadOtherModules(){
@@ -80,6 +98,7 @@ function loadOtherModules(){
          }
 
 }
+
 
 ////////////////////////////////////////////////////////////
 
