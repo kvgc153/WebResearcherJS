@@ -21,19 +21,27 @@ var currentTab = '';
 var urlExceptions = ['https://mail.google.com/mail/u/0/','https://web.whatsapp.com/'];
 
 function handleUpdated(tabId, changeInfo, tabInfo) {
-  // currentTab = "http://0.0.0.0:8001/tiddlyroam3.html#"+tabInfo.url.replace(/(^\w+:|^)\/\//, '');
-  if(!(tabInfo.url in urlExceptions)){
-    currentTab = "http://0.0.0.0:8001/tiddlyroam3.html#"+"#:[search["+tabInfo.url+"]]";
+  var gettingItem = browser.storage.sync.get('TWFilepath');
+  gettingItem.then((res) => {
 
-    var link = document.getElementById('link');
-    var iframeElement = document.getElementById('browser');
-    iframeElement.src="http://0.0.0.0:8001/tiddlyroam3.html"+"#:[search["+tabInfo.url+"]]";
-    var url = document.getElementById('urlInput');
-    url.value ="http://0.0.0.0:8001/tiddlyroam3.html"+"#:[search["+tabInfo.url+"]]";
+    if(!(tabInfo.url in urlExceptions)){
+      currentTab =   JSON.parse(res.TWFilepath)+"#:[search["+tabInfo.url+"]]";
+
+      var link = document.getElementById('link');
+      var iframeElement = document.getElementById('browser');
+      var url = document.getElementById('urlInput');
+
+      iframeElement.src=  JSON.parse(res.TWFilepath)+"#:[search["+tabInfo.url+"]]";
+      url.value =  JSON.parse(res.TWFilepath)+"#:[search["+tabInfo.url+"]]";
+
+
+    }
 
 
 
-  }
+  });
+
+
 
 }
 

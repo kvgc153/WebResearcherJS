@@ -99,6 +99,7 @@ function workerFunction(e){
                          shortcut: 'CMD+SHIFT+O'
                        }
 
+
                      },
                      onChange:(api, event) =>{
                           saved();
