@@ -3,26 +3,6 @@ document.addEventListener('keydown', workerFunction);
 function workerFunction(e){
     var toggleHighlight= false;
     if(e.ctrlKey){
-        //////// save annotation block ///////
-        if(e.keyCode==saveAnnotationsKeyCode){
-            var dict = {};
-            // grab all notes
-            var allNotes=document.getElementsByClassName("ui-widget-content");
-            var allNotes_html = ''
-            for(var i=0;i<allNotes.length;i++){
-                allNotes_html+= allNotes[i].outerHTML; // getting all notes
-            }
-
-            // add note to local storage
-            var makeNewID  = Number(new Date());
-            localStorage.setItem(webPageUrl, allNotes_html.replaceAll("tooltip","tooltip"+ makeNewID));
-            $.notify('Added notes to local storage', "success");
-          }
-         /// End of save annotation block///
-
-
-
-
 
         /////////////// Hightlight + Annotate block //////////////////////
         // highlight and annotate  when Ctrl+1 key is pressed
@@ -100,10 +80,10 @@ function workerFunction(e){
                        }
 
 
-                     },
-                     onChange:(api, event) =>{
-                          saved();
-                      }
+                     }
+                     // onChange:(api, event) =>{
+                     //      saved();
+                     //  }
                   });
 
 

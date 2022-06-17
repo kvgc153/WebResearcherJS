@@ -16,6 +16,7 @@ browser.contextMenus.create({
 var jsFiles = ["ext_libs/jquery.min.js",
 "ext_libs/jquery-ui.min.js",
 "ext_libs/editorjs@latest.js",
+"ext_libs/mark.min.js",
 "ext_libs/header@latest.js",
 "ext_libs/simple-image@latest.js",
 "ext_libs/list@latest.js",
@@ -25,11 +26,11 @@ var jsFiles = ["ext_libs/jquery.min.js",
 "ext_libs/popper.js",
 "ext_libs/notify.min.js",
 "webresearcher/init.js",
-"webresearcher/webresearcher.js",
+"webresearcher/webresearcher.js"
 ];
 
 var cssFiles = [
-"ext_libs/jquery-ui.min.css",
+"ext_libs/jquery-ui.min.css"
 ];
 
 // error catching functions
@@ -41,8 +42,6 @@ function onError(error) {
   // alert(error);
   console.log(`Error: ${error}`);
 }
-
-
 
 // first wait for jquery, jquery-ui and others to load and then load all the small ones.. very poorly written code...
 function loadJQuery(){
@@ -63,6 +62,14 @@ function loadJQueryUI(){
 function loadEditor(){
     const executing = browser.tabs.executeScript({
     file: jsFiles[2]
+    });
+    executing.then(loadMark, onError);
+
+}
+
+function loadMark(){
+    const executing = browser.tabs.executeScript({
+    file: jsFiles[3]
     });
     executing.then(loadTWFilePath, onError);
 
@@ -89,7 +96,7 @@ function loadOtherModules(){
                });
                executing.then(onExecuted, onError);
           }
-        for(var i=3;i<jsFiles.length;i++){
+        for(var i=4;i<jsFiles.length;i++){
             		const executing = browser.tabs.executeScript({
             		file: jsFiles[i]
               });
