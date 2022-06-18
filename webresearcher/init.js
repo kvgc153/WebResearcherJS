@@ -18,6 +18,7 @@ var WBJS_HTML = {};
 var WBJS_CSS = {};
 var WBJS_JSON = {};
 
+var classnames =["color1","color2","color3","color4","color5","color6","color7","color8"];
 /// Add Buttons to the page for control
 $("html").append(`
   <div  style="left: 90%; height: 7%; position: fixed; width: 10%; bottom: 80%;z-index:100;background-color:white">
@@ -25,8 +26,9 @@ $("html").append(`
   <button style="width:100%;border-radius: 8px;font-size:100%" id='exportNotes'>Export to TiddlyWiki</button>
   </div> `);
 
-
-
+function getRandomInt(max) {
+    return Math.floor(Math.random() * max);
+}
 
 
 
@@ -164,7 +166,6 @@ $("html").append(`
 
         await editorJSObjs[i].save()
         .then((savedData) =>{
-            // console.log("then"+i);
             // Convert JSON to html using parser
             const edjsParser = edjsHTML();
             let html = edjsParser.parse(savedData);
@@ -192,7 +193,10 @@ $("html").append(`
                   accuracy: {
                     value: "partially",
                     limiters: [".", ",", "!"]
-                  }
+                  },
+                  exclude: [".ui-widget-content *"],
+                  className: classnames[getRandomInt(classnames.length)]
+
                             });
 
             }
@@ -217,17 +221,16 @@ $("html").append(`
   var intervalId = setInterval(saved,15000);
 
 
-  //export Notes to TiddlyWiki
-  var toggleExport = false;
-  document.getElementById('exportNotes').addEventListener('click', ()=>{
+//export Notes to TiddlyWiki
+document.getElementById('exportNotes').addEventListener('click', ()=>{
     var exportHTML=[];
     exportHTML[0]= "<table><tr><td>URL</td><td>Title</td></tr><tr><td>"+url_window+"</td> <td>"+pageTitle+"</td> </tr></table>";
+
     for(foo_exp=1; foo_exp<note_count; foo_exp++){
-      // console.log(WBJS_HTML[foo_exp]);
       exportHTML[foo_exp] = "<h3>Note:"+foo_exp+"</h3>"+WBJS_HTML[foo_exp]+"<hr><br>";
     }
-    console.log("User asked to export notes to TW. Opening new window...");
 
+    console.log("User asked to export notes to TW. Opening new window...");
     window.open(TWFilepath+"?action=createtid&name="+ encodeURIComponent(pageTitle)  +"&content="+encodeURIComponent(exportHTML.join('')));
 
 

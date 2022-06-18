@@ -30,7 +30,8 @@ var jsFiles = ["ext_libs/jquery.min.js",
 ];
 
 var cssFiles = [
-"ext_libs/jquery-ui.min.css"
+"ext_libs/jquery-ui.min.css",
+"webresearcher/custom.css"
 ];
 
 // error catching functions

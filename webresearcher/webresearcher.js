@@ -3,10 +3,7 @@ document.addEventListener('keydown', workerFunction);
 function workerFunction(e){
     var toggleHighlight= false;
     if(e.ctrlKey){
-
-        /////////////// Hightlight + Annotate block //////////////////////
-        // highlight and annotate  when Ctrl+1 key is pressed
-
+        /////////////// launch editorjs note when Ctrl+1 is pressed //////////////////////
         if(e.keyCode ==createNoteKeyCode){
              ////////// Create Note block ///////////
             function createHighlight(range){
@@ -23,7 +20,6 @@ function workerFunction(e){
                 createHighlight(range);
             }
 
-            ////////// annotate ///////////
             if(window.getSelection().rangeCount >0){
 
                 var newNode1 = document.createElement("div");
@@ -81,9 +77,6 @@ function workerFunction(e){
 
 
                      }
-                     // onChange:(api, event) =>{
-                     //      saved();
-                     //  }
                   });
 
 
