@@ -26,6 +26,9 @@ var jsFiles = ["ext_libs/jquery.min.js",
 "ext_libs/popper.js",
 "ext_libs/notify.min.js",
 "webresearcher/init.js",
+"webresearcher/loadLocalStorage.js",
+"webresearcher/saveLocalStorage.js",
+"webresearcher/export.js",
 "webresearcher/webresearcher.js"
 ];
 
