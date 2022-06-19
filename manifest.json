@@ -1,7 +1,7 @@
 {
 	"manifest_version": 2,
 	"name": "tiddlyWebResearcher",
-	"version": "1.0.0",
+	"version": "1.0.0beta",
 	"description": "https://github.com/kvgc/WebResearcherJS-extension",
 
 	"permissions": [
@@ -9,13 +9,13 @@
 	],
 
 	"browser_action": {
-		"default_title": "WebResearcherJS",
+		"default_title": "tiddlyWebResearcher",
 		"browser_style": true
 	},
 
 	"applications": {
 		"gecko": {
-			"id": "webresearcher@webresearcher.io"
+			"id": "tiddlyWebResearcher@tiddlyWebResearcher.io"
 		}
 	},
 	"sidebar_action": {
@@ -32,6 +32,13 @@
 	"background": {
 	"scripts": ["webresearcher/background.js"]
 },
+"content_scripts": [
+  {
+    "matches": ["*://*/*"],
+    "js": ["webresearcher/contentScript.js"],
+		"run_at":"document_start"
+  }
+],
 	"options_ui": {
   "page": "options.html",
   "browser_style": true

@@ -114,6 +114,16 @@ function loadOtherModules(){
 ////////////////////////////////////////////////////////////
 
 
+function handleMessage(request, sender, sendResponse) {
+  console.log("Message from the content script: " +
+    request.greeting);
+      loadJQuery();
+  sendResponse({response: "Response from background script"});
+}
+
+browser.runtime.onMessage.addListener(handleMessage);
+
+
 browser.contextMenus.onClicked.addListener(function(info, tab) {
   if (info.menuItemId == "eat-page") {
       loadJQuery();
