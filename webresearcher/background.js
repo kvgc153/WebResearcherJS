@@ -1,32 +1,42 @@
+
+
+function handleClick() {
+  browser.runtime.openOptionsPage();
+}
+
+browser.browserAction.onClicked.addListener(handleClick);
+
+console.log("inside background.js");
 browser.contextMenus.create({
   id: "eat-page",
   title: "Start WebResearcherJS"
 });
 
-
 ////////////////////////////////////////////////////////////
 var jsFiles = ["ext_libs/jquery.min.js",
 "ext_libs/jquery-ui.min.js",
-"ext_libs/annotator/annotator-full.min.js",
-"ext_libs/annotator/scripts.js",
+"ext_libs/editorjs@latest.js",
+"ext_libs/mark.min.js",
+"ext_libs/header@latest.js",
+"ext_libs/simple-image@latest.js",
+"ext_libs/list@latest.js",
+"ext_libs/table@latest.js",
+"ext_libs/quote@latest.js",
+"ext_libs/edjsHTML.js",
 "ext_libs/popper.js",
-"ext_libs/pell.min.js",
 "ext_libs/notify.min.js",
-"ext_libs/bootstrap.min.js",
-"ext_libs/tex-chtml.js",
-"ext_libs/katex.min.js",
-"ext_libs/auto-render.min.js",
 "webresearcher/init.js",
-"webresearcher/webresearcher.js",
-"webresearcher/sidebar.js",
-"webresearcher/export.js"
+"webresearcher/handleMouseEvents.js",
+"webresearcher/loadLocalStorage.js",
+"webresearcher/saveLocalStorage.js",
+"webresearcher/export.js",
+"webresearcher/webresearcher.js"
 ];
 
-var cssFiles = ["ext_libs/pell.css",
+var cssFiles = [
 "ext_libs/jquery-ui.min.css",
-"ext_libs/annotator/annotator.min.css",
-"ext_libs/bootstrap.min.css",
-"ext_libs/katex.min.css"];
+"webresearcher/custom.css"
+];
 
 // error catching functions
 function onExecuted(result) {
@@ -38,7 +48,7 @@ function onError(error) {
   console.log(`Error: ${error}`);
 }
 
-// first wait for jquery, jquery-ui and annotator to load
+// first wait for jquery, jquery-ui and others to load and then load all the small ones.. very poorly written code...
 function loadJQuery(){
     const executing = browser.tabs.executeScript({
     file: jsFiles[0]
@@ -50,8 +60,49 @@ function loadJQueryUI(){
     const executing = browser.tabs.executeScript({
     file: jsFiles[1]
     });
-    executing.then(loadOtherModules, onError);
+    executing.then(loadEditor, onError);
 
+}
+
+function loadEditor(){
+    const executing = browser.tabs.executeScript({
+    file: jsFiles[2]
+    });
+    executing.then(loadMark, onError);
+
+}
+
+function loadMark(){
+    const executing = browser.tabs.executeScript({
+    file: jsFiles[3]
+    });
+    executing.then(loadTWFilePath, onError);
+
+}
+
+function loadTWFilePath(){
+    //Tiddlywiki file path obtained from user
+    var gettingItem = browser.storage.sync.get('TWFilepath');
+    gettingItem.then((res) => {
+      var foo_res = JSON.parse(res.TWFilepath);
+      const executing = browser.tabs.executeScript({
+          code:`var TWFilepath="`+ foo_res + `";`
+      });
+      executing.then(loadMarkJS, onError);
+    });
+}
+
+function loadMarkJS(){
+    //Tiddlywiki file path obtained from user
+    var gettingItem = browser.storage.sync.get('MarkJSHighlight');
+    console.log(gettingItem);
+    gettingItem.then((res) => {
+      var foo_res = JSON.parse(res.MarkJSHighlight);
+      const executing = browser.tabs.executeScript({
+          code:`var MarkJSHighlight="`+ foo_res + `";`
+      });
+      executing.then(loadOtherModules, onError);
+    });
 }
 
 // load all other modules
@@ -63,7 +114,7 @@ function loadOtherModules(){
                });
                executing.then(onExecuted, onError);
           }
-        for(var i=2;i<jsFiles.length;i++){
+        for(var i=4;i<jsFiles.length;i++){
             		const executing = browser.tabs.executeScript({
             		file: jsFiles[i]
               });
@@ -72,7 +123,19 @@ function loadOtherModules(){
          }
 
 }
+
+
 ////////////////////////////////////////////////////////////
+
+
+function handleMessage(request, sender, sendResponse) {
+  console.log("Message from the content script: " +
+    request.greeting);
+      loadJQuery();
+  sendResponse({response: "Response from background script"});
+}
+
+browser.runtime.onMessage.addListener(handleMessage);
 
 
 browser.contextMenus.onClicked.addListener(function(info, tab) {
