@@ -6,11 +6,11 @@
 tiddlyWebResearcher is a Firefox extension which allows users to take notes on webpages and exporting them to TiddlyWiki for further parsing.
 
 
-Try out the extension by downloading from the Firefox add-on page:
+Try out the extension by downloading from the Firefox add-on page: https://addons.mozilla.org/en-US/firefox/addon/webresearcherjs/
 
 
 #### Demo
-Watch the demo of WebResearcherJS here: 
+Watch the demo of WebResearcherJS here: https://youtu.be/HNnWeW2yJ74
 
 #### Docs
 Checkout the [docs/docs.md](docs/docs.md) folder for notes on how to develop this extension further.
