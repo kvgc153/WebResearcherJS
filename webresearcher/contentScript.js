@@ -1,5 +1,3 @@
-// content-script.js
-
 function handleResponse(message) {
   console.log(`Message from the background script:  ${message.response}`);
 }
@@ -10,12 +8,10 @@ function handleError(error) {
 
 function notifyBackgroundPage(e) {
   let sending = browser.runtime.sendMessage({
-    greeting: "Greeting from the content script"
+    greeting: "Sending trigger to start extension"
   });
   sending.then(handleResponse, handleError);
 }
-
-// window.addEventListener("click", notifyBackgroundPage);
 
 window.onload = function() {
   notifyBackgroundPage();

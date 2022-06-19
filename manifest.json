@@ -1,6 +1,6 @@
 {
 	"manifest_version": 2,
-	"name": "tiddlyWebResearcher",
+	"name": "WebResearcherJS",
 	"version": "1.0.0beta",
 	"description": "https://github.com/kvgc/WebResearcherJS-extension",
 
@@ -9,13 +9,13 @@
 	],
 
 	"browser_action": {
-		"default_title": "tiddlyWebResearcher",
+		"default_title": "WebResearcherJS",
 		"browser_style": true
 	},
 
 	"applications": {
 		"gecko": {
-			"id": "tiddlyWebResearcher@tiddlyWebResearcher.io"
+			"id": "webresearcher@webresearcher.io"
 		}
 	},
 	"sidebar_action": {

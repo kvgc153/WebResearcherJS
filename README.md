@@ -1,4 +1,4 @@
-# tiddlyWebResearcher
+# WebResearcherJS-extension
 <img width="50%" src="logo.png">
 
 > One of the challenges to using the internet as a means to learn is that, we oftentimes are unable to retain the information that we just read. But _maybe_ we would not run into this issue if there was a way to pro-actively engage in the content.
@@ -10,7 +10,7 @@ Try out the extension by downloading from the Firefox add-on page:
 
 
 #### Demo
-Watch the demo of tiddlyWebResearcher here:
+Watch the demo of WebResearcherJS here: 
 
 #### Docs
 Checkout the [docs/docs.md](docs/docs.md) folder for notes on how to develop this extension further.
