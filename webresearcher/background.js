@@ -26,6 +26,7 @@ var jsFiles = ["ext_libs/jquery.min.js",
 "ext_libs/popper.js",
 "ext_libs/notify.min.js",
 "webresearcher/init.js",
+"webresearcher/handleMouseEvents.js",
 "webresearcher/loadLocalStorage.js",
 "webresearcher/saveLocalStorage.js",
 "webresearcher/export.js",
@@ -86,6 +87,19 @@ function loadTWFilePath(){
       var foo_res = JSON.parse(res.TWFilepath);
       const executing = browser.tabs.executeScript({
           code:`var TWFilepath="`+ foo_res + `";`
+      });
+      executing.then(loadMarkJS, onError);
+    });
+}
+
+function loadMarkJS(){
+    //Tiddlywiki file path obtained from user
+    var gettingItem = browser.storage.sync.get('MarkJSHighlight');
+    console.log(gettingItem);
+    gettingItem.then((res) => {
+      var foo_res = JSON.parse(res.MarkJSHighlight);
+      const executing = browser.tabs.executeScript({
+          code:`var MarkJSHighlight="`+ foo_res + `";`
       });
       executing.then(loadOtherModules, onError);
     });

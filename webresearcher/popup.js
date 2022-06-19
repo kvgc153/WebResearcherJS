@@ -33,15 +33,9 @@ function handleUpdated(tabId, changeInfo, tabInfo) {
 
       iframeElement.src=  JSON.parse(res.TWFilepath)+"#:[search["+tabInfo.url+"]]";
       url.value =  JSON.parse(res.TWFilepath)+"#:[search["+tabInfo.url+"]]";
-
-
     }
 
-
-
   });
-
-
 
 }
 

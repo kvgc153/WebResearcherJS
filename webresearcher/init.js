@@ -22,6 +22,6 @@ var classnames =["color1","color2","color3","color4","color5","color6","color7",
 /// Add Buttons to the page for control
 var htmlAppend = $("html").append(`
   <div  style="left: 90%; height: 7%; position: fixed; width: 10%; bottom: 80%;z-index:100;background-color:white">
-  <button style="width:100%;border-radius:5px;font-size:100%;height:50%" id='saveNotesWBJS'>Save Notes</button>
-  <button style="width:100%;border-radius:5px;font-size:100%;height:50%" id='exportNotes'>Export to TW</button>
+  <button style="width:100%;border-radius:5px;font-size:100%;height:50%" id='saveNotesWBJS'>Save</button>
+  <button style="width:100%;border-radius:5px;font-size:100%;height:50%" id='exportNotes'>Export</button>
   </div> `);
