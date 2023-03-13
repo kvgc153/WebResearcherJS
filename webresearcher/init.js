@@ -24,24 +24,9 @@ var classnames =["color1","color2","color3","color4","color5","color6","color7",
 // Add Buttons to the page for control
 var htmlAppend = $("html").append(`
 <div class = "userButtonPanelWBJS">
-	<button class="badge btn btn-primary " style="width:100%" id='saveNotesWBJS'>Save</button>
-	<button class="badge btn btn-primary " style="width:100%" id='exportNotes'>Copy (TW)</button>
+	<div style="width:100%; text-align: center; background-color: white;"> Save to </div>
+	<button class="badge btn btn-primary " style="width:100%" id='saveNotesWBJS'>LocalStorage</button>
+	<button class="badge btn btn-primary " style="width:100%" id='exportNotes'>TW5</button>
+	<button class="badge btn btn-primary " style="width:100%" id='exportNotesJoplin'>Joplin</button>
 </div> 
 `);
-
-// Sidebar (under testing)
-// <button class="badge btn btn-primary " style="width:100%" id='exportNotes1'>Copy (TW)</button>
-// <div class="sidebar left" id="WBJS_sidebar" style="width:80%; background-color:'blue';">
-// <h3> Notes Summary </h3>
-// </div>
-// var sidebarStatus = false; 
-// document.getElementById('exportNotes1').addEventListener('click', ()=>{
-//   if(sidebarStatus){
-//     $(".sidebar.left").sidebar().trigger("sidebar:close");
-//     sidebarStatus = false;
-//   }
-//   else{
-//     $(".sidebar.left").sidebar().trigger("sidebar:open");
-//     sidebarStatus = true;
-//   }
-// })

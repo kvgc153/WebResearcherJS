@@ -82,10 +82,11 @@ function loadMark(){
 function loadTWFilePath(){
     //Tiddlywiki file path obtained from user
     var gettingItem = browser.storage.sync.get('TWFilepath');
+    var joplinToken  = browser.storage.sync.get('JoplinToken');
     gettingItem.then((res) => {
       var foo_res = JSON.parse(res.TWFilepath);
       const executing = browser.tabs.executeScript({
-          code:`var TWFilepath="`+ foo_res + `";`
+          code:`var TWFilepath="`+ foo_res + `"; var joplinToken="` + joplinToken + `";`
       });
       executing.then(loadMarkJS, onError);
     });
