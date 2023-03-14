@@ -82,15 +82,27 @@ function loadMark(){
 function loadTWFilePath(){
     //Tiddlywiki file path obtained from user
     var gettingItem = browser.storage.sync.get('TWFilepath');
-    var joplinToken  = browser.storage.sync.get('JoplinToken');
     gettingItem.then((res) => {
       var foo_res = JSON.parse(res.TWFilepath);
       const executing = browser.tabs.executeScript({
-          code:`var TWFilepath="`+ foo_res + `"; var joplinToken="` + joplinToken + `";`
+          code:`var TWFilepath="`+ foo_res + `";`
       });
-      executing.then(loadMarkJS, onError);
+      executing.then(loadJoplinToken, onError);
     });
 }
+function loadJoplinToken(){
+  var joplinToken = browser.storage.sync.get('joplinToken');
+  joplinToken.then((res) => {
+    var foo_res = JSON.parse(res.joplinToken);
+    const executing = browser.tabs.executeScript({
+        code:`var joplinToken="`+ foo_res + `";`
+    });
+    executing.then(loadMarkJS, onError);
+  });
+}
+
+var joplinToken  = browser.storage.sync.get('joplinToken');
+
 
 function loadMarkJS(){
     var gettingItem = browser.storage.sync.get('MarkJSHighlight');

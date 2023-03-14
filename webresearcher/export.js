@@ -24,6 +24,7 @@ document.getElementById('exportNotesJoplin').addEventListener('click', ()=>{
   }
 
   console.log("User asked to export notes to Joplin.");
+  console.log("http://localhost:41184/notes?token=" + joplinToken);
 
   fetch("http://localhost:41184/notes?token=" + joplinToken,
       {
