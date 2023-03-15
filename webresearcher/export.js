@@ -28,7 +28,7 @@ document.getElementById('exportNotesJoplin').addEventListener('click', ()=>{
 
   fetch("http://localhost:41184/notes?token=" + joplinToken,
       {
-          body: JSON.stringify({ "title": document.title , "body_html": exportHTML.join('')}),
+          body: JSON.stringify({ "title": document.title , "body_html": exportHTML.join(''), "tags" : "WBJS"}),
           method: "POST",
           headers: {
             "Content-Type": "application/json",
