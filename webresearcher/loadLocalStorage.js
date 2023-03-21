@@ -22,8 +22,7 @@ if(localStorage.getItem(webPageUrl)!=null){
 
     /// Make div for note
     newNode1.innerHTML= `
-      <div id=`+"tooltip" + note_count
-      +`>
+      <div id=`+"tooltip" + note_count + ` class="WBJSNote">
       </div>
       `;
     let notestyleProps = foo_loaded['CSS'][foo_loaded_keys[k]];
