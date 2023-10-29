@@ -26,7 +26,6 @@ var htmlAppend = $("html").append(`
 <div class = "userButtonPanelWBJS">
 	<div style="width:100%; text-align: center; background-color: white;"> Save to </div>
 	<button class="badge btn btn-primary " style="width:100%" id='saveNotesWBJS'>LocalStorage</button>
-	<button class="badge btn btn-primary " style="width:100%" id='exportNotes'>TW5</button>
 	<button class="badge btn btn-primary " style="width:100%" id='exportNotesJoplin'>Joplin</button>
 </div> 
 `);

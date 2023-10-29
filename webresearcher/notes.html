@@ -1,23 +1,25 @@
-<!-- Sidebar html page -->
-<!DOCTYPE html>
 <html>
 <head>
-  <meta charset="utf-8">
-  <script  type="text/javascript" src="popup.js"></script>
-  <link rel="stylesheet" href="../ext_libs/bootstrap.min.css"/>
+  <title>Dashboard</title>
+  <link rel='stylesheet' href='../ext_libs/bootstrap.min.css'>
+  <link rel='stylesheet' href='joplin_mark.css'>
+  <link rel="stylesheet" href="panel.css"/>
+
+  <script type='text/javascript' src='../ext_libs/markdown-it.min.js'></script>
+  <script type='text/javascript' src='../ext_libs/markdown-it-footnote.min.js'></script>
+  <script type='text/javascript' src="../ext_libs/jquery.min.js"></script>
+  <script type='text/javascript' src="../ext_libs/jquery.mark.min.js"></script>
+  <script type='text/javascript' src='joplin.js'></script>
+  <script type='text/javascript' src="joplin_search.js"> </script>
+
 </head>
-
 <body>
-<div id="iframeDiv">
-  <iframe id="browser" src="http://0.0.0.0:8001/tiddlyroam3.html" style="position: absolute; height: 88%; width:100%;"> ></iframe>
-</div>
+  <div id="content"></div>  
+  <div class="container-fluid">
 
-<div>
-  <input style="position: absolute; bottom:7%; width:100%;"  id="urlInput" type="text">Enter url here: </input>
-  <div class="container">
-  <button class="btn btn-lg btn-primary" style="position: absolute; bottom:0%; left:0% " id="link">Load url</button>
+    <div id="searchResults"></div>
   </div>
-</div>
-</body>
 
+
+</body>
 </html>
