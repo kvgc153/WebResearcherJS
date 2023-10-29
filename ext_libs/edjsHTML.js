@@ -11,7 +11,8 @@
             return "<h" + t.level + ">" + t.text + "</h" + t.level + ">";
         },
         paragraph: function (e) {
-            return "<p>" + e.data.text + "</p>";
+            var replaced = e.data.text.replace("http://", "");
+            return "<p>" + replaced + "</p>";
         },
         list: function (e) {
             var t = e.data,

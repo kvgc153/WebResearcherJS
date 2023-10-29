@@ -4,7 +4,6 @@ flowchart LR
     webpage[Webpage] --> load[Load notes from  locaStorage if any] 
    
     load --> Notes{{Take notes on webpage using this extension}}
-    Notes  ---> |on button press| Export1[Save notes to Tiddlywiki]
     Notes  ---> |on button press| Export2[Save notes to Joplin]
     Notes  ---> |on button press| Export3[Save notes to localStorage]
 
@@ -58,7 +57,7 @@ webresearcher/saveLocalStorage.js
 > Save notes to localStorage when user clicks 'Save notes' button
 
 webresearcher/export.js
-> Export notes to TiddlyWiki and Joplin.
+> Export notes to Joplin.
 
 webresearcher/webresearcher.js
 > Core file containing class 'WBJS' which handles the creation of notes on the DOM when the user clicks Ctrl+1. 

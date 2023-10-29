@@ -9,13 +9,14 @@ joplinToken.then((res) => {
 
 /** The following code block was adapted from Joplin dashboard by rami.sedhom@gmail.com **/
 // Enable markdown-it
-var md = window.markdownit({
-  html: true,
-  linkify: true,
-  typographer: true,
-  breaks: true
-})
-  .use(window.markdownitFootnote);;
+// var md = window.markdownit({
+//   html: true,
+//   linkify: true,
+//   typographer: true,
+//   breaks: true
+// })
+//   .use(window.markdownitFootnote);;
+//* <div class="bg-secondary text-white">:/${md.render(note[i].body)}</div>  */}
 
 function joplin_query_notes_by_created(token, css_id_selector, query) {
   var xhr = new XMLHttpRequest();
