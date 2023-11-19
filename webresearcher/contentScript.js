@@ -13,6 +13,5 @@ function notifyBackgroundPage(e) {
   sending.then(handleResponse, handleError);
 }
 
-window.onload = function() {
-  notifyBackgroundPage();
-};
+
+notifyBackgroundPage();
