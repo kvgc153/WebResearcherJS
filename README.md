@@ -6,7 +6,7 @@ Annotate your favorite webpages effortlessly and export to Joplin with ease usin
 
 
 ## Getting started
-Watch the demo of WebResearcherJS here: [https://youtu.be/pMWDywpQpqA](https://youtu.be/pMWDywpQpqA)
+Watch the demo of WebResearcherJS here: [https://www.youtube.com/watch?v=tJVW2UeUl9E](https://www.youtube.com/watch?v=tJVW2UeUl9E)
 
 
 ## Support and development
