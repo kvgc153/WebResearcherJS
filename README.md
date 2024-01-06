@@ -24,7 +24,7 @@ Annotate your favorite webpages effortlessly and export to Joplin with ease usin
 
 <img height="250px" src="demo2.gif">
 
-- Want to make changes to the exported note? Just click on the 'EDIT' button in the exported note on Joplin to go back to the webpage and edit the note. Resave the updated note back to Joplin. See demo below:
+- [New in v3.0.0] Want to make changes to the exported note? Just click on the 'EDIT' button in the exported note on Joplin to go back to the webpage and edit the note. Resave the updated note back to Joplin. See demo below:
 
 <img height="400px" src="demo3.gif">
 
@@ -34,6 +34,11 @@ Annotate your favorite webpages effortlessly and export to Joplin with ease usin
 - **Contextual highlighting**: This feature will compare the text contained in the notes and the text displayed on the webpage, and if the two are in agreement, it will highlight them on the webpage. See demo below. You can enable this by setting the contextual highlighting to true when configuring the extension.
 
 <img height="300px" src="contexthighlight.gif">
+
+- **Joplin-search sidebar**: Search through your Joplin notes by using the Joplin-search sidebar. You can open/close this sidebar by pressing Ctrl+Alt+Y.
+
+<img height="250px" src="sidebar.png">
+
 
 ## Video demo
 [https://www.youtube.com/watch?v=tJVW2UeUl9E](https://www.youtube.com/watch?v=tJVW2UeUl9E)
