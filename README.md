@@ -29,7 +29,7 @@ Annotate your favorite webpages effortlessly and export to Joplin with ease usin
 
 
 ## Video demo
-
+[https://youtu.be/tJVW2UeUl9E?feature=shared](https://youtu.be/tJVW2UeUl9E?feature=shared)
 
 ## Support and development
 Checkout the notes posted [here](docs/docs.md) to understand how the source code works. Code, suggestions, and feedback are welcome.
