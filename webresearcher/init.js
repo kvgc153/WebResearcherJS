@@ -4,6 +4,8 @@ var createNoteKeyCode = 49 ;
 // variables used //
 var note_count = 1;
 var webPageUrl = window.location.href.replace(/(^\w+:|^)\/\//, '');
+webPageUrl = webPageUrl.split("#")[0];
+var webHash = window.location.hash;
 var url_window = window.location.href;
 var pageTitle = document.title;
 
@@ -23,9 +25,10 @@ var classnames =["color1","color2","color3","color4","color5","color6","color7",
 
 // Add Buttons to the page for control
 var htmlAppend = $("html").append(`
-<div class = "userButtonPanelWBJS">
+<div id="userButtonPanelWBJS" class = "userButtonPanelWBJS">
 	<div style="width:100%; text-align: center; background-color: white;"> Save to </div>
 	<button class="badge btn btn-primary " style="width:100%" id='saveNotesWBJS'>LocalStorage</button>
 	<button class="badge btn btn-primary " style="width:100%" id='exportNotesJoplin'>Joplin</button>
 </div> 
 `);
+$("#userButtonPanelWBJS").draggable();

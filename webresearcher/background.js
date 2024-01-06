@@ -21,7 +21,7 @@ var jsFiles = [
   "ext_libs/header@latest.js",
   "ext_libs/simple-image@latest.js",
   "ext_libs/list@latest.js",
-  "ext_libs/table@latest.js",
+  "ext_libs/code@latest.js",
   "ext_libs/quote@latest.js",
   "ext_libs/edjsHTML.js",
   "ext_libs/popper.js",

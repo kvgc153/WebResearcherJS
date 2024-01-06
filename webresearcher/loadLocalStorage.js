@@ -49,12 +49,12 @@ if(localStorage.getItem(webPageUrl)!=null){
 
     editorJSObjs[note_count] = new EditorJS({
         holder: "tooltip"+note_count,
-          tools: {
+        tools: {
           header: {
             class: Header,
             inlineToolbar:true,
             config: {
-              placeholder: 'Header'
+            placeholder: 'Header'
             },
             shortcut: 'CMD+SHIFT+H'
           },
@@ -68,13 +68,27 @@ if(localStorage.getItem(webPageUrl)!=null){
             class: Quote,
             inlineToolbar: true,
             config: {
-              quotePlaceholder: 'Enter a quote',
-              captionPlaceholder: 'Quote\'s author',
+            quotePlaceholder: 'Enter a quote',
+            captionPlaceholder: 'Quote\'s author',
             },
             shortcut: 'CMD+SHIFT+O'
+          },
+          code: CodeTool,
+          },
+        data:  foo_loaded['JSON'][foo_loaded_keys[k]],
+        onReady: () =>{
+          if(webHash.length>0){
+              //check if there are any hashes in the url and if so scroll to that note
+            console.info("WBJS: Scrolling to note");
+            var fooScroll  = document.querySelector(webHash);
+            fooScroll.scrollIntoView();
+
           }
         },
-        data:  foo_loaded['JSON'][foo_loaded_keys[k]],
+      //   onChange: (api, event) => {
+      //     console.log('Now I know that Editor\'s content changed!', event)
+      //     saved();
+      // }
         // readOnly: true, // for now dont allow users to edit the previous imported notes.. Needd some fixes before that..
 
       });

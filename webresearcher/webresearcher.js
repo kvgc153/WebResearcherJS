@@ -44,7 +44,7 @@ class WBJS{
           class: Header,
           inlineToolbar:true,
           config: {
-            placeholder: 'Header'
+          placeholder: 'Header'
           },
           shortcut: 'CMD+SHIFT+H'
         },
@@ -58,12 +58,17 @@ class WBJS{
           class: Quote,
           inlineToolbar: true,
           config: {
-            quotePlaceholder: 'Enter a quote',
-            captionPlaceholder: 'Quote\'s author',
+          quotePlaceholder: 'Enter a quote',
+          captionPlaceholder: 'Quote\'s author',
           },
           shortcut: 'CMD+SHIFT+O'
-        }
-      }
+        },
+        code: CodeTool,
+        },
+      // onChange: (api, event) => {
+      //     console.log('Now I know that Editor\'s content changed!', event)
+      //     saved();
+      // }
     });
 
 
