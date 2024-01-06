@@ -28,9 +28,17 @@ Annotate your favorite webpages effortlessly and export to Joplin with ease usin
 ![](demo3.gif)
 
 
+
+## Experimental features
+- If you set the contextual highlighting to true when configuring the extension, this feature will try to find that sentence in the webpage and highlight it for you.
+
+![](contexthighlight.gif)
+
 ## Video demo
+[https://www.youtube.com/watch?v=tJVW2UeUl9E](https://www.youtube.com/watch?v=tJVW2UeUl9E)
 
 
 ## Support and development
 Checkout the notes posted [here](docs/docs.md) to understand how the source code works. Code, suggestions, and feedback are welcome.
+
 
