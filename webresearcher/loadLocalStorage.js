@@ -1,8 +1,10 @@
 // Check if there are any notes already in localstorage and if so load them up
+$.notify("WBJS is initializing.", "info",{autoHideDelay: 30000});
 
 if(localStorage.getItem(webPageUrl)!=null){
   var foo_loaded        = JSON.parse(localStorage.getItem(webPageUrl));
   var foo_loaded_keys   = Object.keys(foo_loaded['HTML']);
+  
 
   for(k=0;k<foo_loaded_keys.length;k++){
     console.info("WBJS: Adding locally stored notes.");
@@ -104,7 +106,13 @@ function getRandomInt(max) {
     return Math.floor(Math.random() * max);
 }
 
+
+let showSaveMessage = 0;
 async function saved(){
+  if(showSaveMessage==0){
+    showSaveMessage=1;
+    $.notify("WBJS is running", "success");
+  }
 
   console.info("WBJS: saved");
 // save all the notes created so far

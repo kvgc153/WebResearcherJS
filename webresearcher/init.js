@@ -32,3 +32,4 @@ var htmlAppend = $("html").append(`
 </div> 
 `);
 $("#userButtonPanelWBJS").draggable();
+
