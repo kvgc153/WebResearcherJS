@@ -6,13 +6,8 @@ Annotate your favorite webpages effortlessly and export to Joplin with ease usin
 
 
 ## Getting Started
-- Press the WebResearcherJS extension button on the toolbar.
-<img height="200px" src="demo00.gif">
 
-- Copy and paste the Joplin authorization token from `Tools->Options->Web Clipper`. And also set the contextual highlighting to false (see experimental features for more information)
-<img height="300px" src="demo00.png">
-
-- Save the settings. 
+After installing the extension, the first step is to configure it to your specific needs. Checkout the notes posted [here](config.md) for details.
 
 
 
@@ -20,9 +15,11 @@ Annotate your favorite webpages effortlessly and export to Joplin with ease usin
 - Take multiple notes on any webpage by highlighting a text and pressing Ctrl+1 to start a note
 <img height="250px" src="demo1.gif">
   - These notes are automatically saved to your local storage and will be displayed the next time you visit the page. 
-  - You can also export to them to Joplin by pressing the 'save to Joplin' button
 
-<img height="250px" src="demo2.gif">
+
+### Integration with Joplin
+
+- You can also export to them to Joplin by pressing the 'save to Joplin' button
 
 - [New in v3.0.0] Want to make changes to the exported note? Just click on the 'EDIT' button in the exported note on Joplin to go back to the webpage and edit the note. Resave the updated note back to Joplin. See demo below:
 
