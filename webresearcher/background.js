@@ -80,15 +80,7 @@ function loadMark(){
 }
 
 function loadTWFilePath(){
-    //Tiddlywiki file path obtained from user
-    var gettingItem = browser.storage.sync.get('TWFilepath');
-    gettingItem.then((res) => {
-      var foo_res = JSON.parse(res.TWFilepath);
-      const executing = browser.tabs.executeScript({
-          code:`var TWFilepath="`+ foo_res + `";`
-      });
-      executing.then(loadJoplinToken, onError);
-    });
+  loadJoplinToken();
 }
 function loadJoplinToken(){
   var joplinToken = browser.storage.sync.get('joplinToken');
@@ -100,9 +92,6 @@ function loadJoplinToken(){
     executing.then(loadMarkJS, onError);
   });
 }
-
-var joplinToken  = browser.storage.sync.get('joplinToken');
-
 
 function loadMarkJS(){
     var gettingItem = browser.storage.sync.get('MarkJSHighlight');
