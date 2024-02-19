@@ -126,6 +126,7 @@ function workerFunction(e){
 $("#makeNoteButton").click(function(){
   // add selection to range
   const selection = window.getSelection();
+  selection.removeAllRanges();
   const range = document.createRange();
   const node  = document.getElementById("makeNoteButton");
   range.selectNode(node);
