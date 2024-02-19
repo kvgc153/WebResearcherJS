@@ -12,8 +12,10 @@ After installing the extension, the first step is to configure it to your specif
 
 
 ## Core features
-- Take multiple notes on any webpage by highlighting a text and pressing Ctrl+1 to start a note
-<img height="250px" src="demo1.gif">
+- (Legacy Feature) Take multiple notes on any webpage by highlighting a text and pressing Ctrl+1 to start a note. <img height="250px" src="demo1.gif">
+
+- [New in v3.0.2] Click on the 'make note' to start a note.
+<img height="250px" src="demo4.gif">
   - These notes are automatically saved to your local storage and will be displayed the next time you visit the page. 
 
 
