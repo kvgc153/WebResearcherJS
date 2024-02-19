@@ -29,7 +29,8 @@ var htmlAppend = $("html").append(`
 	<div style="width:100%; text-align: center; background-color: white;"> Save to </div>
 	<button class="badge btn btn-primary " style="width:100%" id='saveNotesWBJS'>LocalStorage</button>
 	<button class="badge btn btn-primary " style="width:100%" id='exportNotesJoplin'>Joplin</button>
+	<button class="buttonWBJS" style="width:100%" id="makeNoteButton">Make Note</button>
+
 </div> 
 `);
 $("#userButtonPanelWBJS").draggable();
-

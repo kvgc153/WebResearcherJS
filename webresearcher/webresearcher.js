@@ -121,3 +121,20 @@ function workerFunction(e){
     }
   }
 }
+
+// // Method 2 : Press make note button in the userButtonPanelWBJS panel
+$("#makeNoteButton").click(function(){
+  // add selection to range
+  const selection = window.getSelection();
+  const range = document.createRange();
+  const node  = document.getElementById("makeNoteButton");
+  range.selectNode(node);
+  selection.addRange(range);
+
+  // then make a note if there is a selection
+  if(window.getSelection().rangeCount >0){
+    let w = new WBJS(noteID = note_count);
+    w.createNote();
+    note_count+=1; // update note counter
+  }
+});

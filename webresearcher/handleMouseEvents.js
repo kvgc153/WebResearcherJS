@@ -9,7 +9,7 @@ function handle_mousedown(e){
       // console.log(my_dragging.elem.id);
 
       function handle_dragging(e){
-        if(my_dragging.elem.id.includes("draggable")){ //check if element is a note and only move if so
+        if(my_dragging.elem.id.includes("tooltip")){ //check if element is a note and only move if so
               var left = my_dragging.offset0.left + (e.pageX - my_dragging.pageX0);
               var top = my_dragging.offset0.top + (e.pageY - my_dragging.pageY0);
               $(my_dragging.elem)
