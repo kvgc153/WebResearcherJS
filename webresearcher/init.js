@@ -26,11 +26,16 @@ var classnames =["color1","color2","color3","color4","color5","color6","color7",
 // Add Buttons to the page for control
 var htmlAppend = $("html").append(`
 <div id="userButtonPanelWBJS" class = "userButtonPanelWBJS">
-	<div style="width:100%; text-align: center; background-color: white;"> Save to </div>
-	<button class="badge btn btn-primary " style="width:100%" id='saveNotesWBJS'>LocalStorage</button>
-	<button class="badge btn btn-primary " style="width:100%" id='exportNotesJoplin'>Joplin</button>
-	<button class="buttonWBJS" style="width:100%" id="makeNoteButton">Make Note</button>
-
+	<div class ="btn" style="width:100%; text-align: center; font-weight:1000"> 
+	Tags <br>
+	<input type="text" id="tagsWBJS" style="width:100%;font-family: inherit; " placeholder="Comma-separated"><br>
+	Save to <br>
+	</div>
+	<div>
+	<button class="btn btn-layered-3d btn-layered-3d--purple " style="width:100%; text-align: center;" id='saveNotesWBJS'>Browser</button><br>
+	<button class="btn btn-layered-3d btn-layered-3d--purple" style="width:100%; text-align: center;" id='exportNotesJoplin'>Joplin</button><br>
+	<button class="btn btn-layered-3d btn-layered-3d--blue" style="width:100%; text-align: center;" id="makeNoteButton">Make Note</button><br>
+	</div>
 </div> 
 `);
 $("#userButtonPanelWBJS").draggable();

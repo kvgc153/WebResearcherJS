@@ -1,10 +1,12 @@
 .userButtonPanelWBJS {
-  left: 93%; 
+  left: 92%; 
   bottom: 50%; 
   height: 7%; 
   position: fixed; 
-  width: 6%; 
-  z-index:100; 
+  width: 8%; 
+  z-index:100;
+  font-size: 16px;
+  
 }
 
 .WBJSNote {
@@ -87,8 +89,81 @@
   opacity:80%;
 }
 
-/* From BootstrapJS */
+/* css from https://enjeck.com/btns/ */
 .btn {
+  font-family: Arial, Helvetica, sans-serif;
+  text-transform: uppercase;
+} 
+ 
+.btn:hover .btn-slide-show-text1 {
+  margin-left: 65px;
+} 
+ 
+.btn-layered-3d > ::before {
+  box-sizing: border-box;
+} 
+ 
+.btn-layered-3d {
+  width: 180px;
+  position: relative;
+  display: inline-block;
+  cursor: pointer;
+  outline: none;
+  border: 0px none;
+  vertical-align: middle;
+  text-decoration: none;
+  font-size: inherit;
+  font-family: inherit;
+  font-weight: 600;
+  text-transform: uppercase;
+  padding: 1.15em 2em;
+  border-radius: 0.75em;
+  transform-style: preserve-3d;
+  transition: transform 0.15s ease-out 0s, background 0.15s ease-out 0s;
+} 
+ 
+.btn-layered-3d::before {
+  position: absolute;
+  content: "";
+  width: 100%;
+  height: 100%;
+  inset: 0px;
+  border-radius: inherit;
+  transform: translate3d(0px, 0.75em, -1em);
+  transition: transform 0.15s ease-out 0s, box-shadow 0.15s ease-out 0s;
+} 
+ 
+.btn-layered-3d:hover {
+  transform: translateY(0.25em);
+} 
+ 
+.btn-layered-3d:hover::before {
+  transform: translate3d(0px, 0.5em, -1em);
+} 
+ 
+.btn-layered-3d--purple {
+  color: rgb(62, 53, 141);
+  background: rgb(213, 211, 238);
+  border: 2px solid rgb(62, 53, 141);
+} 
+ 
+.btn-layered-3d--purple::before {
+  background: rgb(144, 137, 210);
+  box-shadow: rgb(62, 53, 141) 0px 0px 0px 2px, rgb(213, 211, 238) 0px 0.625em 0px 0px;
+} 
+
+.btn-layered-3d--blue {
+  color: rgb(61, 135, 255);
+  background: rgb(214, 230, 255);
+  border: 2px solid rgb(61, 135, 255);
+} 
+ 
+.btn-layered-3d--blue::before {
+  background: rgb(148, 189, 255);
+  box-shadow: rgb(61, 135, 255) 0px 0px 0px 2px, rgb(214, 230, 255) 0px 0.625em 0px 0px;
+} 
+/* From BootstrapJS */
+/* .btn {
   display: inline-block;
   font-weight: 400;
   text-align: center;
@@ -133,11 +208,11 @@
 
 /* jQuery-sidebar css */
 
-.sidebar.left {
+/* .sidebar.left {
   position: fixed;
   top: 0;
   left: 0;
   bottom: 0;
   width: 270px;
 }
-
+ */

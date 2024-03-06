@@ -12,9 +12,7 @@ After installing the extension, the first step is to configure it to your specif
 
 
 ## Core features
-- (Legacy Feature) Take multiple notes on any webpage by highlighting a text and pressing Ctrl+1 to start a note. <img height="250px" src="demo1.gif">
-
-- [New in v3.0.2] Click on the 'make note' to start a note.
+- Click on the 'make note' to start a note.
 <img height="250px" src="demo4.gif">
   - These notes are automatically saved to your local storage and will be displayed the next time you visit the page. 
 
@@ -23,7 +21,10 @@ After installing the extension, the first step is to configure it to your specif
 
 - You can also export to them to Joplin by pressing the 'save to Joplin' button
 
-- [New in v3.0.0] Want to make changes to the exported note? Just click on the 'EDIT' button in the exported note on Joplin to go back to the webpage and edit the note. Resave the updated note back to Joplin. See demo below:
+- Add tags to the note that will be exported to Joplin <br>
+<img height="250px" src="demo5.gif">
+
+- Want to make changes to the exported note? Just click on the 'EDIT' button in the exported note on Joplin to go back to the webpage and edit the note. Resave the updated note back to Joplin. See demo below:
 
 <img height="400px" src="demo3.gif">
 
@@ -37,10 +38,6 @@ After installing the extension, the first step is to configure it to your specif
 - **Joplin-search sidebar**: Search through your Joplin notes by using the Joplin-search sidebar. You can open/close this sidebar by pressing Ctrl+Alt+Y.
 
 <img height="250px" src="sidebar.png">
-
-
-## Video demo
-[https://www.youtube.com/watch?v=tJVW2UeUl9E](https://www.youtube.com/watch?v=tJVW2UeUl9E)
 
 
 ## Support and development

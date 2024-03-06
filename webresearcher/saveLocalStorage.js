@@ -2,9 +2,10 @@
 function saveAllNotesWBJS(){
   // pack results into a dictionary
   let foo_final ={}
-  foo_final['HTML'] = WBJS_HTML
-  foo_final['JSON'] = WBJS_JSON
-  foo_final['CSS']  = WBJS_CSS
+  foo_final['HTML'] = WBJS_HTML;
+  foo_final['JSON'] = WBJS_JSON;
+  foo_final['CSS']  = WBJS_CSS;
+  foo_final['TAGS'] = document.getElementById('tagsWBJS').value;
 
   console.info("user asked to save data. Packed data below:")
   console.log(foo_final);

@@ -23,6 +23,7 @@ document.getElementById('exportNotesJoplin').addEventListener('click', ()=>{
       foo_final['HTML'] = WBJS_HTML;
       foo_final['JSON'] = WBJS_JSON;
       foo_final['CSS']  = WBJS_CSS;
+      foo_final['TAGS'] = document.getElementById('tagsWBJS').value;
       let metaDataBlock = `<div id="metadata_wbjs" style="display:none;">` + JSON.stringify(foo_final) + `</div>`;
 
       // create note in Joplin
@@ -31,7 +32,7 @@ document.getElementById('exportNotesJoplin').addEventListener('click', ()=>{
           body: JSON.stringify({ 
             "title": document.title , 
             "body": exportHTML.join('') + metaDataBlock, 
-            "tags" : "WBJS",
+            "tags" : "WBJS, " + document.getElementById('tagsWBJS').value,
             "source_url": url_window,
           }),
           method: "POST",
@@ -49,6 +50,8 @@ document.getElementById('exportNotesJoplin').addEventListener('click', ()=>{
       foo_final['HTML'] = WBJS_HTML;
       foo_final['JSON'] = WBJS_JSON;
       foo_final['CSS']  = WBJS_CSS;
+      foo_final['TAGS'] = document.getElementById('tagsWBJS').value;
+
       let metaDataBlock = `<div id="metadata_wbjs" style="display:none;">` + JSON.stringify(foo_final) + `</div>`;
 
       $.notify('Overwriting existing note', "info");
@@ -56,6 +59,7 @@ document.getElementById('exportNotesJoplin').addEventListener('click', ()=>{
       {
           body: JSON.stringify({ 
             "body": exportHTML.join('') + metaDataBlock, 
+            "tags" : "WBJS, " + document.getElementById('tagsWBJS').value,
           }),
           method: "PUT",
           headers: {

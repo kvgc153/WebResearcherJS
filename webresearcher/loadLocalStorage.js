@@ -3,6 +3,10 @@ $.notify("WBJS is initializing.", "info",{autoHideDelay: 30000});
 
 if(localStorage.getItem(webPageUrl)!=null){
   var foo_loaded        = JSON.parse(localStorage.getItem(webPageUrl));
+  // set tags
+  var foo_tags          = foo_loaded['TAGS'] ?? ""; // if tags are not present, set it to empty string
+  document.getElementById('tagsWBJS').value = foo_tags;
+
   var foo_loaded_keys   = Object.keys(foo_loaded['HTML']);
   
 
@@ -190,6 +194,8 @@ async function saved(){
   foo_final['HTML'] = WBJS_HTML;
   foo_final['JSON'] = WBJS_JSON;
   foo_final['CSS']  = WBJS_CSS;
+  foo_final['TAGS'] = document.getElementById('tagsWBJS').value;
+
   console.info("auto saving data");
   localStorage.setItem(webPageUrl,JSON.stringify(foo_final));
 
