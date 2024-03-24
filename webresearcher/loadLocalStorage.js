@@ -155,33 +155,33 @@ async function saved(){
           WBJS_CSS[i]     = notestyleProps;
           WBJS_HTML[i]    = html.join('');
 
-          if(MarkJSHighlight==="true"){
-            // If user wants contextual highlighting use markJS to do so.. still Experimental feature
-            for(foo_HTML=0; foo_HTML<html.length;foo_HTML++){
-              /// MARKJS
-              var div = document.createElement("div");
-              div.innerHTML =   html[foo_HTML] ;
-              var text = div.textContent || div.innerText || "";
-              div.innerHTML = '';
-              var brands = text;
+          // if(MarkJSHighlight==="true"){
+          //   // If user wants contextual highlighting use markJS to do so.. still Experimental feature
+          //   for(foo_HTML=0; foo_HTML<html.length;foo_HTML++){
+          //     /// MARKJS
+          //     var div = document.createElement("div");
+          //     div.innerHTML =   html[foo_HTML] ;
+          //     var text = div.textContent || div.innerText || "";
+          //     div.innerHTML = '';
+          //     var brands = text;
 
-              var instance = new Mark(document.querySelector("body"));
+          //     var instance = new Mark(document.querySelector("body"));
 
-              instance.mark(brands, {
-                  separateWordSearch: false,
-                  acrossElements: true,
-                  accuracy: {
-                    value: "partially",
-                    limiters: [".", ",", "!"]
-                  },
-                  exclude: [".ui-widget-content *"],
-                  className: classnames[getRandomInt(classnames.length)]
+          //     instance.mark(brands, {
+          //         separateWordSearch: false,
+          //         acrossElements: true,
+          //         accuracy: {
+          //           value: "partially",
+          //           limiters: [".", ",", "!"]
+          //         },
+          //         exclude: [".ui-widget-content *"],
+          //         className: classnames[getRandomInt(classnames.length)]
 
-              });
+          //     });
 
-            }
+          //   }
 
-          }
+          // }
 
 
 

@@ -2,7 +2,10 @@
 document.getElementById('exportNotesJoplin').addEventListener('click', ()=>{
 
   var exportHTML=[];
-  exportHTML[0]= "<table><tr><td>URL</td><td>Title</td></tr><tr><td>" + url_window +"</td> <td>" + pageTitle + "</td> </tr></table>";
+  var oImg = document.createElement("a");
+  oImg.setAttribute('href', url_window);
+  oImg.innerHTML = url_window;
+  exportHTML[0]= "<table><tr><td>URL</td><td>Title</td></tr><tr><td>" + oImg.outerHTML +"</td> <td>" + pageTitle + "</td> </tr></table>";
 
   for(foo_exp=1; foo_exp<note_count; foo_exp++){
     fooDoc = document.createElement("a");

@@ -14,10 +14,10 @@ function restoreOptions() {
   //   document.querySelector("#TWFilepath").value = JSON.parse(res.TWFilepath) || 'Firefox red';
   // });
 
-  var gettingItem1 = browser.storage.sync.get('MarkJSHighlight');
-  gettingItem1.then((res) => {
-    document.querySelector("#MarkJSHighlight").value = JSON.parse(res.MarkJSHighlight) || 'Firefox red';
-  });
+  // var gettingItem1 = browser.storage.sync.get('MarkJSHighlight');
+  // gettingItem1.then((res) => {
+  //   document.querySelector("#MarkJSHighlight").value = JSON.parse(res.MarkJSHighlight) || 'Firefox red';
+  // });
 
   var gettingItem2 = browser.storage.sync.get('joplinToken');
   gettingItem2.then((res) => {

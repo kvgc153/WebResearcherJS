@@ -1,9 +1,9 @@
 .userButtonPanelWBJS {
-  left: 92%; 
+  left: 90%; 
   bottom: 50%; 
   height: 7%; 
   position: fixed; 
-  width: 8%; 
+  width: 10%; 
   z-index:100;
   font-size: 16px;
   
