@@ -24,21 +24,7 @@ After installing the extension, the first step is to configure it to your specif
    
 <img height="500px" src="demo/demo5.gif">
 
-By default, these notes and tags are automatically saved to your local storage and will be displayed the next time you visit the page. 
-
-
-
-## Exporting Notes to Joplin
-
-[Joplin](https://joplinapp.org/) is a great note taking tool and makes it easy to organize your notes.
-
-1. Simply press the "Save to Joplin" button to export your current notes on the webpage to Joplin.
-2. **Editing your notes/tags:** Want to make changes after exporting? Just click the "EDIT" button in your Joplin note. This will take you back to the original webpage for editing. Once done, save the updated note back to Joplin.
-
-**See a quick demo below!** 
-
-<img height="400px" src="demo/demo3.gif">
-
+By default, these notes and tags are automatically saved to your local storage and will be displayed the next time you visit the page. WBJS also supports exporting the notes to Joplin. Check out out the notes posted [here](joplin.md) for more details.
 
 
 ## Support and development
