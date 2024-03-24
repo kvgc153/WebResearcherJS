@@ -28,6 +28,6 @@ By default, these notes and tags are automatically saved to your local storage a
 
 
 ## Support and development
-Checkout the notes posted [here](docs/docs.md) to understand how the source code works. Code, suggestions, and feedback are welcome.
+Checkout the notes posted [here](docs/docs.md) to understand how the source code works. Code, suggestions, and feedback are welcome. FAQs are posted [here](troubleshooting.md)
 
 
