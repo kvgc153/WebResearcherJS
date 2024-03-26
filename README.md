@@ -24,7 +24,7 @@ After installing the extension, the first step is to configure it to your specif
    
 <img height="500px" src="demo/demo5.gif">
 
-By default, these notes and tags are automatically saved to your local storage and will be displayed the next time you visit the page. WBJS also supports exporting the notes to Joplin. Check out out the notes posted [here](joplin.md) for more details.
+By default, these notes and tags are automatically saved to your local storage (Back them up regularly!!) and will be displayed the next time you visit the page. WBJS also supports exporting the notes to Joplin. Check out out the notes posted [here](joplin.md) for more details.
 
 
 ## Support and development
