@@ -2,7 +2,7 @@
 
 You can customize the behavior of the extension at any time by modifying the config parameters. Press the WebResearcherJS extension button on the toolbar to open the config page. Press the save button once done.
 
-<img height="400px" src="demo00.png">
+<img height="400px" src="demo/demo00.png">
 
 
 ## Parameters 
