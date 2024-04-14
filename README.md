@@ -22,10 +22,9 @@ After installing the extension, the first step is to configure it to your specif
 4. **Add tags:** Add relevant tags to your note for easy organization.
    
    
-<img height="500px" src="demo/demo5.gif">
+By default, these notes and tags are automatically saved to your local storage (Back them up regularly!!) and will be displayed the next time you visit the page. 
 
-By default, these notes and tags are automatically saved to your local storage (Back them up regularly!!) and will be displayed the next time you visit the page. WBJS also supports exporting the notes to Joplin. Check out out the notes posted [here](joplin.md) for more details.
-
+WBJS also supports exporting the notes to JSON. Click the JSON export button to save the notes to your local drive (recommended). Use your favorite programming language to export the JSON to your favorite note taking application. 
 
 ## Support and development
 Checkout the notes posted [here](docs/docs.md) to understand how the source code works. Code, suggestions, and feedback are welcome. FAQs are posted [here](troubleshooting.md)
