@@ -20,19 +20,58 @@ var WBJS_HTML = {};
 var WBJS_CSS = {};
 var WBJS_JSON = {};
 
-// classes used for highlighting text 
-var classnames =["color1","color2","color3","color4","color5","color6","color7","color8"];
 // Add Buttons to the page for control
 var htmlAppend = $("html").append(`
 <div id="userButtonPanelWBJS" class = "userButtonPanelWBJS">
 	<div class ="btn" style="width:100%; text-align: center; font-weight:1000"> 
+	&#10021;
 	<input type="text" id="tagsWBJS" style="width:100%;font-family: inherit; font-size:15px; height:25px; " placeholder="Enter Tags: Comma-separated"><br>
+    
 	</div>
 	<div>
 	<button class="btn btn-layered-3d btn-layered-3d--blue" style="width:100%; text-align: center;" id="makeNoteButton">Make Note </button><br>
-	<button class="btn btn-layered-3d btn-layered-3d--purple " style="width:100%; text-align: center;" id='saveNotesWBJS'>Browser</button><br>
-	<button class="btn btn-layered-3d btn-layered-3d--purple" style="width:100%; text-align: center;" id='exportNotesJSON'>JSON</button><br>
+	<button class="btn btn-layered-3d btn-layered-3d--purple" style="width:100%; text-align: center;" id='exportNotesJoplin'>Joplin </button><br>
 	</div>
 </div> 
 `);
 $("#userButtonPanelWBJS").draggable();
+
+
+// Find Joplin port 
+async function findPort() {
+    let port = null;
+
+    for (let portToTest = 41184; portToTest <= 41194; portToTest++) {
+        const result = await pingPort(portToTest); // Call GET /ping
+        if (result === 'JoplinClipperServer') {
+            port = portToTest; // Found the port
+            break;
+        }
+    }
+
+    return port;
+}
+
+async function pingPort(port) {
+    try {
+        const response = await fetch(`http://localhost:${port}/ping`);
+        if (!response.ok) {
+            throw new Error(`Error pinging port ${port}: ${response.statusText}`);
+        }
+        const text = await response.text();
+        return text;
+    } catch (error) {
+        console.error(error);
+        return null;
+    }
+}
+var joplinPort = 0;
+
+findPort().then(port => {
+    if (port !== null) {
+		joplinPort = port;
+        console.log(`Found Joplin Clipper Server on port ${port}`);
+    } else {
+        console.log('Joplin Clipper Server not found on any tested port');
+    }
+});

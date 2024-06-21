@@ -1,8 +1,8 @@
 // Check if there are any notes already in localstorage and if so load them up
 $.notify("WBJS is initializing.", "info",{autoHideDelay: 30000});
 
-if(localStorage.getItem(webPageUrl)!=null){
-  var foo_loaded        = JSON.parse(localStorage.getItem(webPageUrl));
+function displayNotes(parsedJSON){
+  var foo_loaded       = parsedJSON;
   // set tags
   var foo_tags          = foo_loaded['TAGS'] ?? ""; // if tags are not present, set it to empty string
   document.getElementById('tagsWBJS').value = foo_tags;
@@ -104,100 +104,21 @@ if(localStorage.getItem(webPageUrl)!=null){
   }
 }
 
-// async function which automatically saves the notes to localstorage every x seconds
 
-function getRandomInt(max) {
-    return Math.floor(Math.random() * max);
+// grab notes from Joplin
+async function fetchJson(url) {
+  var results = await fetch(url);
+  var resultsJSON = await results.json();
+  if(resultsJSON.items.length == 1){
+    // console.log(resultsJSON.items[0].body);
+    var joplinDiv = document.createElement('div');
+    joplinDiv.innerHTML = resultsJSON.items[0].body;
+    var joplinMetaData = joplinDiv.querySelector("#metadata_wbjs").outerText;
+    var joplinMetaDataParsed = JSON.parse(atob(joplinMetaData));
+
+    // console.log(joplinMetaDataParsed);
+    displayNotes(joplinMetaDataParsed);
+ }
 }
 
-
-let showSaveMessage = 0;
-async function saved(){
-  if(showSaveMessage==0){
-    showSaveMessage=1;
-    $.notify("WBJS is running", "success");
-  }
-
-  console.info("WBJS: saved");
-// save all the notes created so far
-  for(i=1;i<note_count;i++){
-      // console.log("tooltip"+i);
-      let notestyleEl = document.getElementById("tooltip"+i).style;
-      let notestyleProps = {
-        "height"          :notestyleEl.height,
-        "width"           :notestyleEl.width,
-        "border"          :notestyleEl.border,
-        "color"           :notestyleEl.color,
-        "padding"         :notestyleEl.padding,
-        "textDecoration"  :notestyleEl.textDecoration,
-        "display"         :notestyleEl.display,
-        "overflow"        :notestyleEl.overflow,
-        "resize"          :notestyleEl.resize ,
-        "backgroundColor" :notestyleEl.backgroundColor,
-        "fontSize"        :notestyleEl.fontSize,
-        "opacity"         :notestyleEl.opacity,
-        "position"        :notestyleEl.position,
-        "inset"           :notestyleEl.inset,
-        "margin"          :notestyleEl.margin,
-        "transform"       :notestyleEl.transform
-      }
-
-
-
-      await editorJSObjs[i].save()
-      .then((savedData) =>{
-          // Convert JSON to html using parser
-          const edjsParser    = edjsHTML();
-          let html            = edjsParser.parse(savedData);
-
-          // Save the JSON, CSS
-          WBJS_JSON[i]    = savedData;
-          WBJS_CSS[i]     = notestyleProps;
-          WBJS_HTML[i]    = html.join('');
-
-          // if(MarkJSHighlight==="true"){
-          //   // If user wants contextual highlighting use markJS to do so.. still Experimental feature
-          //   for(foo_HTML=0; foo_HTML<html.length;foo_HTML++){
-          //     /// MARKJS
-          //     var div = document.createElement("div");
-          //     div.innerHTML =   html[foo_HTML] ;
-          //     var text = div.textContent || div.innerText || "";
-          //     div.innerHTML = '';
-          //     var brands = text;
-
-          //     var instance = new Mark(document.querySelector("body"));
-
-          //     instance.mark(brands, {
-          //         separateWordSearch: false,
-          //         acrossElements: true,
-          //         accuracy: {
-          //           value: "partially",
-          //           limiters: [".", ",", "!"]
-          //         },
-          //         exclude: [".ui-widget-content *"],
-          //         className: classnames[getRandomInt(classnames.length)]
-
-          //     });
-
-          //   }
-
-          // }
-
-
-
-
-      }).catch((error) =>{
-          console.log(error);
-      })
-  }
-  let foo_final ={};
-  foo_final['HTML'] = WBJS_HTML;
-  foo_final['JSON'] = WBJS_JSON;
-  foo_final['CSS']  = WBJS_CSS;
-  foo_final['TAGS'] = document.getElementById('tagsWBJS').value;
-
-  console.info("auto saving data");
-  localStorage.setItem(webPageUrl,JSON.stringify(foo_final));
-
-}
-var intervalId = setInterval(saved,15000); 
+fetchJson(`http://localhost:${joplinPort}/search?token=` + joplinToken + "&query=" + pageTitle + "&fields=id,title,body");
