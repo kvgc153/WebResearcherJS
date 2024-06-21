@@ -2,7 +2,7 @@
 	"manifest_version": 2,
 	"name": "WebResearcherJS",
 	"version": "0.1",
-	"description": "https://github.com/kvgc/WebResearcherJS-extension",
+	"description": "https://github.com/kvgc153/WebResearcherJS-extension",
 
 	"permissions": [
 		"<all_urls>", "activeTab", "tabs", "storage","contextMenus"
