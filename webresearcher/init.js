@@ -65,13 +65,16 @@ async function pingPort(port) {
         return null;
     }
 }
-var joplinPort = 0;
+// Code to get the joplin port -- takes a while to run
+// findPort().then(port => {
+//     if (port !== null) {
+// 		joplinPort = port;
+//         console.log(`Found Joplin Clipper Server on port ${port}`);
+//     } else {
+//         console.log('Joplin Clipper Server not found on any tested port');
+//     }
+// });
 
-findPort().then(port => {
-    if (port !== null) {
-		joplinPort = port;
-        console.log(`Found Joplin Clipper Server on port ${port}`);
-    } else {
-        console.log('Joplin Clipper Server not found on any tested port');
-    }
-});
+var joplinPort = 41184;
+
+

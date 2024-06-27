@@ -147,4 +147,4 @@ document.getElementById('exportNotesJoplin').addEventListener('click', function(
 
 
 //// Periodically save notes to Jopin every 5 seconds ////
-var intervalId = setInterval(exportJoplinNotes,10000); 
+// var intervalId = setInterval(exportJoplinNotes,10000); 

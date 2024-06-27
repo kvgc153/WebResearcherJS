@@ -69,51 +69,20 @@ function loadEditor(){
   const executing = browser.tabs.executeScript({
     file: jsFiles[2]
   });
-  executing.then(loadMark, onError);
+  executing.then(loadJoplinToken, onError);
 }
 
-function loadMark(){
-  const executing = browser.tabs.executeScript({
-    file: jsFiles[3]
-  });
-  executing.then(loadTWFilePath, onError);
-}
 
-function loadTWFilePath(){
-    //Tiddlywiki file path obtained from user
-    var gettingItem = browser.storage.sync.get('TWFilepath');
-    gettingItem.then((res) => {
-      var foo_res = JSON.parse(res.TWFilepath);
-      const executing = browser.tabs.executeScript({
-          code:`var TWFilepath="`+ foo_res + `";`
-      });
-      executing.then(loadJoplinToken, onError);
-    });
-}
 function loadJoplinToken(){
   var joplinToken = browser.storage.sync.get('joplinToken');
   joplinToken.then((res) => {
     var foo_res = JSON.parse(res.joplinToken);
+    console.log(foo_res);
     const executing = browser.tabs.executeScript({
         code:`var joplinToken="`+ foo_res + `";`
     });
-    executing.then(loadMarkJS, onError);
+    executing.then(loadOtherModules, onError);
   });
-}
-
-var joplinToken  = browser.storage.sync.get('joplinToken');
-
-
-function loadMarkJS(){
-    var gettingItem = browser.storage.sync.get('MarkJSHighlight');
-    console.log(gettingItem);
-    gettingItem.then((res) => {
-      var foo_res = JSON.parse(res.MarkJSHighlight);
-      const executing = browser.tabs.executeScript({
-          code:`var MarkJSHighlight="`+ foo_res + `";`
-      });
-      executing.then(loadOtherModules, onError);
-    });
 }
 
 // load all other modules

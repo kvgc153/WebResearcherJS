@@ -1,8 +1,6 @@
 
 function saveOptions(e) {
   browser.storage.sync.set({
-    // TWFilepath: JSON.stringify(document.querySelector("#TWFilepath").value),
-    MarkJSHighlight: JSON.stringify(document.querySelector("#MarkJSHighlight").value),
     joplinToken: JSON.stringify(document.querySelector("#joplinToken").value)
   });
   e.preventDefault();

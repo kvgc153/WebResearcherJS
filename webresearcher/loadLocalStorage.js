@@ -107,6 +107,20 @@ function displayNotes(parsedJSON){
 
 // grab notes from Joplin
 async function fetchJson(url) {
+
+  // fetch(url)
+  // .then(results => results.json())
+  // .then(resultsJSON => {
+  //   if(resultsJSON.items.length == 1){
+  //     var joplinDiv = document.createElement('div');
+  //     joplinDiv.innerHTML = resultsJSON.items[0].body;
+  //     var joplinMetaData = joplinDiv.querySelector("#metadata_wbjs").outerText;
+  //     var joplinMetaDataParsed = JSON.parse(atob(joplinMetaData));
+  //     displayNotes(joplinMetaDataParsed);
+  //   }
+  // })
+  console.log(url);
+
   var results = await fetch(url);
   var resultsJSON = await results.json();
   if(resultsJSON.items.length == 1){
