@@ -33,7 +33,7 @@ function handleTabChanges(tabId, changeInfo, tabInfo) {
     return false;
   }
 
-  var gettingItem = browser.storage.sync.get('TWFilepath');
+  var gettingItem = chrome.storage.sync.get('TWFilepath');
   gettingItem.then((res) => {
     
     currentTab          = JSON.parse(res.TWFilepath)+"#:[search["+tabTriggered+"]]";
@@ -50,6 +50,6 @@ function handleTabChanges(tabId, changeInfo, tabInfo) {
 
 }
 // when user changes tab, update Tiddlywiki notes page.
-browser.tabs.onUpdated.addListener(handleTabChanges);
-browser.tabs.onActivated.addListener(handleTabChanges);
-browser.tabs.onCreated.addListener(handleTabChanges);
+chrome.tabs.onUpdated.addListener(handleTabChanges);
+chrome.tabs.onActivated.addListener(handleTabChanges);
+chrome.tabs.onCreated.addListener(handleTabChanges);

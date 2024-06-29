@@ -7,11 +7,15 @@ function handleError(error) {
 }
 
 function notifyBackgroundPage(e) {
-  let sending = browser.runtime.sendMessage({
+  chrome.runtime.sendMessage({
     greeting: "Sending trigger to start extension"
+  }, function(response) {
+    if (chrome.runtime.lastError) {
+      handleError(chrome.runtime.lastError);
+    } else {
+      handleResponse(response);
+    }
   });
-  sending.then(handleResponse, handleError);
 }
-
 
 notifyBackgroundPage();

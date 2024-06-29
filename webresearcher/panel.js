@@ -13,10 +13,10 @@ When the user mouses out, save the current contents of the box.
 */
 window.addEventListener("mouseout", () => {
   contentBox.setAttribute("contenteditable", false);
-  browser.tabs.query({windowId: myWindowId, active: true}).then((tabs) => {
+  chrome.tabs.query({windowId: myWindowId, active: true}).then((tabs) => {
     let contentToStore = {};
     contentToStore[tabs[0].url] = contentBox.textContent;
-    browser.storage.local.set(contentToStore);
+    chrome.storage.local.set(contentToStore);
   });
 });
 
@@ -28,9 +28,9 @@ Update the sidebar's content.
 3) Put it in the content box.
 */
 function updateContent() {
-  browser.tabs.query({windowId: myWindowId, active: true})
+  chrome.tabs.query({windowId: myWindowId, active: true})
     .then((tabs) => {
-      return browser.storage.local.get(tabs[0].url);
+      return chrome.storage.local.get(tabs[0].url);
     })
     .then((storedInfo) => {
       contentBox.textContent = storedInfo[Object.keys(storedInfo)[0]];
@@ -40,18 +40,18 @@ function updateContent() {
 /*
 Update content when a new tab becomes active.
 */
-browser.tabs.onActivated.addListener(updateContent);
+chrome.tabs.onActivated.addListener(updateContent);
 
 /*
 Update content when a new page is loaded into a tab.
 */
-browser.tabs.onUpdated.addListener(updateContent);
+chrome.tabs.onUpdated.addListener(updateContent);
 
 /*
 When the sidebar loads, get the ID of its window,
 and update its content.
 */
-browser.windows.getCurrent({populate: true}).then((windowInfo) => {
+chrome.windows.getCurrent({populate: true}).then((windowInfo) => {
   myWindowId = windowInfo.id;
   updateContent();
 });

@@ -2,7 +2,7 @@ var url = 'http://127.0.0.1:41184';
 
 // Get the token from the storage
 let token; 
-var joplinToken = browser.storage.sync.get('joplinToken');
+var joplinToken = chrome.storage.sync.get('joplinToken');
 joplinToken.then((res) => {
   token = JSON.parse(res.joplinToken);
 });
@@ -56,20 +56,20 @@ function logTabs(tabs) {
 
 }
 function handleActivated(activeInfo) {
-  browser.tabs.query({currentWindow: true, active: true}).then(logTabs, console.error);
+  chrome.tabs.query({currentWindow: true, active: true}).then(logTabs, console.error);
 }
 
 
-browser.tabs.onActivated.addListener(handleActivated);
-browser.tabs.onCreated.addListener(handleActivated);
-browser.tabs.onUpdated.addListener(handleActivated);
+chrome.tabs.onActivated.addListener(handleActivated);
+chrome.tabs.onCreated.addListener(handleActivated);
+chrome.tabs.onUpdated.addListener(handleActivated);
 
 /*
 When the user mouses out, search Joplin
 */
 window.addEventListener("mouseout", () => {
   contentBox.setAttribute("contenteditable", false);
-  browser.tabs.query({windowId: myWindowId, active: true}).then((tabs) => {
+  chrome.tabs.query({windowId: myWindowId, active: true}).then((tabs) => {
     joplin_query_notes_by_created(token, 'searchResults', contentBox.textContent);
   });
 });

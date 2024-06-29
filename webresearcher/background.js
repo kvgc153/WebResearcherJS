@@ -1,11 +1,13 @@
+
 function handleClick() {
-  browser.runtime.openOptionsPage();
+  chrome.runtime.openOptionsPage();
 }
 
-browser.browserAction.onClicked.addListener(handleClick);
+
+chrome.browserAction.onClicked.addListener(handleClick);
 
 console.log("inside background.js");
-browser.contextMenus.create({
+chrome.contextMenus.create({
   id: "eat-page",
   title: "Start WebResearcherJS"
 });
@@ -49,57 +51,45 @@ function onError(error) {
   // alert(error);
   console.log(`Error: ${error}`);
 }
-
-// first wait for jquery, jquery-ui and others to load and then load all the small ones.. very poorly written code...
 function loadJQuery(){
-  const executing = browser.tabs.executeScript({
+  chrome.tabs.executeScript({
     file: jsFiles[0]
-  });
-  executing.then(loadJQueryUI, onError);
+  }, loadJQueryUI);
 }
 
 function loadJQueryUI(){
-  const executing = browser.tabs.executeScript({
+  chrome.tabs.executeScript({
     file: jsFiles[1]
-  });
-  executing.then(loadEditor, onError);
+  }, loadEditor);
 }
 
 function loadEditor(){
-  const executing = browser.tabs.executeScript({
+  chrome.tabs.executeScript({
     file: jsFiles[2]
-  });
-  executing.then(loadJoplinToken, onError);
+  }, loadJoplinToken);
 }
-
 
 function loadJoplinToken(){
-  var joplinToken = browser.storage.sync.get('joplinToken');
-  joplinToken.then((res) => {
+  chrome.storage.sync.get('joplinToken', function(res) {
     var foo_res = JSON.parse(res.joplinToken);
     console.log(foo_res);
-    const executing = browser.tabs.executeScript({
+    chrome.tabs.executeScript({
         code:`var joplinToken="`+ foo_res + `";`
-    });
-    executing.then(loadOtherModules, onError);
+    }, loadOtherModules);
   });
 }
 
-// load all other modules
 function loadOtherModules(){
   for(var i=0;i<cssFiles.length;i++){
-          const executing = browser.tabs.insertCSS({
-            file: cssFiles[i]
-          });
-          executing.then(onExecuted, onError);
+    chrome.tabs.insertCSS({
+      file: cssFiles[i]
+    }, onExecuted);
   }
   for(var i=4;i<jsFiles.length;i++){
-          const executing = browser.tabs.executeScript({
-          file: jsFiles[i]
-        });
-        executing.then(onExecuted, onError);
-    }
-
+    chrome.tabs.executeScript({
+      file: jsFiles[i]
+    }, onExecuted);
+  }
 }
 
 function handleMessage(request, sender, sendResponse) {
@@ -107,15 +97,11 @@ function handleMessage(request, sender, sendResponse) {
   loadJQuery();
   sendResponse({response: "Response from background script"});
 }
-// Trigger loading of modules //
-browser.runtime.onMessage.addListener(handleMessage);
 
-////////////////////////////////////////////////////////////
+chrome.runtime.onMessage.addListener(handleMessage);
 
-
-
-browser.contextMenus.onClicked.addListener(function(info, tab) {
+chrome.contextMenus.onClicked.addListener(function(info, tab) {
   if (info.menuItemId == "eat-page") {
-      loadJQuery();
+    loadJQuery();
   }
 });
