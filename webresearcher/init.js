@@ -25,8 +25,10 @@ var htmlAppend = $("html").append(`
 <div id="userButtonPanelWBJS" class = "userButtonPanelWBJS">
 	<div class ="btn" style="width:100%; text-align: center; font-weight:1000"> 
 	&#10021;
-	<input type="text" id="tagsWBJS" style="width:100%;font-family: inherit; font-size:15px; height:25px; " placeholder="Enter Tags: Comma-separated"><br>
-    
+    <div id="tagsList">
+	    <input type="text" id="tagsWBJS" style="width:100%;font-family: inherit; font-size:15px; height:25px; " placeholder="Enter Tags: Comma-separated"><br>
+        <div id="showTags"></div>
+    </div>
 	</div>
 	<div>
 	<button class="btn btn-layered-3d btn-layered-3d--blue" style="width:100%; text-align: center;" id="makeNoteButton">Make Note </button><br>
