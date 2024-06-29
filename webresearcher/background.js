@@ -53,51 +53,54 @@ function onError(error) {
 }
 
 // first wait for jquery, jquery-ui and others to load and then load all the small ones.. very poorly written code...
-function loadJQuery(){
-  const executing = browser.tabs.executeScript({
+function loadJQuery(tabID){
+  const executing = browser.tabs.executeScript(tabID,{
     file: jsFiles[0]
   });
-  executing.then(loadJQueryUI, onError);
+  executing.then(loadJQueryUI(tabID), onError);
 }
 
-function loadJQueryUI(){
-  const executing = browser.tabs.executeScript({
+function loadJQueryUI(tabID){
+  const executing =  browser.tabs.executeScript(tabID,{
     file: jsFiles[1]
   });
-  executing.then(loadEditor, onError);
+  executing.then(loadEditor(tabID), onError);
 }
 
-function loadEditor(){
-  const executing = browser.tabs.executeScript({
+function loadEditor(tabID){
+  const executing =  browser.tabs.executeScript(tabID,{
     file: jsFiles[2]
+
   });
-  executing.then(loadJoplinToken, onError);
+  executing.then(loadJoplinToken(tabID), onError);
 }
 
 
-function loadJoplinToken(){
+function loadJoplinToken(tabID){
   var joplinToken = browser.storage.sync.get('joplinToken');
   joplinToken.then((res) => {
     var foo_res = JSON.parse(res.joplinToken);
     console.log(foo_res);
-    const executing = browser.tabs.executeScript({
+    const executing =  browser.tabs.executeScript(tabID,{
         code:`var joplinToken="`+ foo_res + `";`
     });
-    executing.then(loadOtherModules, onError);
+    executing.then(loadOtherModules(tabID), onError);
   });
 }
 
 // load all other modules
-function loadOtherModules(){
+function loadOtherModules(tabID){
   for(var i=0;i<cssFiles.length;i++){
-          const executing = browser.tabs.insertCSS({
-            file: cssFiles[i]
+          const executing = browser.tabs.insertCSS(tabID,{
+            file: cssFiles[i],
+
           });
           executing.then(onExecuted, onError);
   }
   for(var i=4;i<jsFiles.length;i++){
-          const executing = browser.tabs.executeScript({
-          file: jsFiles[i]
+          const executing =  browser.tabs.executeScript(tabID,{
+          file: jsFiles[i],
+
         });
         executing.then(onExecuted, onError);
     }
@@ -106,7 +109,8 @@ function loadOtherModules(){
 
 function handleMessage(request, sender, sendResponse) {
   console.log("Message from the content script: " + request.greeting);
-  loadJQuery();
+  console.log(sender.tab.id);
+  loadJQuery(sender.tab.id);
   sendResponse({response: "Response from background script"});
 }
 // Trigger loading of modules //
