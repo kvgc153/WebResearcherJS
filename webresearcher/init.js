@@ -10,9 +10,9 @@ var url_window = window.location.href;
 var pageTitle = document.title;
 
 // controls the specs of the notes
-var defaultNoteColor = "#ffffcc";
+var defaultNoteColor = "#E6E6FA";
 var defaultFont= "13px";
-var defaultOpacity = "80%";
+var defaultOpacity = "95%";
 
 // variables used to store the notes and noteobjects 
 var editorJSObjs = {};
