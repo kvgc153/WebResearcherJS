@@ -1,25 +1,21 @@
-
-function saveOptions(e) {
-  chrome.storage.sync.set({
+async function saveOptions(e) {
+  await chrome.storage.sync.set({
     joplinToken: JSON.stringify(document.querySelector("#joplinToken").value)
   });
   e.preventDefault();
 }
 
-function restoreOptions() {
-  // var gettingItem = chrome.storage.sync.get('TWFilepath');
-  // gettingItem.then((res) => {
-  //   document.querySelector("#TWFilepath").value = JSON.parse(res.TWFilepath) || 'Firefox red';
-  // });
+async function restoreOptions() {
+  function getJoplinToken() {
+    return chrome.storage.sync.get('joplinToken').then((x) => {
+      let foo_res = JSON.parse(x.joplinToken);
+      return foo_res;
+    });
+  }
+  getJoplinToken().then((token) => {
+    joplinToken = token;
+    document.querySelector("#joplinToken").value = joplinToken || 'Firefox red';
 
-  // var gettingItem1 = chrome.storage.sync.get('MarkJSHighlight');
-  // gettingItem1.then((res) => {
-  //   document.querySelector("#MarkJSHighlight").value = JSON.parse(res.MarkJSHighlight) || 'Firefox red';
-  // });
-
-  var gettingItem2 = chrome.storage.sync.get('joplinToken');
-  gettingItem2.then((res) => {
-    document.querySelector("#joplinToken").value = JSON.parse(res.joplinToken) || 'Firefox red';
   });
 }
 

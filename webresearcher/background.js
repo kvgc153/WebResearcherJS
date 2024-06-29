@@ -1,20 +1,22 @@
-
-function handleClick() {
-  chrome.runtime.openOptionsPage();
-}
-
-
-chrome.browserAction.onClicked.addListener(handleClick);
-
 console.log("inside background.js");
+
+var joplinToken = '';
+
+
 chrome.contextMenus.create({
   id: "eat-page",
-  title: "Start WebResearcherJS"
+  title: "Start WebResearcherJS",
+  contexts: ["all"]
 });
 
-/////////////////////////////////////
-//// Load all modules to webpage ////
-/////////////////////////////////////
+function handleClick() {
+  chrome.tabs.create({url: 'options.html'});
+}
+
+chrome.action.onClicked.addListener(handleClick);
+
+
+
 var jsFiles = [
   "ext_libs/jquery.min.js",
   "ext_libs/jquery-ui.min.js",
@@ -42,66 +44,107 @@ var cssFiles = [
   "webresearcher/custom.css"
 ];
 
-// error catching functions
 function onExecuted(result) {
   console.log(`Loaded`);
 }
 
 function onError(error) {
-  // alert(error);
   console.log(`Error: ${error}`);
 }
-function loadJQuery(){
-  chrome.tabs.executeScript({
-    file: jsFiles[0]
-  }, loadJQueryUI);
-}
 
-function loadJQueryUI(){
-  chrome.tabs.executeScript({
-    file: jsFiles[1]
-  }, loadEditor);
-}
-
-function loadEditor(){
-  chrome.tabs.executeScript({
-    file: jsFiles[2]
-  }, loadJoplinToken);
-}
-
-function loadJoplinToken(){
-  chrome.storage.sync.get('joplinToken', function(res) {
-    var foo_res = JSON.parse(res.joplinToken);
-    console.log(foo_res);
-    chrome.tabs.executeScript({
-        code:`var joplinToken="`+ foo_res + `";`
-    }, loadOtherModules);
+async function loadJQuery(tab) {
+  await chrome.scripting.executeScript({
+    target: {tabId: tab.id},
+    files: [jsFiles[0]]
   });
+  loadJQueryUI(tab);
 }
 
-function loadOtherModules(){
-  for(var i=0;i<cssFiles.length;i++){
-    chrome.tabs.insertCSS({
-      file: cssFiles[i]
-    }, onExecuted);
+async function loadJQueryUI(tab) {
+  await chrome.scripting.executeScript({
+    target: {tabId: tab.id},
+    files: [jsFiles[1]]
+  });
+  loadEditor(tab);
+}
+
+async function loadEditor(tab) {
+  await chrome.scripting.executeScript({
+    target: {tabId: tab.id},
+    files: [jsFiles[2]]
+  });
+  loadJoplinToken(tab);
+}
+
+async function loadJoplinToken(tab) {
+  // let {joplinToken} = await chrome.storage.sync.get('joplinToken');
+  // let foo_res = JSON.parse(joplinToken);
+  // var joplinToken = foo_res;
+  // console.log(foo_res);
+  
+  // Define a function that sets the joplinToken variable
+  function setJoplinToken() {
+    // var joplinToken = foo_res;
+    // o nothing 
   }
-  for(var i=4;i<jsFiles.length;i++){
-    chrome.tabs.executeScript({
-      file: jsFiles[i]
-    }, onExecuted);
+
+  // Execute the function
+  await chrome.scripting.executeScript({
+    target: {tabId: tab.id},
+    function: setJoplinToken
+  });
+
+  loadOtherModules(tab);
+}
+
+
+async function loadOtherModules(tab) {
+  for(let i=0; i<cssFiles.length; i++){
+    await chrome.scripting.insertCSS({
+      target: {tabId: tab.id},
+      files: [cssFiles[i]]
+    });
+  }
+  for(let i=4; i<jsFiles.length; i++){
+    await chrome.scripting.executeScript({
+      target: {tabId: tab.id},
+      files: [jsFiles[i]]
+    });
   }
 }
 
-function handleMessage(request, sender, sendResponse) {
-  console.log("Message from the content script: " + request.greeting);
-  loadJQuery();
-  sendResponse({response: "Response from background script"});
-}
+// chrome.runtime.onMessage.addListener(async (request, sender) => {
 
-chrome.runtime.onMessage.addListener(handleMessage);
 
-chrome.contextMenus.onClicked.addListener(function(info, tab) {
+//   console.log("Message from the content script: " + request.greeting);
+//   console.log(joplinToken);
+  
+//   loadJQuery(sender.tab);
+
+//   // Return a Promise that resolves to the response
+//   return {response: joplinToken};
+// });
+
+chrome.runtime.onMessage.addListener(
+  function(request, sender, sendResponse) {
+    function getJoplinToken() {
+      return chrome.storage.sync.get('joplinToken').then((x) => {
+        console.log(x);
+        let foo_res = JSON.parse(x.joplinToken);
+        return foo_res;
+      });
+    }
+    getJoplinToken().then((token) => {
+      joplinToken = token;
+      console.log(joplinToken);
+    });
+    sendResponse({response: joplinToken});
+    loadJQuery(sender.tab);
+  }
+);
+
+chrome.contextMenus.onClicked.addListener((info, tab) => {
   if (info.menuItemId == "eat-page") {
-    loadJQuery();
+    loadJQuery(tab);
   }
 });

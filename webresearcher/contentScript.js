@@ -1,21 +1,32 @@
-function handleResponse(message) {
-  console.log(`Message from the background script:  ${message.response}`);
-}
+var joplinToken = '';
 
-function handleError(error) {
-  console.log(`Error: ${error}`);
-}
+// function handleResponse(message) {
+//   console.log(`Message from the background script:  ${message.response}`);
+//   joplinToken = message.response;
+// }
 
-function notifyBackgroundPage(e) {
-  chrome.runtime.sendMessage({
-    greeting: "Sending trigger to start extension"
-  }, function(response) {
-    if (chrome.runtime.lastError) {
-      handleError(chrome.runtime.lastError);
-    } else {
-      handleResponse(response);
-    }
-  });
-}
+// function handleError(error) {
+//   console.log(`Error: ${error}`);
+// }
 
-notifyBackgroundPage();
+// async function notifyBackgroundPage(e) {
+//   try {
+//     let response = await chrome.runtime.sendMessage({
+//       greeting: "Sending trigger to start extension"
+//     });
+//     console.log(JSON.stringify(response));
+//     handleResponse(response);
+//   } catch (error) {
+//     handleError(error);
+//   }
+// }
+
+// notifyBackgroundPage();
+
+(async () => {
+  const response = await chrome.runtime.sendMessage({greeting: "hello"});
+  // do something with response here, not outside the function
+  console.log(response.response);
+  joplinToken = response.response;
+  console.log(joplinToken);
+})();

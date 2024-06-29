@@ -77,4 +77,3 @@ async function pingPort(port) {
 
 var joplinPort = 41184;
 
-

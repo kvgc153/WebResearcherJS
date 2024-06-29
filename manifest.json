@@ -1,35 +1,28 @@
 {
-	"manifest_version": 2,
-	"name": "WebResearcherJS",
-	"version": "6.0.1",
-	"description": "https://github.com/kvgc153/WebResearcherJS-extension",
+    "manifest_version": 3,
+    "name": "WebResearcherJS",
+    "version": "6.0.1",
+    "description": "https://github.com/kvgc153/WebResearcherJS-extension",
 
-	"permissions": [
-		"<all_urls>", "activeTab", "tabs", "storage","contextMenus"
-	],
+    "permissions": [
+        "activeTab", "tabs", "storage","contextMenus","scripting"
+    ],
+    "host_permissions": ["https://*/*","http://*/*"],
+    "action": {
+        "default_title": "WebResearcherJS"
+    },
 
-	"browser_action": {
-		"default_title": "WebResearcherJS",
-		"browser_style": true
-	},
+    "background": {
+        "service_worker": "webresearcher/background.js"
+    },
 
-	"applications": {
-		"gecko": {
-			"id": "webresearcher@webresearcher.io"
-		}
-	},
-	"background": {
-	"scripts": ["webresearcher/background.js"]
-},
-"content_scripts": [
-  {
-    "matches": ["*://*/*"],
-    "js": ["webresearcher/contentScript.js"],
-	"run_at":"document_start"
-  }
-],
-	"options_ui": {
-  "page": "options.html",
-  "browser_style": true
-}
+    "content_scripts": [
+        {
+            "matches": ["<all_urls>"],
+            "js": ["webresearcher/contentScript.js"],
+            "run_at":"document_start"
+        }
+    ],
+
+    "options_ui": "options.html"
 }
