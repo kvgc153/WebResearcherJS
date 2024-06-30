@@ -1,4 +1,4 @@
-// export Notes to Joplin using API
+  // export Notes to Joplin using API
 
 
 async function exportJoplinNotes(notify=false){
@@ -79,7 +79,7 @@ async function exportJoplinNotes(notify=false){
         fetch(`http://localhost:${joplinPort}/notes?token=` + joplinToken,
         {
             body: JSON.stringify({ 
-              "title": document.title , 
+              "title": pageTitle , 
               "body": exportHTML.join('') + metaDataBlock, 
               "tags" : "WBJS, " + document.getElementById('tagsWBJS').value,
               "source_url": url_window,

@@ -138,8 +138,8 @@ $("#makeNoteButton").click(function(){
     w.createNote();
     note_count+=1; // update note counter
 
-    if(note_count==2){
-      var intervalId = setInterval(exportJoplinNotes,15000); // export notes every 10 seconds
-    }
+    // if(note_count==2){
+    //   var intervalId = setInterval(exportJoplinNotes,15000); // export notes every 10 seconds
+    // }
   }
 });

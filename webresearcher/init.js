@@ -8,6 +8,7 @@ webPageUrl = webPageUrl.split("#")[0];
 var webHash = window.location.hash;
 var url_window = window.location.href;
 var pageTitle = document.title;
+pageTitle = pageTitle.replace(/\|/g, "");
 
 // controls the specs of the notes
 var defaultNoteColor = "#E6E6FA";
