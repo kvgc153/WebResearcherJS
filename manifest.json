@@ -1,7 +1,7 @@
 {
 	"manifest_version": 2,
 	"name": "WebResearcherJS",
-	"version": "6.0.1",
+	"version": "6.0.2",
 	"description": "https://github.com/kvgc153/WebResearcherJS-extension",
 
 	"permissions": [
