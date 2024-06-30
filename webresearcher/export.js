@@ -42,18 +42,32 @@ async function exportJoplinNotes(notify=false){
         })
     }
 
-
-    var exportHTML=[];
+    var exportHTML = [];
     var oImg = document.createElement("a");
     oImg.setAttribute('href', url_window);
     oImg.innerHTML = url_window;
-    exportHTML[0]= "<table><tr><td>URL</td><td>Title</td></tr><tr><td>" + oImg.outerHTML +"</td> <td>" + pageTitle + "</td> </tr></table>";
-
-    for(foo_exp=1; foo_exp<note_count; foo_exp++){
-      fooDoc = document.createElement("a");
-      fooDoc.href = url_window + "#tooltip" + foo_exp;
+    
+    exportHTML[0] = `<h1>WBJS notes</h1>
+      <table>
+        <tr>
+          <td>URL</td>
+          <td>Title</td>
+        </tr>
+        <tr>
+          <td>${oImg.outerHTML}</td>
+          <td>${pageTitle}</td>
+        </tr>
+      </table>`;
+    
+    for(let foo_exp = 1; foo_exp < note_count; foo_exp++){
+      let fooDoc = document.createElement("a");
+      fooDoc.href = `${url_window}#tooltip${foo_exp}`;
       fooDoc.innerText = "(EDIT)";
-      exportHTML[foo_exp] = "<h3>Note"+foo_exp+ fooDoc.outerHTML +":</h3>"+WBJS_HTML[foo_exp]+"<hr><br>";
+    
+      exportHTML[foo_exp] = `<h3>Note ${foo_exp} ${fooDoc.outerHTML}:</h3>
+        ${WBJS_HTML[foo_exp]}
+        <hr>
+        <br>`;
     }
 
     console.log("User asked to export notes to Joplin.");
@@ -147,4 +161,10 @@ document.getElementById('exportNotesJoplin').addEventListener('click', function(
 
 
 //// Periodically save notes to Jopin every 5 seconds ////
-// var intervalId = setInterval(exportJoplinNotes,10000); 
+function perdiodicExportJoplinNotes(){
+  // Check if note has been taken or someone has added a tag 
+  if(note_count>1 || document.getElementById('tagsWBJS').value.length>0){
+    exportJoplinNotes(notify=false);
+  }
+}
+var intervalId = setInterval(perdiodicExportJoplinNotes,10000); 

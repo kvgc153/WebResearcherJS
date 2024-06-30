@@ -119,7 +119,7 @@ async function fetchJson(url) {
   //     displayNotes(joplinMetaDataParsed);
   //   }
   // })
-  console.log(url);
+  // console.log(url);
 
   var results = await fetch(url);
   var resultsJSON = await results.json();
