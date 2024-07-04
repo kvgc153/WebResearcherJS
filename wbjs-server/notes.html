@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>My notes</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            padding: 20px;
+        }
+        .note-content {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            grid-gap: 1em;
+        }
+
+        .iframenote {
+          display:block;
+            overflow-y:scroll;
+            background-color: #fff;
+            transition: box-shadow 0.3s ease;
+            margin: 0 auto;
+
+
+        }
+
+        .note {
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            height:400px;
+            overflow-y:scroll;
+            background-color: #fff;
+            transition: box-shadow 0.3s ease;
+        }
+        .note:hover {
+            box-shadow: 0 0 10px rgba(0, 0, 0, 1);
+            /* transform: scale(1.2,1.2); */
+            /* z-index: 100; */
+        }
+
+        .note-title {
+            font-size: 20px;
+            font-weight: bold;
+            margin-bottom: 10px;
+            width:100%;
+        }
+        .lastModified{
+          font-size:13px;
+        }
+        button {
+            margin-top: 20px;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            background-color: #007BFF;
+            color: #fff;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+        button:hover {
+            background-color: #0056b3;
+
+        }
+        .beautiful-button {
+            font-size: 1em;
+            padding: 10px;
+            color: #fff;
+            border: 2px solid #3498db;
+            border-radius: 5px;
+            background-color: #3498db;
+            cursor: pointer;
+            transition: all 0.15s;
+        }
+
+        .beautiful-button:hover {
+            color: #3498db;
+            background-color: #fff;
+
+        }
+    </style>
+</head>
+<body>
+  <br><h2 style="text-align:center">WBJS notes <div>
+      <button class="beautiful-button" id="myButton">Export notes</button>
+  </div> </h2>
+  <div id="note-container"></div>
+  <script type="text/javascript" src= "jquery.min.js"></script>
+  <script type="text/javascript" src= "jquery.sidebar.min.js"></script>
+  <script type="text/javascript" src= "editorjs@latest.js"></script>
+  <script type="text/javascript" src= "code@latest.js"></script>
+  <script type="text/javascript" src= "edjsHTML.js"></script>
+  <script type="text/javascript" src= "header@latest.js"></script>
+  <script type="text/javascript" src= "list@latest.js"></script>
+  <script type="text/javascript" src= "marker@latest.js"></script>
+  <script type="text/javascript" src= "quote@latest.js"></script>
+  <script type="text/javascript" src= "simple-image@latest.js"></script>
+  <script type="text/javascript" src= "table@latest.js"></script>
+
+      <script>
+      var note_count = 0;
+      let colorsNotes = [
+        "rgba(255, 255, 255, 0.95)", // Default (White)
+        "rgba(255, 204, 204, 0.95)", // Light Red
+        "rgba(255, 224, 153, 0.95)", // Light Orange
+        "rgba(255, 255, 204, 0.95)", // Light Yellow
+        "rgba(229, 255, 204, 0.95)", // Light Green
+        "rgba(204, 255, 242, 0.95)", // Light Teal
+        "rgba(224, 247, 255, 0.95)", // Light Blue
+        "rgba(224, 235, 255, 0.95)", // Light Dark Blue
+        "rgba(235, 224, 255, 0.95)", // Light Purple
+        "rgba(255, 235, 245, 0.95)"  // Light Pink
+
+      ];
+      function displayNotes(data){
+        var allData = data;
+        var allDataKeys = Object.keys(allData);
+        for(let i=0;i<allDataKeys.length;i++){
+          var edjsData   = JSON.parse(allData[allDataKeys[i]]);
+          console.log(edjsData);
+          
+          var foo_loaded_keys   = Object.keys(edjsData['JSON']);
+          console.log(edjsData);
+
+
+          var colorChosen = colorsNotes[Math.floor(Math.random()*colorsNotes.length)];
+
+          var noteContent = document.createElement('div');
+          noteContent.className = 'note-content';
+          noteContent.id = 'note-content' + i;
+
+
+          if(foo_loaded_keys.length>0){
+            document.getElementById('note-container').appendChild(noteContent);
+
+          }
+
+
+
+          for(let j=0;j<foo_loaded_keys.length;j++){
+
+
+              var noteDiv = document.createElement('div');
+              noteDiv.className = 'note';
+              noteDiv.style.backgroundColor = colorChosen;
+              noteDiv.id = 'note' + note_count;
+
+              var titleInput = document.createElement('div');
+              titleInput.className = 'note-title';
+              var titleCount = j+1;
+              // var titleURL = localStorage.key(i).replace("0.0.0.0:8000/","http://0.0.0.0:8000/") + "#tooltip" + titleCount ;
+              var tagsDiv = '';
+              edjsData['TAGS'].split(",").forEach(function(item) {
+                      var div = document.createElement('div');
+                      div.textContent = item;
+                      div.style.border = '1px solid #000';
+                      div.style.padding = '10px';
+                      div.style.margin = '5px';
+                      div.style.display = 'inline-block';
+                      div.style.backgroundColor = '#f0f0f0';
+                      div.style.borderRadius = '20px'; // Rounded corners
+                      div.style.color = '#800000'; // Maroon text color
+                      div.style.fontFamily = 'Arial, sans-serif'; // Font family
+                      div.style.fontSize = '14px'; // Font size
+                      div.style.fontWeight = 'bold'; // Bold text
+                      tagsDiv +=div.outerHTML;
+                  });
+             var editedTime = new Date(edjsData['JSON'][foo_loaded_keys[j]]['time']).toString();
+
+             titleInput.innerHTML = "<a href='" + "" + "'>" + "Source &#128279;" + "</a><br>" + tagsDiv + "<br><i class='lastModified'>Last edited on:"+ editedTime  + "</i>";
+
+             noteDiv.appendChild(titleInput);
+
+
+             document.getElementById('note-content' + i).appendChild(noteDiv);
+
+              var edjsnote = new EditorJS({
+                   holder: "note"+note_count,
+                   tools: {
+                     header: {
+                       class: Header,
+                       inlineToolbar:true,
+                       config: {
+                       placeholder: 'Header'
+                       },
+                       shortcut: 'CMD+SHIFT+H'
+                     },
+                     image: SimpleImage,
+                     list: {
+                       class: List,
+                       inlineToolbar: true,
+                       shortcut: 'CMD+SHIFT+L'
+                     },
+                     quote: {
+                       class: Quote,
+                       inlineToolbar: true,
+                       config: {
+                       quotePlaceholder: 'Enter a quote',
+                       captionPlaceholder: 'Quote\'s author',
+                       },
+                       shortcut: 'CMD+SHIFT+O'
+                     },
+                     code: CodeTool,
+                     },
+                   data:  edjsData['JSON'][foo_loaded_keys[j]],
+                   readOnly: true
+
+                 });
+                 note_count+=1;
+
+                }
+
+        }
+      }
+      var dataPacket = {};
+      fetch(`http://0.0.0.0:3000/getAll`,
+        {
+            body: JSON.stringify(dataPacket),
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },          
+        }).then((results) => {
+          results.json().then((data) => {
+            // foo_loaded = JSON.parse(data.value);
+            // console.log(data);
+            displayNotes(data);
+          }
+        )
+        });
+
+      // fetch(`http://0.0.0.0:3000/getAll`)
+      //   .then((results) => {
+      //     console.log(results);
+      //     //  results.json().then((data) =>{
+      //     //    console.log("received data----" + JSON.parse(data));
+      //     //    displayNotes(data);
+      //      });
+
+      //    });
+
+      // $.getJSON("http://0.0.0.0:3000/getAll", function(result){
+      //   console.log(result);
+      // });
+      
+      //  fetch(`http://0.0.0.0:3000/getAll`)
+      //    .then((results) => {
+      //       results.json().then((data) =>{
+      //         console.log("received data----" + JSON.parse(data));
+      //         // displayNotes(data);
+      //       });
+          //  results.json().then((data) =>{
+            // console.log("received data" + data); 
+            // displayNotes(data);
+          // });
+        //  });
+
+
+
+    </script>
+</body>
+</html>

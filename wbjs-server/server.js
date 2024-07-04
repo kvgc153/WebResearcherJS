@@ -1,6 +1,25 @@
 const express = require('express');
 const sqlite3 = require('sqlite3').verbose();
+const cors = require("cors");
+
+const allowedOrigins = ["0.0.0.0:8000"];
 const app = express();
+
+// app.use(
+//     cors({
+//         origin: function(origin, callback) {
+//             if (!origin) return callback(null, true);
+//             if (allowedOrigins.indexOf(origin) === -1) {
+//                 var msg =
+//                     "The CORS policy for this site does not " +
+//                     "allow access from the specified Origin.";
+//                 return callback(new Error(msg), false);
+//             }
+//             return callback(null, true);
+//         }
+//     })
+// );
+app.use(express.static("ext_libs/"));
 app.use(express.json({ limit: '200mb' }));
 
 // Connect to SQLite database
@@ -19,6 +38,28 @@ db.run(`CREATE TABLE IF NOT EXISTS MyTable (key TEXT UNIQUE, value TEXT)`, (err)
   console.log('Table created if it did not exist.');
 });
 
+app.get('/notesViewer', (req, res) => {
+  res.sendFile(__dirname + '/notes.html');
+});
+
+app.post('/getAll', (req, res) => {
+  let sql = `SELECT * FROM MyTable`;
+
+  db.all(sql, [], (err, rows) => {
+    if (err) {
+      throw err;
+    }
+
+    let result = {};
+    rows.forEach((row, index) => {
+      result[row['key']] = row['value'];
+    });
+
+    console.log("Data found: ", result);
+    res.json(result);
+  });
+});
+
 // Endpoint to get data from database
 app.post('/getData', (req, res) => {
   let key = req.body.key;
@@ -31,6 +72,7 @@ app.post('/getData', (req, res) => {
         }
         console.log("data found");
         res.json(row);
+        
         });
 });
 
