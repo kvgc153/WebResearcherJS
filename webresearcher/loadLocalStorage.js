@@ -135,4 +135,22 @@ async function fetchJson(url) {
  }
 }
 
-fetchJson(`http://localhost:${joplinPort}/search?token=` + joplinToken + "&query=" + pageTitle + "&fields=id,title,body");
+var foo_loaded = {};
+var dataPacket = {};
+dataPacket['key'] = webPageUrl;
+fetch(`http://localhost:3000/getData`,
+{
+    body: JSON.stringify(dataPacket),
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },          
+}
+).then((results) => {
+  results.json().then((data) => {
+    console.log(data);
+    foo_loaded = JSON.parse(data.value);
+    displayNotes(foo_loaded);
+  }
+)
+});

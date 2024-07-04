@@ -10,7 +10,20 @@ function saveAllNotesWBJS(){
   console.info("user asked to save data. Packed data below:")
   console.log(foo_final);
 
-  localStorage.setItem(webPageUrl, JSON.stringify(foo_final));
+  // localStorage.setItem(webPageUrl, JSON.stringify(foo_final));
   $.notify('Added notes to local storage', "success");
+ // create note in localserver
+ var dataPacket = {};
+ dataPacket[webPageUrl] = JSON.stringify(foo_final);
+ fetch(`http://localhost:3000/data`,
+ {
+     body: JSON.stringify(dataPacket),
+     method: "POST",
+     headers: {
+       "Content-Type": "application/json",
+     },          
+ }
+ );
+ 
 }
 document.getElementById('saveNotesWBJS').addEventListener('click', saveAllNotesWBJS);
