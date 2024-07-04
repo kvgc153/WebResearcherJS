@@ -1,5 +1,5 @@
 /// save Notes to localStorage when user clicks "save notes button" ///
-function saveAllNotesWBJS(){
+function saveAllNotesWBJS(notify=true){
   // pack results into a dictionary
   let foo_final ={}
   foo_final['HTML'] = WBJS_HTML;
@@ -11,7 +11,9 @@ function saveAllNotesWBJS(){
   console.log(foo_final);
 
   // localStorage.setItem(webPageUrl, JSON.stringify(foo_final));
-  $.notify('Added notes to local storage', "success");
+  if(notify){
+    $.notify('Added notes to DB', "success");
+  }
  // create note in localserver
  var dataPacket = {};
  dataPacket[webPageUrl] = JSON.stringify(foo_final);
@@ -27,3 +29,7 @@ function saveAllNotesWBJS(){
  
 }
 document.getElementById('saveNotesWBJS').addEventListener('click', saveAllNotesWBJS);
+
+var interval = setInterval(function() {
+  saveAllNotesWBJS(notify=false);
+}, 10000);

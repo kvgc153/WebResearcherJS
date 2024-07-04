@@ -91,11 +91,9 @@ function displayNotes(parsedJSON){
 
           }
         },
-      //   onChange: (api, event) => {
-      //     console.log('Now I know that Editor\'s content changed!', event)
-      //     saved();
-      // }
-        // readOnly: true, // for now dont allow users to edit the previous imported notes.. Needd some fixes before that..
+        onChange: (api, event) => {
+          serverExport();
+      }
 
       });
     $('#'+"tooltip"+note_count).mousedown(handle_mousedown); // move popper
@@ -104,36 +102,6 @@ function displayNotes(parsedJSON){
   }
 }
 
-
-// grab notes from Joplin
-async function fetchJson(url) {
-
-  // fetch(url)
-  // .then(results => results.json())
-  // .then(resultsJSON => {
-  //   if(resultsJSON.items.length == 1){
-  //     var joplinDiv = document.createElement('div');
-  //     joplinDiv.innerHTML = resultsJSON.items[0].body;
-  //     var joplinMetaData = joplinDiv.querySelector("#metadata_wbjs").outerText;
-  //     var joplinMetaDataParsed = JSON.parse(atob(joplinMetaData));
-  //     displayNotes(joplinMetaDataParsed);
-  //   }
-  // })
-  // console.log(url);
-
-  var results = await fetch(url);
-  var resultsJSON = await results.json();
-  if(resultsJSON.items.length == 1){
-    // console.log(resultsJSON.items[0].body);
-    var joplinDiv = document.createElement('div');
-    joplinDiv.innerHTML = resultsJSON.items[0].body;
-    var joplinMetaData = joplinDiv.querySelector("#metadata_wbjs").outerText;
-    var joplinMetaDataParsed = JSON.parse(atob(joplinMetaData));
-
-    // console.log(joplinMetaDataParsed);
-    displayNotes(joplinMetaDataParsed);
- }
-}
 
 var foo_loaded = {};
 var dataPacket = {};

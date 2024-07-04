@@ -65,10 +65,9 @@ class WBJS{
         },
         code: CodeTool,
         },
-      // onChange: (api, event) => {
-      //     console.log('Now I know that Editor\'s content changed!', event)
-      //     saved();
-      // }
+      onChange: (api, event) => {
+          serverExport();
+      }
     });
 
 
@@ -107,22 +106,7 @@ class WBJS{
 
 }
 
-
-document.addEventListener('keydown', workerFunction);
-function workerFunction(e){
-  if(e.ctrlKey){
-    // launch editorjs note when Ctrl+1 is pressed //
-    if(e.keyCode ==createNoteKeyCode){
-      if(window.getSelection().rangeCount >0){
-          let w = new WBJS(noteID = note_count);
-          w.createNote();
-          note_count+=1; // update note counter
-      }
-    }
-  }
-}
-
-// // Method 2 : Press make note button in the userButtonPanelWBJS panel
+//  Press make note button in the userButtonPanelWBJS panel
 $("#makeNoteButton").click(function(){
   // add selection to range
   const selection = window.getSelection();
