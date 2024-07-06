@@ -6,6 +6,9 @@ function saveAllNotesWBJS(notify=true){
   foo_final['JSON'] = WBJS_JSON;
   foo_final['CSS']  = WBJS_CSS;
   foo_final['TAGS'] = document.getElementById('tagsWBJS').value;
+  foo_final['TITLE'] = document.title || "";
+  foo_final['URL'] = window.location.href;
+  
 
   console.info("user asked to save data. Packed data below:")
   console.log(foo_final);
