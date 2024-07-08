@@ -20,7 +20,7 @@ function saveAllNotesWBJS(notify=true){
  // create note in localserver
  var dataPacket = {};
  dataPacket[webPageUrl] = JSON.stringify(foo_final);
- fetch(`http://localhost:3000/data`,
+ fetch(postServer,
  {
      body: JSON.stringify(dataPacket),
      method: "POST",

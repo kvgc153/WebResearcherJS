@@ -106,7 +106,7 @@ function displayNotes(parsedJSON){
 var foo_loaded = {};
 var dataPacket = {};
 dataPacket['key'] = webPageUrl;
-fetch(`http://localhost:3000/getData`,
+fetch(fetchServer,
 {
     body: JSON.stringify(dataPacket),
     method: "POST",

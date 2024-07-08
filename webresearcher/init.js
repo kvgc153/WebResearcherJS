@@ -15,6 +15,11 @@ var defaultNoteColor = "#E6E6FA";
 var defaultFont= "13px";
 var defaultOpacity = "95%";
 
+// Server variables
+var serverHost  = "http://localhost:3000";
+var fetchServer = serverHost + "/getData";
+var postServer  = serverHost + `/data`;
+
 // variables used to store the notes and noteobjects 
 var editorJSObjs = {};
 var WBJS_HTML = {};
