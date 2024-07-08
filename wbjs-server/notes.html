@@ -120,7 +120,7 @@
         for(let i=0;i<allDataKeys.length;i++){
           var edjsData   = JSON.parse(allData[allDataKeys[i]]);
           console.log(edjsData);
-          
+
           var foo_loaded_keys   = Object.keys(edjsData['JSON']);
           console.log(edjsData);
 
@@ -169,7 +169,7 @@
                   });
              var editedTime = new Date(edjsData['JSON'][foo_loaded_keys[j]]['time']).toString();
 
-             titleInput.innerHTML = "<a href='" + allDataKeys[i] + "'>" +   edjsData['TITLE'] +  " &#128279;" + "</a><br>" + tagsDiv + "<br><i class='lastModified'>Last edited on:"+ editedTime  + "</i>";
+             titleInput.innerHTML = "<a href='" + 'https://' + allDataKeys[i] + "'>" +   edjsData['TITLE'] +  " &#128279;" + "</a><br>" + tagsDiv + "<br><i class='lastModified'>Last edited on:"+ editedTime  + "</i>";
 
              noteDiv.appendChild(titleInput);
 
@@ -221,7 +221,7 @@
             method: "POST",
             headers: {
               "Content-Type": "application/json",
-            },          
+            },
         }).then((results) => {
           results.json().then((data) => {
             // foo_loaded = JSON.parse(data.value);
@@ -244,7 +244,7 @@
       // $.getJSON("http://0.0.0.0:3000/getAll", function(result){
       //   console.log(result);
       // });
-      
+
       //  fetch(`http://0.0.0.0:3000/getAll`)
       //    .then((results) => {
       //       results.json().then((data) =>{
@@ -252,7 +252,7 @@
       //         // displayNotes(data);
       //       });
           //  results.json().then((data) =>{
-            // console.log("received data" + data); 
+            // console.log("received data" + data);
             // displayNotes(data);
           // });
         //  });
