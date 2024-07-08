@@ -42,6 +42,10 @@ app.get('/notesViewer', (req, res) => {
   res.sendFile(__dirname + '/notes.html');
 });
 
+app.get('/pdf.html', (req, res) => {
+  res.sendFile(__dirname + '/pdf.html');
+});
+
 app.post('/getAll', (req, res) => {
   let sql = `SELECT * FROM MyTable`;
 

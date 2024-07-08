@@ -1,0 +1,1 @@
+javascript:(function(){    var currentUrl = window.location.href;      window.location.href='http://0.0.0.0:3000/pdf.html?pdfUrl=' +currentUrl; })();
