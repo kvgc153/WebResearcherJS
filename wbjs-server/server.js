@@ -1,24 +1,7 @@
 const express = require('express');
 const sqlite3 = require('sqlite3').verbose();
-const cors = require("cors");
-
-const allowedOrigins = ["0.0.0.0:8000"];
 const app = express();
 
-// app.use(
-//     cors({
-//         origin: function(origin, callback) {
-//             if (!origin) return callback(null, true);
-//             if (allowedOrigins.indexOf(origin) === -1) {
-//                 var msg =
-//                     "The CORS policy for this site does not " +
-//                     "allow access from the specified Origin.";
-//                 return callback(new Error(msg), false);
-//             }
-//             return callback(null, true);
-//         }
-//     })
-// );
 app.use(express.static("ext_libs/"));
 app.use(express.json({ limit: '200mb' }));
 
