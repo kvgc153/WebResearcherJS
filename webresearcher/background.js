@@ -29,9 +29,9 @@ var jsFiles = [
   "ext_libs/jquery.sidebar.min.js",
   "webresearcher/init.js",
   "webresearcher/handleMouseEvents.js",
-  "webresearcher/loadLocalStorage.js",
-  "webresearcher/saveLocalStorage.js",
   "webresearcher/export.js",
+  "webresearcher/saveLocalStorage.js",
+  "webresearcher/loadLocalStorage.js",
   "webresearcher/webresearcher.js",
   "webresearcher/joplin.js"
 

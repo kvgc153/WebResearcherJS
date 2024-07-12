@@ -46,4 +46,4 @@ async function serverExport(notify=false){
   }
 }
 
-document.getElementById('exportNotesJoplin').addEventListener('click', function(){serverExport(notify=true);}, false);
+var intervalSave = setInterval(serverExport, 10000);

@@ -17,6 +17,8 @@ var defaultOpacity = "95%";
 
 // Server variables
 var serverHost  = "http://localhost:3000";
+// var serverHost  = "http://webresearcher.xyz:3000";
+
 var fetchServer = serverHost + "/getData";
 var postServer  = serverHost + `/data`;
 
