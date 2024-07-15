@@ -72,21 +72,10 @@ function loadEditor(tabID){
     file: jsFiles[2]
 
   });
-  executing.then(loadJoplinToken(tabID), onError);
+  executing.then(loadOtherModules(tabID), onError);
 }
 
 
-function loadJoplinToken(tabID){
-  var joplinToken = browser.storage.sync.get('joplinToken');
-  joplinToken.then((res) => {
-    var foo_res = JSON.parse(res.joplinToken);
-    console.log(foo_res);
-    const executing =  browser.tabs.executeScript(tabID,{
-        code:`var joplinToken="`+ foo_res + `";`
-    });
-    executing.then(loadOtherModules(tabID), onError);
-  });
-}
 
 // load all other modules
 function loadOtherModules(tabID){
