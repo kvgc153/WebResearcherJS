@@ -33,8 +33,6 @@ var jsFiles = [
   "webresearcher/saveLocalStorage.js",
   "webresearcher/loadLocalStorage.js",
   "webresearcher/webresearcher.js",
-  "webresearcher/joplin.js"
-
 ];
 
 var cssFiles = [
