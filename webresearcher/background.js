@@ -30,8 +30,7 @@ var jsFiles = [
   "webresearcher/init.js",
   "webresearcher/handleMouseEvents.js",
   "webresearcher/export.js",
-  "webresearcher/saveLocalStorage.js",
-  "webresearcher/loadLocalStorage.js",
+  "webresearcher/storage.js",
   "webresearcher/webresearcher.js",
 ];
 
