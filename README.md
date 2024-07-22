@@ -27,15 +27,10 @@ After installing, the first step is to configure it to your specific needs. Chec
 
 
 
-## Exporting Notes to Joplin
+## Saving notes
 
-By default, these notes and tags are periodically saved to your Joplin notes and will be displayed the next time you visit the page. You can also manually save the notes to your notes at any time pressing the "Save to Joplin" button to export your current notes on the webpage to Joplin.
+By default, these notes and tags are periodically saved a database on your server and will be displayed the next time you visit the page. You can also manually save the notes to your notes at any time pressing the "Save" button to export your current notes on the webpage.
 
-
-**Editing your notes/tags:** Want to make changes after exporting? Just click the "EDIT" button in your Joplin note. This will take you back to the original webpage for editing. Once done, save the updated note back to Joplin.
-
-
-<img height="400px" src="demo/demo3.gif">
 
 
 
