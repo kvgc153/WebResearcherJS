@@ -81,10 +81,27 @@
             background-color: #fff;
 
         }
+        #search {
+            width: 400px;
+            height: 45px;
+            border: 1px solid #dfe1e5;
+            box-shadow: none;
+            border-radius: 24px;
+            padding: 0 20px;
+            margin: 20px 0;
+            font-size: 16px;
+            outline: none;
+        }
+
+        #search:focus {
+            box-shadow: 0 1px 6px 0 rgba(32,33,36,0.28);
+        }
+
     </style>
 </head>
 <body>
   <br><h2 style="text-align:center">WBJS notes <div>
+    <input type="text" id='search' placeholder="search"> </input>
   </div> </h2>
   <div id="note-container"></div>
   <script type="text/javascript" src= "jquery.min.js"></script>
@@ -100,6 +117,14 @@
   <script type="text/javascript" src= "table@latest.js"></script>
 
       <script>
+      // Search functionality/////
+      $('#search').on('input', function(){
+          var text = $(this).val();
+          $('.note-content').children('div').show();
+          $('.note-content').children('div:not(:contains(' + text + '))').hide();
+      });
+
+      //////////////////////////
       var note_count = 0;
       let colorsNotes = [
         "rgba(255, 255, 255, 0.95)", // Default (White)
@@ -169,7 +194,7 @@
                   });
              var editedTime = new Date(edjsData['JSON'][foo_loaded_keys[j]]['time']).toString();
 
-             titleInput.innerHTML = "<a href='" + 'https://' + allDataKeys[i] + "'>" +   edjsData['TITLE'] +  " &#128279;" + "</a><br>" + tagsDiv + "<br><i class='lastModified'>Last edited on:"+ editedTime  + "</i>";
+             titleInput.innerHTML = "<a href='" + 'https://' + allDataKeys[i] + "#tooltip"  + titleCount + "'>" +   edjsData['TITLE'] +  " &#128279;" + "</a><br>" + tagsDiv + "<br><i class='lastModified'>Last edited on:"+ editedTime  + "</i>";
 
              noteDiv.appendChild(titleInput);
 
@@ -230,34 +255,6 @@
           }
         )
         });
-
-      // fetch(`http://0.0.0.0:3000/getAll`)
-      //   .then((results) => {
-      //     console.log(results);
-      //     //  results.json().then((data) =>{
-      //     //    console.log("received data----" + JSON.parse(data));
-      //     //    displayNotes(data);
-      //      });
-
-      //    });
-
-      // $.getJSON("http://0.0.0.0:3000/getAll", function(result){
-      //   console.log(result);
-      // });
-
-      //  fetch(`http://0.0.0.0:3000/getAll`)
-      //    .then((results) => {
-      //       results.json().then((data) =>{
-      //         console.log("received data----" + JSON.parse(data));
-      //         // displayNotes(data);
-      //       });
-          //  results.json().then((data) =>{
-            // console.log("received data" + data);
-            // displayNotes(data);
-          // });
-        //  });
-
-
 
     </script>
 </body>
