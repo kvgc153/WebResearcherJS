@@ -42,7 +42,7 @@ app.post('/getAll', (req, res) => {
       result[row['key']] = row['value'];
     });
 
-    console.log("Data found: ", result);
+    // console.log("Data found: ", result);
     res.json(result);
   });
 });
@@ -62,6 +62,30 @@ app.post('/getData', (req, res) => {
         
         });
 });
+
+// Endpoint to search data from database
+
+app.post('/search', (req, res) => {
+  let key = "%" + req.body.key + "%";
+  console.log("user asked to search for : "+key);
+
+  let sql = `SELECT * FROM MyTable WHERE value LIKE ?`;
+
+  db.all(sql, [key], (err, rows) => {
+    if (err) {
+      throw err;
+    }
+
+    let result = {};
+    rows.forEach((row, index) => {
+      result[row['key']] = row['value'];
+    });
+
+    res.json(result);
+  });
+});
+
+
 
 // Endpoint to add data to database
 app.post('/data', (req, res) => {
