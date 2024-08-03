@@ -1,4 +1,3 @@
-
 //////////////////////////
 var note_count = 0;
 let colorsNotes = [
@@ -155,3 +154,45 @@ function searchDB(){
 document.getElementById('searchBtn').addEventListener('click', searchDB);
 
 // setInterval(searchDB, 1000);
+
+document.addEventListener('click', function(e) {
+    // only toggle if display is not visible
+
+    if(e.target.id == 'searchDiv' || e.target.id == 'search' || e.target.id == 'searchBtn'){
+        return;
+    }
+    else{
+       
+        $("#display").toggle();
+    
+    }
+    
+    try{
+        if(e.target.id.includes('note')){
+            $("#display").html(e.target.innerHTML);
+        }
+        else{
+            // check parent
+            if(e.target.parentElement.id.includes('note')){
+                $("#display").html(e.target.parentElement.innerHTML);
+            }
+            else{
+                // check grandparent
+                if(e.target.parentElement.parentElement.id.includes('note')){
+                    $("#display").html(e.target.parentElement.parentElement.innerHTML);
+                }
+                else{
+                    // check great grandparent
+                    if(e.target.parentElement.parentElement.parentElement.id.includes('note')){
+                        $("#display").html(e.target.parentElement.parentElement.parentElement.innerHTML);
+                    }
+                    else{}
+                }
+            }
+        }   
+    }
+   catch(err){
+       console.log(err);
+   }
+
+});
