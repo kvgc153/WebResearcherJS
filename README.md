@@ -1,13 +1,27 @@
 ## WebResearcherJS (WBJS) <img width="40px" src="logo.png">
 
-Annotate your webpages effortlessly and export to [Joplin](https://joplinapp.org/) with ease using the WebResearcherJS Firefox extension.  
-
+Actively engage with webpages by annotating with WBJS sticky notes.
 
 
 ## Getting Started
-Download the extension from the add-on page ([https://addons.mozilla.org/en-US/firefox/addon/webresearcherjs/](https://addons.mozilla.org/en-US/firefox/addon/webresearcherjs/)).
+- **Webclipper**: Download the webclipper from the add-on page ([https://addons.mozilla.org/en-US/firefox/addon/webresearcherjs/](https://addons.mozilla.org/en-US/firefox/addon/webresearcherjs/)). 
 
-After installing, the first step is to configure it to your specific needs. Checkout the notes posted [here](config.md) for details.
+- **Local server**: All the notes taken on the browser using the webclipper will be saved to the server running locally. Requires node and npm.
+
+```shell 
+git clone https://github.com/kvgc153/WebResearcherJS-extension.git
+cd WebResearcherJS-extension/wbjs-server/
+npm install
+node server.js
+```
+When the server successfully starts, you will get the following message:
+
+```shell
+Server is running on port 3000
+Connected to the SQLite database.
+Table created if it did not exist.
+```
+A sqlite DB will be created in the same folder which will contain all the notes taken by the webclipper. Check that this exists in the folder before procedding further.
 
 
 ## How to take notes using WBJS?
@@ -25,17 +39,13 @@ After installing, the first step is to configure it to your specific needs. Chec
    
 <img height="200px" src="demo/demo2.gif">
 
+5. **Saving notes**: Save notes to server by pressing the save button. The notes will be automatically displayed the next time you visit the page.
 
-
-## Saving notes
-
-By default, these notes and tags are periodically saved a database on your server and will be displayed the next time you visit the page. You can also manually save the notes to your notes at any time pressing the "Save" button to export your current notes on the webpage.
-
-
+<img height="200px" src="demo/demo3.gif">
 
 
 
 ## Support and development
-Checkout the notes posted [here](docs/docs.md) to understand how the source code works. Code, suggestions, and feedback are welcome. FAQs are posted [here](troubleshooting.md)
+Checkout the notes posted [here](docs/docs.md) to understand how the webclipper code works. Code, suggestions, and feedback are welcome. 
 
 
