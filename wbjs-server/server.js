@@ -1,8 +1,11 @@
 const express = require('express');
 const sqlite3 = require('sqlite3').verbose();
+const path = require('path');
+const fs = require('fs');
 const app = express();
 
 app.use(express.static("ext_libs/"));
+app.use('/notes', express.static('notes'))
 app.use(express.json({ limit: '200mb' }));
 
 // Connect to SQLite database
@@ -115,6 +118,45 @@ app.post('/data', (req, res) => {
         }
   });
 });
+
+
+// Blank canvas for user to take notes 
+app.get('/canvas', (req, res) => {
+  const uniqueId = Date.now();
+  const fileName = `page_${uniqueId}.html`;
+  const filePath = path.join('notes', fileName);
+
+  const htmlContent = `
+  <!DOCTYPE html>
+  <html>
+  <head>
+      <meta charset="UTF-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1">
+      <title>WBJS Canvas</title>
+      <style>
+          body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            padding: 20px;
+        }
+      </style>
+  </head>
+  <body>
+      <div height="10000px" width="100%" id="wbjs-canvas" style="overflow-y:auto;background-color: #f4f4f4;">${"&nbsp;<br>".repeat(100) }</div>
+  </body>
+  </html>
+  `;
+  fs.writeFile(filePath, htmlContent, (err) => {
+      if (err) {
+          console.error('Error writing file:', err);
+          res.status(500).send('Server Error');
+          return;
+      }
+      res.redirect(`http://127.0.0.1:3000/notes/${fileName}`);
+  });
+});
+
+
 
 // Start server
 app.listen(3000,"127.0.0.1", () => {

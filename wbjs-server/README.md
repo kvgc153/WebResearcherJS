@@ -86,3 +86,7 @@ fetch("http://127.0.0.1:3000/data",
 );
 ```
 
+- /canvas -- When a user visits this page, a unique html page is created and stored in the notes/ folder. Then the server redirects the user to the created page. The user can use the webclipper to take notes on this blank canvas page. Attached is a demo:
+
+
+<img width="100%" src="canvas.gif">
