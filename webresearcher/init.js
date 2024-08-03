@@ -35,7 +35,7 @@ var htmlAppend = $("html").append(`
 	<div class ="btn" style="width:100%; text-align: center; font-weight:1000"> 
 	&#10021;
     <div id="tagsList">
-	    <input type="text" id="tagsWBJS" style="width:100%;font-family: inherit; font-size:15px; height:25px; " placeholder="Enter Tags: Comma-separated"><br>
+	    <input type="text" id="tagsWBJS" style="width:90%;font-family: inherit; font-size:15px; height:25px; " placeholder="Enter Tags: Comma-separated"><br>
         <div id="showTags"></div>
     </div>
 	</div>

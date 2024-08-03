@@ -1,23 +1,23 @@
 .userButtonPanelWBJS {
-  left: 90%; 
+  left: 93.6%; 
   bottom: 50%; 
   height: 7%; 
   position: fixed; 
-  width: 10%; 
+  width: 6%; 
   z-index:100;
-  font-size: 16px;
+  font-size: 14px;
   display: none;
   
 }
 
 .userButtonPanelWBJSToggler {
-  left: 90%; 
+  left: 95%; 
   bottom: 50%; 
   height: 7%; 
   position: fixed; 
-  width: 10%; 
+  width: 5%; 
   z-index:100;
-  font-size: 16px;
+  font-size: 14px;
 }
 
 .WBJSNote {
