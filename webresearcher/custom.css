@@ -6,7 +6,18 @@
   width: 10%; 
   z-index:100;
   font-size: 16px;
+  display: none;
   
+}
+
+.userButtonPanelWBJSToggler {
+  left: 90%; 
+  bottom: 50%; 
+  height: 7%; 
+  position: fixed; 
+  width: 10%; 
+  z-index:100;
+  font-size: 16px;
 }
 
 .WBJSNote {

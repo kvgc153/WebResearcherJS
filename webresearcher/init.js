@@ -30,6 +30,7 @@ var WBJS_JSON = {};
 
 // Add Buttons to the page for control
 var htmlAppend = $("html").append(`
+<div id ="userButtonPanelToggler" class = "userButtonPanelWBJSToggler"><button class="btn btn-layered-3d btn-layered-3d--blue" style="width:100%; text-align: center;">WBJS</button></div>
 <div id="userButtonPanelWBJS" class = "userButtonPanelWBJS">
 	<div class ="btn" style="width:100%; text-align: center; font-weight:1000"> 
 	&#10021;
@@ -46,3 +47,8 @@ var htmlAppend = $("html").append(`
 `);
 $("#userButtonPanelWBJS").draggable();
 
+
+document.getElementById('userButtonPanelToggler').addEventListener('click', function() {
+	document.getElementById('userButtonPanelToggler').style.display = 'none';
+	$("#userButtonPanelWBJS").toggle();	
+});
