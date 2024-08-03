@@ -43,7 +43,7 @@ A sqlite DB will be created in the same folder which will contain all the notes 
 
 <img height="200px" src="demo/demo3.gif">
 
-
+6. **View all notes** : Visit http://127.0.0.1:3000/notesViewer to view and search all the notes taken.
 
 ## Support and development
 Checkout the notes posted [here](docs/docs.md) to understand how the webclipper code works. Code, suggestions, and feedback are welcome. 
