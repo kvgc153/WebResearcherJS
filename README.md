@@ -4,9 +4,9 @@ Actively engage with webpages by annotating with WBJS sticky notes.
 
 
 ## Getting Started
-- **Webclipper**: Download the webclipper from the add-on page ([https://addons.mozilla.org/en-US/firefox/addon/webresearcherjs/](https://addons.mozilla.org/en-US/firefox/addon/webresearcherjs/)). 
+- **WBJS Sticky Notes**: Download the WBJS Sticky Notes Firefox extension from the add-on page ([https://addons.mozilla.org/en-US/firefox/addon/webresearcherjs/](https://addons.mozilla.org/en-US/firefox/addon/webresearcherjs/)). 
 
-- **Local server**: All the notes taken on the browser using the webclipper will be saved to the server running locally. Requires node and npm.
+- **Local server**: All the notes taken on the browser using the extension will be saved to a server running locally. Requires node and npm.
 
 ```shell 
 git clone https://github.com/kvgc153/WebResearcherJS-extension.git
