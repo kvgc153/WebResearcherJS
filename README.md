@@ -41,7 +41,7 @@ A sqlite DB will be created in the same folder which will contain all the notes 
 
 5. **Saving notes**: Save notes to server by pressing the save button. The notes will be automatically displayed the next time you visit the page.
 
-<img height="200px" src="demo/demo3.gif">
+<img width="100%" src="demo/demo3.gif">
 
 6. **View all notes** : Visit http://127.0.0.1:3000/notesViewer to view and search all the notes taken.
 
