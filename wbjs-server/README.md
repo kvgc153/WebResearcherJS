@@ -60,7 +60,7 @@ fetch(`http://127.0.0.1:3000/search`,
 
 ```
 
-- /data -- Used to make new notes. Note that the datapacket needs to the format specified below for it be saved to the database. Caution: Make sure your keys are unique. The server does not enforce this by default.
+- /data -- Used to make new notes. Caution: Make sure your keys are unique. The server does not enforce this by default.
 
 ```javascript
 let dataToSave ={}
