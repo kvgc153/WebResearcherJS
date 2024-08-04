@@ -3,8 +3,16 @@
 
 async function serverExport(notify=false){
   if(note_count>1){
+    document.getElementById('notesOnPage').innerHTML  = "<h5>Note List</h5>"; 
     // save all the notes created so far
     for(i=1;i<note_count;i++){
+        // Add the note to the userButtonPanelWBJS
+        var aFoo = document.createElement('a');
+        aFoo.href = "#tooltip"+i;
+        aFoo.innerHTML = 'Note '+i+'<br>';
+
+        document.getElementById('notesOnPage').innerHTML += aFoo.outerHTML;
+
         // console.log("tooltip"+i);
         let notestyleEl = document.getElementById("tooltip"+i).style;
         let notestyleProps = {
@@ -42,8 +50,15 @@ async function serverExport(notify=false){
         })
     }
 
-    console.log("User asked to export notes to Joplin.");
+    console.log("ping.");
   }
 }
 
 var intervalSave = setInterval(serverExport, 10000);
+
+
+document.getElementById('userButtonPanelToggler').addEventListener('click', function() {
+	document.getElementById('userButtonPanelToggler').style.display = 'none';
+	$("#userButtonPanelWBJS").toggle();	
+  serverExport();
+});
