@@ -3,7 +3,9 @@ const sqlite3 = require('sqlite3').verbose();
 const path = require('path');
 const fs = require('fs');
 const app = express();
+var cors = require('cors')
 
+app.use(cors({credentials: true, origin: true}))
 app.use(express.static("ext_libs/"));
 app.use('/notes', express.static('notes'))
 app.use(express.json({ limit: '200mb' }));
@@ -121,6 +123,7 @@ app.post('/data', (req, res) => {
 
 
 // Blank canvas for user to take notes 
+
 app.get('/canvas', (req, res) => {
   const uniqueId = Date.now();
   const fileName = `page_${uniqueId}.html`;
