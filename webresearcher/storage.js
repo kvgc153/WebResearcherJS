@@ -58,6 +58,12 @@ function displayNotes(parsedJSON){
 
   for(k=0;k<foo_loaded_keys.length;k++){
     console.info("WBJS: Adding locally stored notes.");
+
+    if(k==0){
+      // if there are notes, show the userButtonPanelWBJS
+      document.getElementById('userButtonPanelToggler').style.display = 'none';
+      $("#userButtonPanelWBJS").toggle();	
+    }
     
     var newNode1 = document.createElement("div");
     newNode1.classList.add("ui-widget-content");
