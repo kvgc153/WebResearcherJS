@@ -1,29 +1,54 @@
 .userButtonPanelWBJS {
-  left: 90%; 
-  bottom: 50%; 
+  left: 92%; 
+  bottom: 65%; 
   height: 7%; 
   position: fixed; 
-  width: 10%; 
+  width: 7%; 
   z-index:100;
-  font-size: 16px;
+  font-size: 14px;
+  display: none;
   
 }
 
+.userButtonPanelWBJSToggler {
+  left: 95%; 
+  bottom: 50%; 
+  height: 7%; 
+  position: fixed; 
+  width: 5%; 
+  z-index:100;
+  font-size: 14px;
+}
+
 .WBJSNote {
-  height: 200px; 
+  position: absolute;
+  border: 2px solid #ddd;
+  height: 200px;
   width: 350px;
   border: none;
-  color: black;  
-  padding-right: 75px; 
-  padding-left: 25px;
-  padding-top: 25px;
-  padding-bottom: 25px; 
-  text-align: enter;
-  text-decoration: none;  
-  display: inline-block; 
-  overflow:auto;
-  resize:both;
+  color: black;
+  padding: 25px 75px 25px 25px;
+  text-decoration: none;
+  display: inline-block;
+  overflow: auto;
+  resize: both;
+  box-sizing: border-box; /* To include padding and border in element's total width and height */
+
+  /* Added properties for a fancy look */
+  background-color: #f9f9f9;
+  box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+  font-family: 'Arial', sans-serif;
+  line-height: 1.6;
+  transition: all 0.05s ease; /* Increased transition duration for smoother effect */
 }
+
+.WBJSNote:hover {
+  height:350px;
+  background-color: #e9e9e9;
+  box-shadow: 0px 12px 20px 0px rgba(0,0,0,0.3);
+  transform: scale(1.5);
+}
+
 
 
 .buttonWBJS {
@@ -162,57 +187,47 @@
   background: rgb(148, 189, 255);
   box-shadow: rgb(61, 135, 255) 0px 0px 0px 2px, rgb(214, 230, 255) 0px 0.625em 0px 0px;
 } 
-/* From BootstrapJS */
-/* .btn {
-  display: inline-block;
-  font-weight: 400;
+
+
+/* TOC Container */
+.toc {
+  background-color: #f9f9f9;
+  border: 1px solid #ddd;
+  padding: 20px;
+  margin: 20px 0;
+  border-radius: 8px;
+  font-family: 'Arial', sans-serif;
   text-align: center;
-  white-space: nowrap;
-  vertical-align: middle;
-  -webkit-user-select: none;
-  -moz-user-select: none;
-  -ms-user-select: none;
-  user-select: none;
-  border: 1px solid transparent;
-  padding: 0.375rem 0.75rem;
-  font-size: 1rem;
-  line-height: 1.5;
-  border-radius: 0.25rem;
-  transition: color 0.15s ease-in-out, background-color 0.15s ease-in-out, border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
 }
 
-.btn-primary {
-  color: #fff;
-  background-color: #007bff;
-  border-color: #007bff;
+/* TOC Header */
+.toc h2 {
+  font-size: 1.5em;
+  margin-bottom: 10px;
+  color: #333;
 }
 
-.btn-lg, .btn-group-lg > .btn {
-  padding: 0.5rem 1rem;
-  font-size: 1.25rem;
-  line-height: 1.5;
-  border-radius: 0.3rem;
+/* TOC List */
+.toc ul {
+  list-style: none;
+  padding: 0;
 }
 
-.badge {
-  display: inline-block;
-  padding: 0.25em 0.4em;
-  font-size: 75%;
-  font-weight: 700;
-  line-height: 1;
-  text-align: center;
-  white-space: nowrap;
-  vertical-align: baseline;
-  border-radius: 0.25rem;
+/* TOC List Items */
+.toc ul li {
+  margin: 10px 0;
 }
 
-/* jQuery-sidebar css */
-
-/* .sidebar.left {
-  position: fixed;
-  top: 0;
-  left: 0;
-  bottom: 0;
-  width: 270px;
+/* TOC Links */
+.toc ul li a {
+  text-decoration: none;
+  color: #007bff;
+  font-size: 1em;
+  transition: color 0.3s ease;
 }
- */
+
+/* TOC Links Hover Effect */
+.toc ul li a:hover {
+  color: #0056b3;
+  text-decoration: underline;
+}

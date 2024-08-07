@@ -1,6 +1,52 @@
 // Check if there are any notes already in localstorage and if so load them up
 $.notify("WBJS is initializing.", "info",{autoHideDelay: 30000});
 
+
+/// save Notes to localStorage when user clicks "save notes button" ///
+function saveAllNotesWBJS(notify=true){
+  // pack results into a dictionary
+  let foo_final ={}
+  foo_final['HTML'] = WBJS_HTML;
+  foo_final['JSON'] = WBJS_JSON;
+  foo_final['CSS']  = WBJS_CSS;
+  foo_final['TAGS'] = document.getElementById('tagsWBJS').value;
+  foo_final['TITLE'] = document.title || "";
+  foo_final['URL'] = window.location.href;
+  
+
+  console.info("user asked to save data");
+  if(notify){
+    $.notify('Added notes to DB', "success");
+  }
+ // create note in localserver
+ if(note_count>1 || foo_final['TAGS'] != ""){
+  var dataPacket = {};
+  dataPacket[webPageUrl] = JSON.stringify(foo_final);
+  fetch(postServer,
+  {
+      body: JSON.stringify(dataPacket),
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },          
+  }
+  );
+}
+}
+document.getElementById('saveNotesWBJS').addEventListener('click', saveAllNotesWBJS);
+
+var intervalServer = setInterval(function() {
+  saveAllNotesWBJS(notify=false);
+}, 10000);
+
+
+
+
+
+
+
+
+
 function displayNotes(parsedJSON){
   var foo_loaded       = parsedJSON;
   // set tags
@@ -91,11 +137,9 @@ function displayNotes(parsedJSON){
 
           }
         },
-      //   onChange: (api, event) => {
-      //     console.log('Now I know that Editor\'s content changed!', event)
-      //     saved();
-      // }
-        // readOnly: true, // for now dont allow users to edit the previous imported notes.. Needd some fixes before that..
+        onChange: (api, event) => {
+          // serverExport(notify=false);
+      }
 
       });
     $('#'+"tooltip"+note_count).mousedown(handle_mousedown); // move popper
@@ -105,34 +149,22 @@ function displayNotes(parsedJSON){
 }
 
 
-// grab notes from Joplin
-async function fetchJson(url) {
-
-  // fetch(url)
-  // .then(results => results.json())
-  // .then(resultsJSON => {
-  //   if(resultsJSON.items.length == 1){
-  //     var joplinDiv = document.createElement('div');
-  //     joplinDiv.innerHTML = resultsJSON.items[0].body;
-  //     var joplinMetaData = joplinDiv.querySelector("#metadata_wbjs").outerText;
-  //     var joplinMetaDataParsed = JSON.parse(atob(joplinMetaData));
-  //     displayNotes(joplinMetaDataParsed);
-  //   }
-  // })
-  console.log(url);
-
-  var results = await fetch(url);
-  var resultsJSON = await results.json();
-  if(resultsJSON.items.length == 1){
-    // console.log(resultsJSON.items[0].body);
-    var joplinDiv = document.createElement('div');
-    joplinDiv.innerHTML = resultsJSON.items[0].body;
-    var joplinMetaData = joplinDiv.querySelector("#metadata_wbjs").outerText;
-    var joplinMetaDataParsed = JSON.parse(atob(joplinMetaData));
-
-    // console.log(joplinMetaDataParsed);
-    displayNotes(joplinMetaDataParsed);
- }
+var foo_loaded = {};
+var dataPacket = {};
+dataPacket['key'] = webPageUrl;
+fetch(fetchServer,
+{
+    body: JSON.stringify(dataPacket),
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },          
 }
-
-fetchJson(`http://localhost:${joplinPort}/search?token=` + joplinToken + "&query=" + pageTitle + "&fields=id,title,body");
+).then((results) => {
+  results.json().then((data) => {
+    console.log(data);
+    foo_loaded = JSON.parse(data.value);
+    displayNotes(foo_loaded);
+  }
+)
+});

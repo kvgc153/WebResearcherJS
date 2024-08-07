@@ -8,11 +8,19 @@ webPageUrl = webPageUrl.split("#")[0];
 var webHash = window.location.hash;
 var url_window = window.location.href;
 var pageTitle = document.title;
+pageTitle = pageTitle.replace(/\|/g, "");
 
 // controls the specs of the notes
-var defaultNoteColor = "#ffffcc";
+var defaultNoteColor = "#E6E6FA";
 var defaultFont= "13px";
-var defaultOpacity = "80%";
+var defaultOpacity = "95%";
+
+// Server variables
+var serverHost  = "http://127.0.0.1:3000";
+// var serverHost  = "http://webresearcher.xyz:3000";
+
+var fetchServer = serverHost + "/getData";
+var postServer  = serverHost + `/data`;
 
 // variables used to store the notes and noteobjects 
 var editorJSObjs = {};
@@ -22,58 +30,29 @@ var WBJS_JSON = {};
 
 // Add Buttons to the page for control
 var htmlAppend = $("html").append(`
-<div id="userButtonPanelWBJS" class = "userButtonPanelWBJS">
-	<div class ="btn" style="width:100%; text-align: center; font-weight:1000"> 
-	&#10021;
-	<input type="text" id="tagsWBJS" style="width:100%;font-family: inherit; font-size:15px; height:25px; " placeholder="Enter Tags: Comma-separated"><br>
-    
-	</div>
-	<div>
-	<button class="btn btn-layered-3d btn-layered-3d--blue" style="width:100%; text-align: center;" id="makeNoteButton">Make Note </button><br>
-	<button class="btn btn-layered-3d btn-layered-3d--purple" style="width:100%; text-align: center;" id='exportNotesJoplin'>Joplin </button><br>
-	</div>
-</div> 
+<div id="userButtonPanelToggler" class="userButtonPanelWBJSToggler">
+    <button class="btn btn-layered-3d btn-layered-3d--blue" style="width:100%; text-align: center;">WBJS</button>
+</div>
+
+<div id="userButtonPanelWBJS" class="userButtonPanelWBJS">
+    <div class="btn" style="width:100%; text-align: center; font-weight:1000"> 
+        <div id="panelMover" style="cursor:grab">&#10021;</div>
+        <div id="tagsList">
+            <input type="text" id="tagsWBJS" style="width:90%;font-family: inherit; font-size:15px; height:25px;" placeholder="Enter Tags: Comma-separated">
+            <br>
+            <div id="showTags"></div>
+        </div>
+    </div>
+	<div id = "notesOnPage" class="toc">
+
+	</div>	
+    <div>
+        <button class="btn btn-layered-3d btn-layered-3d--blue" style="width:100%; text-align: center;" id="makeNoteButton">Make Note</button>
+        <br>
+        <button class="btn btn-layered-3d btn-layered-3d--purple" style="width:100%; text-align: center;" id='saveNotesWBJS'>Save</button>
+        <br>
+    </div>
+
+</div>
 `);
 $("#userButtonPanelWBJS").draggable();
-
-
-// Find Joplin port 
-async function findPort() {
-    let port = null;
-
-    for (let portToTest = 41184; portToTest <= 41194; portToTest++) {
-        const result = await pingPort(portToTest); // Call GET /ping
-        if (result === 'JoplinClipperServer') {
-            port = portToTest; // Found the port
-            break;
-        }
-    }
-
-    return port;
-}
-
-async function pingPort(port) {
-    try {
-        const response = await fetch(`http://localhost:${port}/ping`);
-        if (!response.ok) {
-            throw new Error(`Error pinging port ${port}: ${response.statusText}`);
-        }
-        const text = await response.text();
-        return text;
-    } catch (error) {
-        console.error(error);
-        return null;
-    }
-}
-// Code to get the joplin port -- takes a while to run
-// findPort().then(port => {
-//     if (port !== null) {
-// 		joplinPort = port;
-//         console.log(`Found Joplin Clipper Server on port ${port}`);
-//     } else {
-//         console.log('Joplin Clipper Server not found on any tested port');
-//     }
-// });
-
-var joplinPort = 41184;
-

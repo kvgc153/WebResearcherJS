@@ -1,6 +1,10 @@
-console.log("inside background.js");
 
-var joplinToken = '';
+function handleClick() {
+  chrome.tabs.create({url: 'options.html'});
+}
+
+chrome.action.onClicked.addListener(handleClick);
+
 
 
 chrome.contextMenus.create({
@@ -8,12 +12,6 @@ chrome.contextMenus.create({
   title: "Start WebResearcherJS",
   contexts: ["all"]
 });
-
-function handleClick() {
-  chrome.tabs.create({url: 'options.html'});
-}
-
-chrome.action.onClicked.addListener(handleClick);
 
 
 
@@ -33,10 +31,9 @@ var jsFiles = [
   "ext_libs/jquery.sidebar.min.js",
   "webresearcher/init.js",
   "webresearcher/handleMouseEvents.js",
-  "webresearcher/loadLocalStorage.js",
-  "webresearcher/saveLocalStorage.js",
   "webresearcher/export.js",
-  "webresearcher/webresearcher.js"
+  "webresearcher/storage.js",
+  "webresearcher/webresearcher.js",
 ];
 
 var cssFiles = [
@@ -73,29 +70,9 @@ async function loadEditor(tab) {
     target: {tabId: tab.id},
     files: [jsFiles[2]]
   });
-  loadJoplinToken(tab);
-}
-
-async function loadJoplinToken(tab) {
-  // let {joplinToken} = await chrome.storage.sync.get('joplinToken');
-  // let foo_res = JSON.parse(joplinToken);
-  // var joplinToken = foo_res;
-  // console.log(foo_res);
-  
-  // Define a function that sets the joplinToken variable
-  function setJoplinToken() {
-    // var joplinToken = foo_res;
-    // o nothing 
-  }
-
-  // Execute the function
-  await chrome.scripting.executeScript({
-    target: {tabId: tab.id},
-    function: setJoplinToken
-  });
-
   loadOtherModules(tab);
 }
+
 
 
 async function loadOtherModules(tab) {
@@ -113,32 +90,11 @@ async function loadOtherModules(tab) {
   }
 }
 
-// chrome.runtime.onMessage.addListener(async (request, sender) => {
 
-
-//   console.log("Message from the content script: " + request.greeting);
-//   console.log(joplinToken);
-  
-//   loadJQuery(sender.tab);
-
-//   // Return a Promise that resolves to the response
-//   return {response: joplinToken};
-// });
 
 chrome.runtime.onMessage.addListener(
   function(request, sender, sendResponse) {
-    function getJoplinToken() {
-      return chrome.storage.sync.get('joplinToken').then((x) => {
-        console.log(x);
-        let foo_res = JSON.parse(x.joplinToken);
-        return foo_res;
-      });
-    }
-    getJoplinToken().then((token) => {
-      joplinToken = token;
-      console.log(joplinToken);
-    });
-    sendResponse({response: joplinToken});
+    sendResponse({response: "starting WBJS"});
     loadJQuery(sender.tab);
   }
 );
