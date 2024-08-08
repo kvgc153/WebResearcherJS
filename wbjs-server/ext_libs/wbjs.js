@@ -65,7 +65,7 @@ function displayNotes(data){
                 });
             var editedTime = new Date(edjsData['JSON'][foo_loaded_keys[j]]['time']).toString();
 
-            titleInput.innerHTML = "<a href='" + 'https://' + allDataKeys[i] + "#tooltip"  + titleCount + "'>" +   edjsData['TITLE'] +  " &#128279;" + "</a><br>" + tagsDiv + "<br><i class='lastModified'>Last edited on:"+ editedTime  + "</i>";
+            titleInput.innerHTML = "<a href='" + 'http://' + allDataKeys[i] + "#tooltip"  + titleCount + "'>" +   edjsData['TITLE'] +  " &#128279;" + "</a><br>" + tagsDiv + "<br><i class='lastModified'>Last edited on:"+ editedTime  + "</i>";
 
             noteDiv.appendChild(titleInput);
 
