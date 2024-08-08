@@ -1,11 +1,11 @@
 {
     "manifest_version": 3,
     "name": "WebResearcherJS",
-    "version": "6.0.2",
+    "version": "6.0.3",
     "description": "https://github.com/kvgc153/WebResearcherJS-extension",
 
     "permissions": [
-        "activeTab", "tabs", "storage","contextMenus","scripting"
+        "activeTab", "contextMenus","scripting"
     ],
     "host_permissions": ["https://*/*","http://*/*"],
     "action": {
