@@ -1,0 +1,231 @@
+.userButtonPanelWBJS {
+  left: 92%; 
+  bottom: 65%; 
+  height: 7%; 
+  position: fixed; 
+  width: 7%; 
+  z-index:100;
+  font-size: 14px;
+  display: none;
+  
+}
+
+.userButtonPanelWBJSToggler {
+  left: 95%; 
+  bottom: 50%; 
+  height: 7%; 
+  position: fixed; 
+  width: 5%; 
+  z-index:100;
+  font-size: 14px;
+}
+
+.WBJSNote {
+  position: absolute;
+  border: 2px solid #ddd;
+  height: 200px;
+  width: 350px;
+  border: none;
+  color: black;
+  padding: 25px 75px 25px 25px;
+  text-decoration: none;
+  display: inline-block;
+  overflow: auto;
+  resize: both;
+  box-sizing: border-box; /* To include padding and border in element's total width and height */
+
+  /* Added properties for a fancy look */
+  background-color: #f9f9f9;
+  box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+  font-family: 'Arial', sans-serif;
+  line-height: 1.6;
+  transition: all 0.05s ease; /* Increased transition duration for smoother effect */
+}
+
+.WBJSNote:hover {
+  box-shadow: 0px 12px 20px 0px rgba(0,0,0,0.3);
+  transform: scale(1.5);
+}
+
+
+
+.buttonWBJS {
+  background-color: #04AA6D;
+  border: none;
+  color: white;
+  padding: 20px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 16px;
+  margin: 4px 2px;
+  border-radius:60%;
+}
+
+
+/* colors used for highlighting */
+.color1 {
+  padding: 0;
+  background-color:#96ceb4;
+  opacity:80%;
+}
+
+.color2 {
+  padding: 0;
+  background-color:#ffeead;
+  opacity:80%;
+}
+
+.color3 {
+  padding: 0;
+  background-color:#ffcc5c;
+  opacity:80%;
+}
+
+.color4 {
+  padding: 0;
+  background-color:#ff6f69;
+  opacity:80%;
+}
+
+.color5 {
+  padding: 0;
+  background-color:#b8a9c9;
+  opacity:80%;
+}
+
+.color6 {
+  padding: 0;
+  background-color:#b7d7e8;
+  opacity:80%;
+}
+
+.color7 {
+  padding: 0;
+  background-color:#bccad6;
+  opacity:80%;
+}
+
+.color8 {
+  padding: 0;
+  background-color:#ddeedd;
+  opacity:80%;
+}
+
+/* css from https://enjeck.com/btns/ */
+.btn {
+  font-family: Arial, Helvetica, sans-serif;
+  text-transform: uppercase;
+} 
+ 
+.btn:hover .btn-slide-show-text1 {
+  margin-left: 65px;
+} 
+ 
+.btn-layered-3d > ::before {
+  box-sizing: border-box;
+} 
+ 
+.btn-layered-3d {
+  width: 180px;
+  position: relative;
+  display: inline-block;
+  cursor: pointer;
+  outline: none;
+  border: 0px none;
+  vertical-align: middle;
+  text-decoration: none;
+  font-size: inherit;
+  font-family: inherit;
+  font-weight: 600;
+  text-transform: uppercase;
+  padding: 1.15em 2em;
+  border-radius: 0.75em;
+  transform-style: preserve-3d;
+  transition: transform 0.15s ease-out 0s, background 0.15s ease-out 0s;
+} 
+ 
+.btn-layered-3d::before {
+  position: absolute;
+  content: "";
+  width: 100%;
+  height: 100%;
+  inset: 0px;
+  border-radius: inherit;
+  transform: translate3d(0px, 0.75em, -1em);
+  transition: transform 0.15s ease-out 0s, box-shadow 0.15s ease-out 0s;
+} 
+ 
+.btn-layered-3d:hover {
+  transform: translateY(0.25em);
+} 
+ 
+.btn-layered-3d:hover::before {
+  transform: translate3d(0px, 0.5em, -1em);
+} 
+ 
+.btn-layered-3d--purple {
+  color: rgb(62, 53, 141);
+  background: rgb(213, 211, 238);
+  border: 2px solid rgb(62, 53, 141);
+} 
+ 
+.btn-layered-3d--purple::before {
+  background: rgb(144, 137, 210);
+  box-shadow: rgb(62, 53, 141) 0px 0px 0px 2px, rgb(213, 211, 238) 0px 0.625em 0px 0px;
+} 
+
+.btn-layered-3d--blue {
+  color: rgb(61, 135, 255);
+  background: rgb(214, 230, 255);
+  border: 2px solid rgb(61, 135, 255);
+} 
+ 
+.btn-layered-3d--blue::before {
+  background: rgb(148, 189, 255);
+  box-shadow: rgb(61, 135, 255) 0px 0px 0px 2px, rgb(214, 230, 255) 0px 0.625em 0px 0px;
+} 
+
+
+/* TOC Container */
+.toc {
+  background-color: #f9f9f9;
+  border: 1px solid #ddd;
+  padding: 20px;
+  margin: 20px 0;
+  border-radius: 8px;
+  font-family: 'Arial', sans-serif;
+  text-align: center;
+}
+
+/* TOC Header */
+.toc h2 {
+  font-size: 1.5em;
+  margin-bottom: 10px;
+  color: #333;
+}
+
+/* TOC List */
+.toc ul {
+  list-style: none;
+  padding: 0;
+}
+
+/* TOC List Items */
+.toc ul li {
+  margin: 10px 0;
+}
+
+/* TOC Links */
+.toc ul li a {
+  text-decoration: none;
+  color: #007bff;
+  font-size: 1em;
+  transition: color 0.3s ease;
+}
+
+/* TOC Links Hover Effect */
+.toc ul li a:hover {
+  color: #0056b3;
+  text-decoration: underline;
+}

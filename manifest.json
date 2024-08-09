@@ -1,0 +1,31 @@
+{
+	"manifest_version": 2,
+	"name": "WebResearcherJS",
+	"version": "7.0.0",
+	"description": "https://github.com/kvgc153/WebResearcherJS-extension",
+
+	"permissions": [
+		"<all_urls>", "activeTab", "tabs","contextMenus"
+	],
+
+	"browser_action": {
+		"default_title": "WebResearcherJS",
+		"browser_style": true
+	},
+
+	"applications": {
+		"gecko": {
+			"id": "webresearcher@webresearcher.io"
+		}
+	},
+	"background": {
+	"scripts": ["webresearcher/background.js"]
+},
+"content_scripts": [
+  {
+    "matches": ["*://*/*"],
+    "js": ["webresearcher/contentScript.js"],
+	"run_at":"document_start"
+  }
+]
+}
