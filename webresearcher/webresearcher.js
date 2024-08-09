@@ -18,7 +18,7 @@ class WBJS{
     var wrapperNode = document.createElement("div");
     wrapperNode.classList.add("ui-widget-content");
     wrapperNode.setAttribute("style", "display: inline-block;overflow:auto;");
-    wrapperNode.innerHTML= `<div id="tooltip${this.noteID}"> <div style='display: inline-block;padding:25px;cursor:grab;width:100%;' id="mover${this.noteID}" ></div></div>`;
+    wrapperNode.innerHTML= `<div id="tooltip${this.noteID}"> <div style='display: inline-block;padding:15px;cursor:grab;width:100%;text-align:center' id="mover${this.noteID}" ><h2>${"Note: "+note_count}</h2></div></div>`;
 
     document.body.appendChild(wrapperNode)
 

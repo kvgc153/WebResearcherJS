@@ -81,8 +81,7 @@ function displayNotes(parsedJSON){
     /// Make div for note
     newNode1.innerHTML= `
       <div id=`+"tooltip" + note_count + ` class="WBJSNote"> 
-      <div style='display: inline-block;padding:25px;cursor:grab;width:100%;' id=`+"mover" + note_count +  `></div>
-      
+      <div style='display: inline-block;padding:15px;cursor:grab;width:100%;text-align:center' id=`+"mover" + note_count +  `><h2>${"Note: "+note_count}</h2></div>
       </div>
       `;
     let notestyleProps = foo_loaded['CSS'][foo_loaded_keys[k]];
