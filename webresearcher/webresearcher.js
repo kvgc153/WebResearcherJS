@@ -18,7 +18,7 @@ class WBJS{
     var wrapperNode = document.createElement("div");
     wrapperNode.classList.add("ui-widget-content");
     wrapperNode.setAttribute("style", "display: inline-block;overflow:auto;");
-    wrapperNode.innerHTML= `<div id="tooltip${this.noteID}"></div>`;
+    wrapperNode.innerHTML= `<div id="tooltip${this.noteID}"> <div style='display: inline-block;padding:25px;cursor:grab;width:100%;' id="mover${this.noteID}" ></div></div>`;
 
     document.body.appendChild(wrapperNode)
 
@@ -88,7 +88,7 @@ class WBJS{
         ],
     });
 
-    $('#'+"tooltip"+this.noteID).mousedown(handle_mousedown); // move popper
+    $('#'+"mover"+note_count).mousedown(handle_mousedown); // move popper
 
   }
 
