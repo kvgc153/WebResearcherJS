@@ -1,0 +1,26 @@
+{
+    "manifest_version": 3,
+    "name": "WebResearcherJS",
+    "version": "6.0.3",
+    "description": "https://github.com/kvgc153/WebResearcherJS-extension",
+
+    "permissions": [
+        "activeTab", "contextMenus","scripting"
+    ],
+    "host_permissions": ["https://*/*","http://*/*"],
+    "action": {
+        "default_title": "WebResearcherJS"
+    },
+
+    "background": {
+        "service_worker": "webresearcher/background.js"
+    },
+
+    "content_scripts": [
+        {
+            "matches": ["<all_urls>"],
+            "js": ["webresearcher/contentScript.js"],
+            "run_at":"document_start"
+        }
+    ]
+}
