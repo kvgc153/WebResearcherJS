@@ -60,6 +60,30 @@ fetch(`http://127.0.0.1:3000/search`,
 
 ```
 
+- /searchWBJS -- this search endpoint searches the database but returns the output in a format compatible with link-autocomplete tool. 
+
+
+
+It returns the URL in which the search term occurs along with the title of the webpage in the following format:
+
+```javascript 
+{
+  "success": true,
+  "items": [
+    {
+      "href": "URL1",
+      "name": "URL1 - TITLE",
+    },
+    {
+      "href": "URL1",
+      "name": "URL2-TITLE",
+    }
+  ]
+}
+
+```
+
+
 - /data -- Used to make new notes. Caution: Make sure your keys are unique. The server does not enforce this by default.
 
 ```javascript
