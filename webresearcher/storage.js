@@ -133,6 +133,13 @@ function displayNotes(parsedJSON){
             shortcut: 'CMD+SHIFT+O'
           },
           code: CodeTool,
+          link: {
+            class: LinkAutocomplete,
+            config: {
+              endpoint: 'http://127.0.0.1:3000/searchWBJS',
+              queryParam: 'search'
+            }
+          }          
           },
         data:  foo_loaded['JSON'][foo_loaded_keys[k]],
         onReady: () =>{
