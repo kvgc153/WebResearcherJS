@@ -91,6 +91,40 @@ app.post('/search', (req, res) => {
 });
 
 
+//End point for EDJS search
+app.get('/searchWBJS', (req, res) => {
+  const searchString = req.query.search
+  let key = "%" + searchString + "%";
+  console.log("user from WBJS asked to search for : "+key);
+
+  let sql = `SELECT * FROM MyTable WHERE value LIKE ?`;
+
+  db.all(sql, [key], (err, rows) => {
+    if (err) {
+      throw err;
+    }
+
+    let itemsPacked = [];
+    rows.forEach((row, index) => {
+      let resultFoo = {};
+      resultFoo["href"] = "http://" + row['key'];
+      let val  = JSON.parse(row['value']);
+      console.log(val);
+      resultFoo["name"] = val['TITLE'];
+
+      itemsPacked.push(resultFoo);
+
+    });
+    const result = {
+      success: true,
+      items: itemsPacked
+    };
+
+    console.log(result);
+    res.setHeader('Content-Type', 'application/json');
+    res.json(result);
+  });
+});
 
 // Endpoint to add data to database
 app.post('/data', (req, res) => {

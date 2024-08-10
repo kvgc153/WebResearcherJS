@@ -27,6 +27,7 @@ var jsFiles = [
   "ext_libs/popper.js",
   "ext_libs/notify.min.js",
   "ext_libs/jquery.sidebar.min.js",
+  "ext_libs/link-autocomplete.js",
   "webresearcher/init.js",
   "webresearcher/handleMouseEvents.js",
   "webresearcher/export.js",

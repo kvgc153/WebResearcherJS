@@ -34,16 +34,20 @@ A sqlite DB will be created in the same folder which will contain all the notes 
 
 3. **Delete Note:** Right-click on the note, then select 'Delete' from the menu to remove it.
 
-4. **Add tags:** Add relevant tags to your note for easy organization.
-   
-   
+4. **Add tags:** Add relevant tags to your note for easy organization.   
 <img height="200px" src="demo/demo2.gif">
 
-5. **Saving notes**: Save notes to server by pressing the save button. The notes will be automatically displayed the next time you visit the page.
+5. **Search and link to your existing notes inline**:
+   
+<img height="400px" src="demo/demo4.gif">
+
+
+
+6. **Saving notes**: Save notes to server by pressing the save button. The notes will be automatically displayed the next time you visit the page.
 
 <img width="100%" src="demo/demo3.gif">
 
-6. **View all notes** : Visit http://127.0.0.1:3000/notesViewer to view and search all the notes taken.
+7. **View all notes** : Visit http://127.0.0.1:3000/notesViewer to view and search all the notes taken.
 
 ## Support and development
 Checkout the notes posted [here](docs/docs.md) to understand how the webclipper code works. Code, suggestions, and feedback are welcome. 

@@ -64,6 +64,13 @@ class WBJS{
           shortcut: 'CMD+SHIFT+O'
         },
         code: CodeTool,
+        link: {
+          class: LinkAutocomplete,
+          config: {
+            endpoint: 'http://127.0.0.1:3000/searchWBJS',
+            queryParam: 'search'
+          }
+        }
         },
       onChange: (api, event) => {
         // serverExport(notify=false);
