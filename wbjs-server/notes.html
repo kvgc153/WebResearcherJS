@@ -11,8 +11,9 @@
   
         .note-content {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
-            grid-gap: 1em;
+            grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
+            grid-gap: 0.3em;
+            row-gap: 0.3em;
         }
 
         .note-display {
@@ -27,14 +28,14 @@
             border-radius: 5px;
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
             padding: 20px;
-            height:400px;
+            height:500px;
             overflow-y:scroll;
             background-color: #fff;
             transition: box-shadow 0.3s ease;
         }
         .note:hover {
             box-shadow: 0 0 10px rgba(0, 0, 0, 1);
-            cursor: pointer;
+            /* cursor: pointer; */
             /* transform: scale(1.2,1.2); */
             /* z-index: 100; */
         }
@@ -95,6 +96,24 @@
             box-shadow: 0 1px 6px 0 rgba(32,33,36,0.28);
         }
 
+        .display-div {
+            position: fixed;
+            font-size: larger;
+            top: 0;
+            left: 0;
+            height: 10000px;
+            width: 100%;
+            z-index: 99;
+            background-color: #f4f4f4;
+            display: none;
+            border: 2px solid #ccc;
+            padding: 20px;
+            margin: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            transition: backdrop-filter 0.3s ease;
+        }
+
+
     </style>
 </head>
 <body>
@@ -105,7 +124,7 @@
         <button id ="searchBtn"> Search </button>
     </div> 
   </h2>
-  <div id="display" style="position: fixed; font-size: larger ; text-align: center; top: 0; left: 0; height: 10000px; width: 100%; z-index: 99;background-color: #f4f4f4; display: none;"></div>
+  <div id="display" class="display-div"> </div>
   <div id="note-container"></div>
   <script type="text/javascript" src= "jquery.min.js"></script>
   <script type="text/javascript" src= "jquery.sidebar.min.js"></script>

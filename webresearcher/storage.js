@@ -41,12 +41,6 @@ var intervalServer = setInterval(function() {
 
 
 
-
-
-
-
-
-
 function displayNotes(parsedJSON){
   var foo_loaded       = parsedJSON;
   // set tags
