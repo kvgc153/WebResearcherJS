@@ -50,6 +50,21 @@ A sqlite DB will be created in the same folder which will contain all the notes 
 7. **View all notes** : Visit http://127.0.0.1:3000/notesViewer to view and search all the notes taken.
 
 ## Support and development
-Checkout the notes posted [here](docs/docs.md) to understand how the webclipper code works. Code, suggestions, and feedback are welcome. 
+Checkout the notes posted [here](docs/docs.md) to understand how the extension code works and the notes posted [here](wbjs-server/README.md) to understand the server side implementation. Code, suggestions, and feedback are always welcome. 
 
+The best way to support this project is by contributing to it if at all possible :). 
 
+## Inspiration
+
+WBJS has been inspired by the following note taking projects:
+
+- [TiddlyWiki](https://tiddlywiki.com/)
+- [Joplin](https://joplinapp.org/)
+- [Logseq](https://github.com/logseq/logseq)
+- [Promnesia](https://github.com/karlicoss/promnesia)
+
+WBJS uses the following packages and is thankful to its developers for its continued maintainence 
+
+- [JQuery](https://jquery.com/)
+- [EditorJS](https://editorjs.io/)
+- [Express.js](https://expressjs.com/)
