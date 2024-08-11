@@ -37,7 +37,7 @@ async function serverExport(notify=false){
         await editorJSObjs[i].save()
         .then((savedData) =>{
             // Convert JSON to html using parser
-            const edjsParser    = edjsHTML();
+            // const edjsParser    = edjsHTML();
             // let html            = edjsParser.parse(savedData);
 
             // Save the JSON, CSS

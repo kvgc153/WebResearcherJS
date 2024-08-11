@@ -47,17 +47,24 @@ function displayNotes(parsedJSON){
   var foo_tags          = foo_loaded['TAGS'] ?? ""; // if tags are not present, set it to empty string
   document.getElementById('tagsWBJS').value = foo_tags;
 
-  var foo_loaded_keys   = Object.keys(foo_loaded['HTML']);
+  var foo_loaded_keys   = Object.keys(foo_loaded['CSS']);
   
 
   for(k=0;k<foo_loaded_keys.length;k++){
     console.info("WBJS: Adding locally stored notes.");
 
     if(k==0){
-      // if there are notes, show the userButtonPanelWBJS
+      // if there are notes, show the userButtonPanelWBJS and add a note list header
       document.getElementById('userButtonPanelToggler').style.display = 'none';
       $("#userButtonPanelWBJS").toggle();	
+      document.getElementById('notesOnPage').innerHTML  = "<h5>Note List</h5>"; 
     }
+    /// Add the note to the userButtonPanelWBJS ///
+    var aFoo = document.createElement('a');
+    aFoo.href = "#tooltip"+note_count;
+    aFoo.innerHTML = 'Note '+note_count+'<br>';
+    document.getElementById('notesOnPage').innerHTML += aFoo.outerHTML;
+    ///////////////////////////////////////////////
     
     var newNode1 = document.createElement("div");
     newNode1.classList.add("ui-widget-content");
