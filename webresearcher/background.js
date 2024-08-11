@@ -17,16 +17,13 @@ var jsFiles = [
   "ext_libs/jquery.min.js",
   "ext_libs/jquery-ui.min.js",
   "ext_libs/editorjs@latest.js",
-  "ext_libs/mark.min.js",
   "ext_libs/header@latest.js",
   "ext_libs/simple-image@latest.js",
   "ext_libs/list@latest.js",
   "ext_libs/code@latest.js",
   "ext_libs/quote@latest.js",
-  "ext_libs/edjsHTML.js",
   "ext_libs/popper.js",
   "ext_libs/notify.min.js",
-  "ext_libs/jquery.sidebar.min.js",
   "ext_libs/link-autocomplete.js",
   "webresearcher/init.js",
   "webresearcher/handleMouseEvents.js",
@@ -84,7 +81,7 @@ function loadOtherModules(tabID){
           });
           executing.then(onExecuted, onError);
   }
-  for(var i=4;i<jsFiles.length;i++){
+  for(var i=3;i<jsFiles.length;i++){
           const executing =  browser.tabs.executeScript(tabID,{
           file: jsFiles[i],
 

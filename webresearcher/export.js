@@ -38,12 +38,13 @@ async function serverExport(notify=false){
         .then((savedData) =>{
             // Convert JSON to html using parser
             const edjsParser    = edjsHTML();
-            let html            = edjsParser.parse(savedData);
+            // let html            = edjsParser.parse(savedData);
 
             // Save the JSON, CSS
             WBJS_JSON[i]    = savedData;
             WBJS_CSS[i]     = notestyleProps;
-            WBJS_HTML[i]    = html.join('');
+            // WBJS_HTML[i]    = html.join('');
+            WBJS_HTML[i]    = '';
 
         }).catch((error) =>{
             console.log(error);
