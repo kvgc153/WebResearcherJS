@@ -34,6 +34,48 @@ app.get('/pdf.html', (req, res) => {
   res.sendFile(__dirname + '/pdf.html');
 });
 
+app.get('/pdfViewer', (req, res) => {
+  // glob pdf files from folder
+  const folderPath = path.join(__dirname, 'notes');
+  fs.readdir(folderPath, (err, files) => {
+      if (err) {
+          console.error('Error reading folder:', err);
+      }
+      const pdfFiles = files.filter(file => file.endsWith('.pdf'));
+
+      // generate html content
+      const htmlContent = `
+      <!DOCTYPE html>
+      <html>
+      <head>
+          <meta charset="UTF-8">
+          <title>Saved PDFs</title>
+          <style>
+              body {
+                  font-family: Arial, sans-serif;
+                  background-color: #f4f4f4;
+                  padding: 20px;
+              }
+              .pdf-link {
+                  display: block;
+                  margin-bottom: 10px;
+              }
+          </style>
+      </head>
+      <body>
+          <h1>Saved PDFs</h1>
+          ${pdfFiles.map(pdfFile => `<a class="pdf-link" href="/pdf.html?pdfUrl=/notes/${pdfFile}" target="_blank">${pdfFile}</a>`).join('')}
+      </body>
+      </html>
+      `;
+      res.send(htmlContent);
+  }
+  );
+});
+
+
+
+
 app.post('/getAll', (req, res) => {
   let sql = `SELECT * FROM MyTable`;
 
