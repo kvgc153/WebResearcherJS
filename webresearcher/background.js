@@ -136,7 +136,11 @@ function handleMessage(request, sender, sendResponse) {
     }
     ).then(()=>{
       return({
-        response: "Saved"
+        response: "saved"
+      })
+    }).catch((error)=>{
+      return({
+        response: "error"
       })
     });
      

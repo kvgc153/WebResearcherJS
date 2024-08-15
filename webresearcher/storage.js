@@ -15,19 +15,26 @@ function saveAllNotesWBJS(notify=true){
   
 
   console.info("user asked to save data");
-  if(notify){
-    $.notify('Added notes to DB', "success");
-  }
  // create note in localserver
  if(note_count>1 || foo_final['TAGS'] != ""){
   
   var dataPacket = {};
   dataPacket[webPageUrl] = JSON.stringify(foo_final);
   
+  function sendNotification(message){
+    if(message.response == "saved"){
+      $.notify('Added notes to DB', "success");
+    }
+    if(message.response == "error"){
+      $.notify('Error adding notes to DB', "error");
+    }
+    
+  }
 
   let saveDB = notifyBackgroundPage(
     greeting="save",
-    data = dataPacket
+    data = dataPacket,
+    respond = sendNotification
   );
 
 
