@@ -13,6 +13,7 @@
     <iframe id="pdfFrame"></iframe>
 
     <script>
+
         function getParameterByName(name, url) {
             if (!url) url = window.location.href;
             name = name.replace(/[\[\]]/g, '\\$&');
@@ -25,6 +26,7 @@
 
         var pdfUrl = getParameterByName('pdfUrl');
         if (pdfUrl) {
+            
             document.getElementById('pdfFrame').src = pdfUrl;
         }
     </script>

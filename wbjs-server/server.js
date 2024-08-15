@@ -29,6 +29,9 @@ db.run(`CREATE TABLE IF NOT EXISTS MyTable (key TEXT UNIQUE, value TEXT)`, (err)
 app.get('/notesViewer', (req, res) => {
   res.sendFile(__dirname + '/notes.html');
 });
+app.get('/home', (req, res) => {
+  res.sendFile(__dirname + '/home.html');
+});
 
 app.get('/pdf.html', (req, res) => {
   res.sendFile(__dirname + '/pdf.html');
@@ -59,12 +62,14 @@ app.get('/pdfViewer', (req, res) => {
               .pdf-link {
                   display: block;
                   margin-bottom: 10px;
+                  text-align: center;
               }
           </style>
       </head>
       <body>
-          <h1>Saved PDFs</h1>
-          ${pdfFiles.map(pdfFile => `<a class="pdf-link" href="/pdf.html?pdfUrl=/notes/${pdfFile}" target="_blank">${pdfFile}</a>`).join('')}
+          <h1 style="text-align:center">Saved PDFs
+            ${pdfFiles.map(pdfFile => `<h4><a class="pdf-link" href="/pdf.html?pdfUrl=/notes/${pdfFile}" target="_blank">${pdfFile}</a></h4>`).join('')}
+          </h1>
       </body>
       </html>
       `;
