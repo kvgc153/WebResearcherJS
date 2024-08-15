@@ -14,14 +14,18 @@ Table   created   if   it   did   not   exist.
 
 A sqlite DB will be created in the same folder which will contain all the notes taken by the webclipper. Check that this exists in the folder before procedding further.
 
-### Pages
-- /notesViewer --- Page containing all the notes taken with WBJS along with search. Visit http://127.0.0.1:3000/notesViewer
+## Pages
 
-<img width="100%" src="notesViewer.png">
+- [/home](http://127.0.0.1:3000/home)  --- Home page. 
+- [/notesViewer](http://127.0.0.1:3000/notesViewer) --- Page containing all the notes taken with WBJS along with search.
+- [/pdfViewer](http://127.0.0.1:3000/pdfViewer) --- Page containing all the saved pdfs which are stored in the notes/ folder in the server.
+ 
+ - [/canvas (beta)](http://127.0.0.1:3000/canvas) -- When a user visits this page, a unique html page is created and stored in the notes/ folder. Then the server redirects the user to the created page. The user can use the web extension to take notes on this blank canvas page. Attached is a demo:
+
+<img width="100%" src="canvas.gif">
 
 
-
-### Endpoints to server
+## Endpoints to server
 - /getAll -- gets all the notes in the database. 
 ```javascript 
 var dataPacket = {};
@@ -110,7 +114,4 @@ fetch("http://127.0.0.1:3000/data",
 );
 ```
 
-- /canvas -- When a user visits this page, a unique html page is created and stored in the notes/ folder. Then the server redirects the user to the created page. The user can use the webclipper to take notes on this blank canvas page. Attached is a demo:
 
-
-<img width="100%" src="canvas.gif">
