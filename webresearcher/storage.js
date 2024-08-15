@@ -35,9 +35,22 @@ function saveAllNotesWBJS(notify=true){
 }
 document.getElementById('saveNotesWBJS').addEventListener('click', saveAllNotesWBJS);
 
-var intervalServer = setInterval(function() {
-  saveAllNotesWBJS(notify=false);
-}, 10000);
+// var intervalServer = setInterval(function() {
+//   saveAllNotesWBJS(notify=false);
+// }, 10000);
+
+// Bind to ctrl+s and save notes
+document.addEventListener('keydown', function(event) {
+  if (event.ctrlKey && event.key === 's') {
+    saveAllNotesWBJS();
+    event.preventDefault();
+  }
+  // if its a mac and the user is using cmd+s
+  if (event.metaKey && event.key === 's') {
+    saveAllNotesWBJS();
+    event.preventDefault();
+  }
+});
 
 
 
