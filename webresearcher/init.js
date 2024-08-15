@@ -15,12 +15,6 @@ var defaultNoteColor = "#E6E6FA";
 var defaultFont= "13px";
 var defaultOpacity = "95%";
 
-// Server variables
-var serverHost  = "http://127.0.0.1:3000";
-// var serverHost  = "http://webresearcher.xyz:3000";
-
-var fetchServer = serverHost + "/getData";
-var postServer  = serverHost + `/data`;
 
 // variables used to store the notes and noteobjects 
 var editorJSObjs = {};
