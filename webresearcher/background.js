@@ -1,14 +1,14 @@
-function handleClick() {
-  browser.runtime.openOptionsPage();
-}
+// function handleClick() {
+//   browser.runtime.openOptionsPage();
+// }
 
-browser.browserAction.onClicked.addListener(handleClick);
+// browser.browserAction.onClicked.addListener(handleClick);
 
 console.log("inside background.js");
-browser.contextMenus.create({
-  id: "eat-page",
-  title: "Start WebResearcherJS"
-});
+// browser.contextMenus.create({
+//   id: "eat-page",
+//   title: "Start WebResearcherJS"
+// });
 
 /////////////////////////////////////
 //// Load all modules to webpage ////
@@ -91,11 +91,61 @@ function loadOtherModules(tabID){
 
 }
 
+// Server variables
+var serverHost  = "http://127.0.0.1:3000";
+// var serverHost  = "http://webresearcher.xyz:3000";
+
+var fetchServer = serverHost + "/getData";
+var postServer  = serverHost + `/data`;
+
 function handleMessage(request, sender, sendResponse) {
-  console.log("Message from the content script: " + request.greeting);
-  console.log(sender.tab.id);
-  loadJQuery(sender.tab.id);
-  sendResponse({response: "Response from background script"});
+  if(request.greeting == "trigger"){
+    console.log("Message from the content script: " + request.greeting);
+    console.log(sender.tab.id);
+    // make a log of the id and url of the tab
+    loadJQuery(sender.tab.id);
+    sendResponse({response: "Response from background script"});
+  }
+
+  else if (request.greeting == "fetch"){
+    console.log("Fetching data from server");
+    return fetch(fetchServer, {
+      body: request.data, 
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        return({ 
+          response: data.value 
+        }); 
+      })
+
+  }
+  else if (request.greeting == "save"){
+    console.log("Saving data to server");
+    return  fetch(postServer,
+    {
+        body: JSON.stringify(request.data),
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },          
+    }
+    ).then(()=>{
+      return({
+        response: "saved"
+      })
+    }).catch((error)=>{
+      return({
+        response: "error"
+      })
+    });
+     
+
+  }
 }
 // Trigger loading of modules //
 browser.runtime.onMessage.addListener(handleMessage);
@@ -104,8 +154,8 @@ browser.runtime.onMessage.addListener(handleMessage);
 
 
 
-browser.contextMenus.onClicked.addListener(function(info, tab) {
-  if (info.menuItemId == "eat-page") {
-      loadJQuery();
-  }
-});
+// browser.contextMenus.onClicked.addListener(function(info, tab) {
+//   if (info.menuItemId == "eat-page") {
+//       loadJQuery();
+//   }
+// });

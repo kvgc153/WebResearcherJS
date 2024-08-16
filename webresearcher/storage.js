@@ -15,29 +15,41 @@ function saveAllNotesWBJS(notify=true){
   
 
   console.info("user asked to save data");
-  if(notify){
-    $.notify('Added notes to DB', "success");
-  }
  // create note in localserver
  if(note_count>1 || foo_final['TAGS'] != ""){
+  
   var dataPacket = {};
   dataPacket[webPageUrl] = JSON.stringify(foo_final);
-  fetch(postServer,
-  {
-      body: JSON.stringify(dataPacket),
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },          
+  
+  function sendNotification(message){
+    if(message.response == "saved"){
+      $.notify('Added notes to DB', "success");
+    }
+    if(message.response == "error"){
+      $.notify('Error adding notes to DB', "error");
+    }
+    
   }
+
+  let saveDB = notifyBackgroundPage(
+    greeting="save",
+    data = dataPacket,
+    respond = sendNotification
   );
-}
+
+
+
+
+
+
+
+
+
+
+  }
 }
 document.getElementById('saveNotesWBJS').addEventListener('click', saveAllNotesWBJS);
 
-// var intervalServer = setInterval(function() {
-//   saveAllNotesWBJS(notify=false);
-// }, 10000);
 
 // Bind to ctrl+s and save notes
 document.addEventListener('keydown', function(event) {
@@ -180,19 +192,15 @@ function displayNotes(parsedJSON){
 var foo_loaded = {};
 var dataPacket = {};
 dataPacket['key'] = webPageUrl;
-fetch(fetchServer,
-{
-    body: JSON.stringify(dataPacket),
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },          
+
+function initDB(message) {
+  displayNotes(JSON.parse(message.response));
 }
-).then((results) => {
-  results.json().then((data) => {
-    console.log(data);
-    foo_loaded = JSON.parse(data.value);
-    displayNotes(foo_loaded);
-  }
-)
-});
+
+let DB = notifyBackgroundPage(
+  greeting="fetch",
+  data = JSON.stringify(dataPacket),
+  respond = initDB,
+);
+
+
