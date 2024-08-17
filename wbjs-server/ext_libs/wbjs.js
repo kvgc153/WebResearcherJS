@@ -84,6 +84,16 @@ function displayNotes(data){
                     shortcut: 'CMD+SHIFT+H'
                   },
                   image: SimpleImage,
+                  embed: {
+                    class: Embed,
+                    config: {
+                      services: {
+                        youtube: true,
+                        github: true,
+                        vimeo: true,
+                      }
+                    }
+                  },
                   list: {
                     class: List,
                     inlineToolbar: true,

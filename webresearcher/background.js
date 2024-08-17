@@ -22,6 +22,7 @@ var jsFiles = [
   "ext_libs/list@latest.js",
   "ext_libs/code@latest.js",
   "ext_libs/quote@latest.js",
+  "ext_libs/embed@latest.js", 
   "ext_libs/popper.js",
   "ext_libs/notify.min.js",
   "ext_libs/link-autocomplete.js",
