@@ -15,7 +15,9 @@ let db = new sqlite3.Database('./my_database.db', (err) => {
   if (err) {
     console.error(err.message);
   }
-  console.log('Connected to the SQLite database.');
+  else{
+    console.log('Connected to the SQLite database.');
+  }
 });
 
 // Create table if not exists
@@ -23,7 +25,9 @@ db.run(`CREATE TABLE IF NOT EXISTS MyTable (key TEXT UNIQUE, value TEXT)`, (err)
   if (err) {
     console.error(err.message);
   }
-  console.log('Table created if it did not exist.');
+  else{
+    console.log('Table created if it did not exist.');
+  }
 });
 
 app.get('/notesViewer', (req, res) => {
