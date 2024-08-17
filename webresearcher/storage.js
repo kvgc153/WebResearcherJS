@@ -53,7 +53,7 @@ document.getElementById('saveNotesWBJS').addEventListener('click', saveAllNotesW
 
 // Bind to ctrl+s and save notes
 document.addEventListener('keydown', function(event) {
-  if (event.ctrlKey && event.key === 's') {
+  if (event.altKey && event.key === 's') {
     saveAllNotesWBJS();
     event.preventDefault();
   }
@@ -159,6 +159,16 @@ function displayNotes(parsedJSON){
             shortcut: 'CMD+SHIFT+O'
           },
           code: CodeTool,
+          embed: {
+            class: Embed,
+            config: {
+              services: {
+                youtube: true,
+                github: true,
+                vimeo: true,
+              }
+            }
+          },
           link: {
             class: LinkAutocomplete,
             config: {

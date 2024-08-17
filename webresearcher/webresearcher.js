@@ -64,6 +64,16 @@ class WBJS{
           shortcut: 'CMD+SHIFT+O'
         },
         code: CodeTool,
+        embed: {
+          class: Embed,
+          config: {
+            services: {
+              youtube: true,
+              github: true,
+              vimeo: true,
+            }
+          }
+        },
         link: {
           class: LinkAutocomplete,
           config: {
