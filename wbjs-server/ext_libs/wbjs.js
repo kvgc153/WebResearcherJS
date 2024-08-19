@@ -160,6 +160,12 @@ function searchDB(){
     });
 
 };
+// Bind enter key to search
+document.getElementById('search').addEventListener('keypress', function (e) {
+    if (e.key === 'Enter') {
+        searchDB();
+    }
+});
 
 document.getElementById('searchBtn').addEventListener('click', searchDB);
 document.getElementById('exporthBtn').addEventListener('click', () => {
