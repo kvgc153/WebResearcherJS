@@ -30,8 +30,15 @@ function displayNotes(data){
         noteContent.id = 'note-content' + i;
 
 
+        var noteContent1 = document.createElement('div');
+        // var editedTime = new Date(edjsData['JSON'][foo_loaded_keys[0]]['time']).toString();
+        noteContent1.innerHTML = "<h1>" + "<a href='" + 'http://' + allDataKeys[i] + "#tooltip"  + titleCount + "'>" + edjsData['TITLE'] + "</a></h1>" +  edjsData['TAGS'] + "<br>";
+
+
+
         if(foo_loaded_keys.length>0){
             // Only insert div to page if there are notes
+            document.getElementById('note-container').appendChild(noteContent1);
             document.getElementById('note-container').appendChild(noteContent);
         }
 
@@ -48,24 +55,26 @@ function displayNotes(data){
             titleInput.className = 'note-title';
             var titleCount = j+1;
             var tagsDiv = '';
-            edjsData['TAGS'].split(",").forEach(function(item) {
-                    var div = document.createElement('div');
-                    div.textContent = item;
-                    div.style.border = '1px solid #000';
-                    div.style.padding = '10px';
-                    div.style.margin = '5px';
-                    div.style.display = 'inline-block';
-                    div.style.backgroundColor = '#f0f0f0';
-                    div.style.borderRadius = '20px'; // Rounded corners
-                    div.style.color = '#800000'; // Maroon text color
-                    div.style.fontFamily = 'Arial, sans-serif'; // Font family
-                    div.style.fontSize = '14px'; // Font size
-                    div.style.fontWeight = 'bold'; // Bold text
-                    tagsDiv +=div.outerHTML;
-                });
-            var editedTime = new Date(edjsData['JSON'][foo_loaded_keys[j]]['time']).toString();
+            // edjsData['TAGS'].split(",").forEach(function(item) {
+            //         var div = document.createElement('div');
+            //         div.textContent = item;
+            //         div.style.border = '1px solid #000';
+            //         div.style.padding = '10px';
+            //         div.style.margin = '5px';
+            //         div.style.display = 'inline-block';
+            //         div.style.backgroundColor = '#f0f0f0';
+            //         div.style.borderRadius = '20px'; // Rounded corners
+            //         div.style.color = '#800000'; // Maroon text color
+            //         div.style.fontFamily = 'Arial, sans-serif'; // Font family
+            //         div.style.fontSize = '14px'; // Font size
+            //         div.style.fontWeight = 'bold'; // Bold text
+            //         tagsDiv +=div.outerHTML;
+            //     });
+           
+            var counter = j+1;
 
-            titleInput.innerHTML = "<a href='" + 'http://' + allDataKeys[i] + "#tooltip"  + titleCount + "'>" +   edjsData['TITLE'] +  " &#128279;" + "</a><br>" + tagsDiv + "<br><i class='lastModified'>Last edited on:"+ editedTime  + "</i>";
+            // titleInput.innerHTML = "<a href='" + 'http://' + allDataKeys[i] + "#tooltip"  + titleCount + "'>" +   edjsData['TITLE'] +  " &#128279;" + "</a><br>" + tagsDiv + "<br><i class='lastModified'>Last edited on:"+ editedTime  + "</i>";
+            titleInput.innerHTML = "<a href='" + 'http://' + allDataKeys[i] + "#tooltip"  + titleCount + "'>" +  'Note-' +counter +  " &#128279;" + "</a><br>" + tagsDiv + "<br>";
 
             noteDiv.appendChild(titleInput);
 
