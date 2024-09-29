@@ -58,8 +58,7 @@ function displayNotes(data){
            
             var counter = j+1;
 
-            // titleInput.innerHTML = "<a href='" + 'http://' + allDataKeys[i] + "#tooltip"  + titleCount + "'>" +   edjsData['TITLE'] +  " &#128279;" + "</a><br>" + tagsDiv + "<br><i class='lastModified'>Last edited on:"+ editedTime  + "</i>";
-            titleInput.innerHTML = "<a href='" + 'http://' + allDataKeys[i] + "#tooltip"  + titleCount + "'>" +  'Note-' +counter +  " &#128279;" + "</a><br>" + tagsDiv + "<br>";
+            titleInput.innerHTML = `Note-${counter} <a href='http://${allDataKeys[i]}#tooltip${titleCount}'>[1]</a> <a href='http://0.0.0.0:3000/notesViewer?q=${allDataKeys[i]}#tooltip${titleCount}'>[2]</a><br>${tagsDiv}<br>`;
 
             noteDiv.appendChild(titleInput);
 
