@@ -158,7 +158,7 @@ app.get('/searchWBJS', (req, res) => {
     let itemsPacked = [];
     rows.forEach((row, index) => {
       let resultFoo = {};
-      resultFoo["href"] = "http://" + row['key'];
+      resultFoo["href"] = "http://0.0.0.0:3000/notesViewer?q=" +  row['key']; // link to the search page instead of the row['key']
       let val  = JSON.parse(row['value']);
       console.log(val);
       resultFoo["name"] = val['TITLE'];
