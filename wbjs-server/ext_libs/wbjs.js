@@ -32,7 +32,7 @@ function displayNotes(data){
 
         var noteContent1 = document.createElement('div');
         // var editedTime = new Date(edjsData['JSON'][foo_loaded_keys[0]]['time']).toString();
-        noteContent1.innerHTML = "<h1>" + "<a href='" + 'http://' + allDataKeys[i] + "#tooltip"  + titleCount + "'>" + edjsData['TITLE'] + "</a></h1>" +  edjsData['TAGS'] + "<br>";
+        noteContent1.innerHTML = "<h1>" + "<a href='" + 'http://' + allDataKeys[i] + "'>" + edjsData['TITLE'] + "</a></h1>" +  edjsData['TAGS'] + "<br>";
 
 
 
@@ -55,21 +55,6 @@ function displayNotes(data){
             titleInput.className = 'note-title';
             var titleCount = j+1;
             var tagsDiv = '';
-            // edjsData['TAGS'].split(",").forEach(function(item) {
-            //         var div = document.createElement('div');
-            //         div.textContent = item;
-            //         div.style.border = '1px solid #000';
-            //         div.style.padding = '10px';
-            //         div.style.margin = '5px';
-            //         div.style.display = 'inline-block';
-            //         div.style.backgroundColor = '#f0f0f0';
-            //         div.style.borderRadius = '20px'; // Rounded corners
-            //         div.style.color = '#800000'; // Maroon text color
-            //         div.style.fontFamily = 'Arial, sans-serif'; // Font family
-            //         div.style.fontSize = '14px'; // Font size
-            //         div.style.fontWeight = 'bold'; // Bold text
-            //         tagsDiv +=div.outerHTML;
-            //     });
            
             var counter = j+1;
 
@@ -129,29 +114,14 @@ function displayNotes(data){
     }
 }
 
-var dataPacket = {};
-fetch(`http://127.0.0.1:3000/getAll`,
-    {
-        body: JSON.stringify(dataPacket),
-        method: "POST",
-        headers: {
-        "Content-Type": "application/json",
-        },
-    }).then((results) => {
-        results.json().then((data) => {
-            displayNotes(data);
-        })
-    });
-
 
 // Search functionality/////
 function searchDB(){
     var text = document.getElementById('search').value;
+
     document.getElementById('note-container').innerHTML = ''; // Clear the note container
     note_count = 0
 
-    // $('.note-content').children('div').show();
-    // $('.note-content').children('div:not(:contains(' + text + '))').hide();
     var dataPacket = {};
     dataPacket['key'] = text;
 
@@ -169,6 +139,30 @@ function searchDB(){
     });
 
 };
+
+
+// Get query from URL 
+const queryString = window.location.search; 
+const urlParams = new URLSearchParams(queryString);
+const urlSearch = urlParams.get('q') || '';
+
+
+var dataPacket = {};
+dataPacket['key'] = urlSearch;
+
+fetch(`http://127.0.0.1:3000/search`,
+{
+    body: JSON.stringify(dataPacket),
+    method: "POST",
+    headers: {
+    "Content-Type": "application/json",
+    },
+}).then((results) => {
+    results.json().then((data) => {
+        displayNotes(data);
+    })
+});
+
 // Bind enter key to search
 document.getElementById('search').addEventListener('keypress', function (e) {
     if (e.key === 'Enter') {
@@ -328,43 +322,3 @@ document.getElementById('exporthBtn').addEventListener('click', () => {
 
 });
 
-
-// setInterval(searchDB, 1000);
-
-// document.addEventListener('dblclick', function(e) {
-//     // only toggle if display is not visible
-//     console.log(e.target.id);
-    
-//     if(e.target.id == 'searchDiv' || e.target.id == 'search' || e.target.id == 'searchBtn'){
-//         return;
-//     }
-
-
-//     else{
-//         $("#display").toggle();
-//         try{
-//             if(e.target.id.includes('note')){
-//                 $("#display").toggle();
-//                 $("#display").html(e.target.innerHTML);
-//             }
-//             else{
-//                 // check parent
-//                 if(e.target.parentElement.id.includes('note')){
-//                     $("#display").toggle();
-//                     $("#display").html(e.target.parentElement.innerHTML);
-//                 }
-//                 else{
-//                     // check parent's parent
-//                     if(e.target.parentElement.parentElement.id.includes('note')){
-//                         $("#display").toggle();
-//                         $("#display").html(e.target.parentElement.parentElement.innerHTML);
-//                     }
-//                     else{return;}
-//                 }
-//             }   
-//         }
-//         catch(err){
-//                 console.log(err);
-//             }
-//     }   
-// });
