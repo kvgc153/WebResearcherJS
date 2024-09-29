@@ -49,6 +49,10 @@ A sqlite DB will be created in the same folder which will contain all the notes 
 
 7. **View all notes** : Visit http://127.0.0.1:3000/notesViewer to view and search all the notes taken.
 
+
+<img width="100%" src="demo/homepage_WBJS.png">
+
+
 ## Support and development
 Checkout the notes posted [here](docs/docs.md) to understand how the extension code works and the notes posted [here](wbjs-server/README.md) to understand the server side implementation. Code, suggestions, and feedback are always welcome. 
 
