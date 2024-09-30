@@ -150,32 +150,38 @@ app.get('/searchWBJS', (req, res) => {
 
   let sql = `SELECT * FROM MyTable WHERE value LIKE ?`;
 
-  db.all(sql, [key], (err, rows) => {
-    if (err) {
-      throw err;
-    }
+    db.all(sql, [key], (err, rows) => {
+      if (err) {
+        throw err;
+      }
 
-    let itemsPacked = [];
-    rows.forEach((row, index) => {
-      let resultFoo = {};
-      resultFoo["href"] = "http://0.0.0.0:3000/notesViewer?q=" +  row['key']; // link to the search page instead of the row['key']
-      let val  = JSON.parse(row['value']);
-      console.log(val);
-      resultFoo["name"] = val['TITLE'];
+      let itemsPacked = [];
+      rows.forEach((row, index) => {
 
-      itemsPacked.push(resultFoo);
+        try{
+          let resultFoo = {};
+          resultFoo["href"] = "http://127.0.0.1:3000/notesViewer?q=" + row['key'];
+          let val  = JSON.parse(row['value']);
+          console.log(val);
+          resultFoo["name"] = val['TITLE'];
+          resultFoo["description"] = val['TAGS'];
 
+          itemsPacked.push(resultFoo);
+        }catch(e){
+          console.error(e);
+        }
+
+      });
+      const result = {
+        success: true,
+        items: itemsPacked
+      };
+
+      console.log(result);
+      res.setHeader('Content-Type', 'application/json');
+      res.json(result);
     });
-    const result = {
-      success: true,
-      items: itemsPacked
-    };
-
-    console.log(result);
-    res.setHeader('Content-Type', 'application/json');
-    res.json(result);
   });
-});
 
 // Endpoint to add data to database
 app.post('/data', (req, res) => {
@@ -210,6 +216,14 @@ app.post('/data', (req, res) => {
 // Blank canvas for user to take notes 
 
 app.get('/canvas', (req, res) => {
+
+  // require user to provide title
+  const title  = req.query.title;
+  if (!title) {
+      res.status(400).send('Error. Could not make canvas. Title is required. Try again with a title. Example:http://127.0.0.1:3000/canvas?title=MyNotes');
+      return;
+  }
+
   const uniqueId = Date.now();
   const fileName = `page_${uniqueId}.html`;
   const filePath = path.join('notes', fileName);
@@ -220,7 +234,7 @@ app.get('/canvas', (req, res) => {
   <head>
       <meta charset="UTF-8">
       <meta name="viewport" content="width=device-width, initial-scale=1">
-      <title>WBJS Canvas</title>
+      <title>${title}</title>
       <style>
           body {
             font-family: Arial, sans-serif;
