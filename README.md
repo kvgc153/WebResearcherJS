@@ -53,6 +53,19 @@ A sqlite DB will be created in the same folder which will contain all the notes 
 <img width="100%" src="demo/homepage_WBJS.png">
 
 
+The query string `q` can also be used to search the notes. 
+Example usage: 
+```
+http://0.0.0.0:3000/notesViewer?q=test
+```
+
+8. **Canvas** : Sometimes all you want is an empty canvas to start putting down your thoughts:
+
+<img width="100%" src="demo/canvas_demo.png">
+
+If you visit `http://127.0.0.1:3000/canvas?title=[your canvas title]`, the server will create an empty HTML page with the canvas title for you explore your thoughts.
+
+
 ## Support and development
 Checkout the notes posted [here](docs/docs.md) to understand how the extension code works and the notes posted [here](wbjs-server/README.md) to understand the server side implementation. Code, suggestions, and feedback are always welcome. 
 
