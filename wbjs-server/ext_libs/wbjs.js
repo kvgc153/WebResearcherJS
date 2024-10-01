@@ -58,7 +58,7 @@ function displayNotes(data){
            
             var counter = j+1;
 
-            titleInput.innerHTML = `Note-${counter} <a href='http://${allDataKeys[i]}#tooltip${titleCount}'>[1]</a> <a href='http://0.0.0.0:3000/notesViewer?q=${allDataKeys[i]}#tooltip${titleCount}'>[2]</a><br>${tagsDiv}<br>`;
+            titleInput.innerHTML = `Note-${counter} <a href='http://${allDataKeys[i]}#tooltip${titleCount}'>[Edit]</a> <a href='http://0.0.0.0:3000/notesViewer?q=${allDataKeys[i]}#tooltip${titleCount}'>[Cite]</a><br>${tagsDiv}<br>`;
 
             noteDiv.appendChild(titleInput);
 
