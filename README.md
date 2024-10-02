@@ -66,6 +66,12 @@ http://0.0.0.0:3000/notesViewer?q=test
 If you visit `http://127.0.0.1:3000/canvas?title=[your canvas title]`, the server will create an empty HTML page with the canvas title for you explore your thoughts.
 
 
+### Assistant
+
+- Ask
+<img width="100%" src="demo/ask.gif">
+
+
 ## Support and development
 Checkout the notes posted [here](docs/docs.md) to understand how the extension code works and the notes posted [here](wbjs-server/README.md) to understand the server side implementation. Code, suggestions, and feedback are always welcome. 
 

@@ -175,7 +175,8 @@ function displayNotes(parsedJSON){
               endpoint: 'http://127.0.0.1:3000/searchWBJS',
               queryParam: 'search'
             }
-          }          
+          },
+          ask: Ask          
           },
         data:  foo_loaded['JSON'][foo_loaded_keys[k]],
         onReady: () =>{

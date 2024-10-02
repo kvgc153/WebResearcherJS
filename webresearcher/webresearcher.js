@@ -80,7 +80,8 @@ class WBJS{
             endpoint: 'http://127.0.0.1:3000/searchWBJS',
             queryParam: 'search'
           }
-        }
+        },
+        ask: Ask 
         },
       onChange: (api, event) => {
         // serverExport(notify=false);
