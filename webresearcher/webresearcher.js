@@ -1,7 +1,8 @@
 // class handing creation of notes 
 class WBJS{
-  constructor(noteID){
+  constructor(noteID,data=''){
     this.noteID = noteID;
+    this.data = data;
   }
 
   addAnchor(){
@@ -39,6 +40,7 @@ class WBJS{
 
     editorJSObjs[this.noteID] = new EditorJS({
       holder: "tooltip"+this.noteID,
+      data: this.data,
       tools: {
         header: {
           class: Header,

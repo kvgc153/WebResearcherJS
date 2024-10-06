@@ -236,3 +236,13 @@
   color: #0056b3;
   text-decoration: underline;
 }
+.tooltip {
+  position: absolute;
+  background-color: black;
+  color: white;
+  /* padding: 5px; */
+  /* border-radius: 5px; */
+  display: none;
+  z-index: 1000;
+  /* font-size: 12px; */
+}

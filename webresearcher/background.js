@@ -32,6 +32,7 @@ var jsFiles = [
   "webresearcher/export.js",
   "webresearcher/storage.js",
   "webresearcher/webresearcher.js",
+  "webresearcher/tooltip.js",
 ];
 
 var cssFiles = [
