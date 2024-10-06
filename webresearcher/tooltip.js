@@ -67,7 +67,7 @@ function makeTooltip(){
         "messages": [
             { 
               "role": "user",
-              "content": "Summarize this in two sentences: " + context
+              "content": "Summarize this in two sentences and give me tags in hashtag format to remember them later: " + context
             }
         ]
   
