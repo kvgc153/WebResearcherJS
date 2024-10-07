@@ -109,6 +109,9 @@ summarizeButton.addEventListener('click', function()  {
       w.createNote();
       note_count+=1; // update note counter
 
+      // hide the tooltip
+      let tooltip = document.getElementById('tooltipWBJS');
+      tooltip.style.display = 'none';
     })
     .catch((error) => {
       console.error("Error:", error);
@@ -140,4 +143,7 @@ citeButton.addEventListener('click', function()  {
   w.createNote();
   note_count+=1; // update note counter
 
+  // hide the tooltip
+  let tooltip = document.getElementById('tooltipWBJS');
+  tooltip.style.display = 'none';
 });
