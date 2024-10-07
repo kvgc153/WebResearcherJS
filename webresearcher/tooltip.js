@@ -141,7 +141,13 @@ summarizeButton.addEventListener('click', function()  {
 
 let citeButton = document.getElementById('citeWBJS');
 citeButton.addEventListener('click', function()  {
-  const context = window.getSelection().toString();
+  const context = window.getSelection();
+
+  // Get the HTML of the selected text
+  var selectedText = document.createElement("div");
+  for (var i = 0, len = context.rangeCount; i < len; ++i) {
+    selectedText.appendChild(context.getRangeAt(i).cloneContents());
+  }
 
   responseBlock = {
     "time": 1629780000000,
@@ -150,7 +156,7 @@ citeButton.addEventListener('click', function()  {
       {
       type: 'quote',
       data: {
-        text: context,
+        text: selectedText.innerHTML,
         caption: "",
         alignment: "left"
       }
