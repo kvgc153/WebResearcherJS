@@ -46,6 +46,23 @@ function showTooltip(event) {
 
 
   if (selection.toString().length > 0) {
+
+      // Check if the element that trigger it is a WBJS note and if so, igore the event
+      // Why 7? Its arbitrary. 
+      
+      let element = event.target;
+      for (let i = 0; i < 7; i++) {
+        if (element.parentElement) {
+          element = element.parentElement;
+          if(element.id.includes("tooltip")){
+            return;
+          }
+        } else {
+          break;
+        }
+      }
+      ////////////////////////////
+     
       const range = selection.getRangeAt(0);
       const rect = range.getBoundingClientRect();
 
@@ -111,6 +128,9 @@ summarizeButton.addEventListener('click', function()  {
       // hide the tooltip
       let tooltip = document.getElementById('tooltipWBJS');
       tooltip.style.display = 'none';
+
+      //toggle the WBJS sidebar
+      $("#userButtonPanelWBJS").toggle();
     })
     .catch((error) => {
       console.error("Error:", error);
@@ -145,4 +165,7 @@ citeButton.addEventListener('click', function()  {
   // hide the tooltip
   let tooltip = document.getElementById('tooltipWBJS');
   tooltip.style.display = 'none';
+
+  //toggle the WBJS sidebar
+  $("#userButtonPanelWBJS").toggle();
 });
