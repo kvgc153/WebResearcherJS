@@ -83,8 +83,7 @@ summarizeButton.addEventListener('click', function()  {
       "messages": [
           { 
             "role": "user",
-            "content": "Summarize the following in two sentences and give me tags in hashtag format to remember them later. Print only the summary and tags. Text: " + context
-          }
+"content": "Summarize the following in two sentences and give me tags in hashtag format to remember them later. The tags must be returned in the following template only where TAG is the tag:<a href='http://0.0.0.0:3000/notesViewer?q=TAG'>#TAG</a>. Print only the summary and tags in HTML format. Text:" + context          }
       ]
 
     }),
