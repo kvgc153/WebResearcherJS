@@ -51,7 +51,7 @@ function showTooltip(event) {
       // Why 7? Its arbitrary. 
       
       let element = event.target;
-      for (let i = 0; i < 7; i++) {
+      for (let i = 0; i < 10; i++) {
         if (element.parentElement) {
           element = element.parentElement;
           if(element.id.includes("tooltip")){
@@ -80,6 +80,7 @@ function showTooltip(event) {
   }
 }
 document.addEventListener('mouseup', showTooltip);
+document.addEventListener('keyup', showTooltip);
 
 
 // When the summarize button is clicked, summarize the selected text
