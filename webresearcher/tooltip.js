@@ -88,6 +88,8 @@ let summarizeButton = document.getElementById('summarizeWBJS');
 summarizeButton.addEventListener('click', function()  {
   // const question = document.getElementById('questionWBJS').value;  
   const context = window.getSelection().toString();
+
+  $.notify("Summarizing the text. Please wait...", "info");
   
   // Call API to summarize the text
   fetch("http://localhost:11434/api/chat ", {
