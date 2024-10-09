@@ -132,8 +132,6 @@ summarizeButton.addEventListener('click', function()  {
       let tooltip = document.getElementById('tooltipWBJS');
       tooltip.style.display = 'none';
 
-      //toggle the WBJS sidebar
-      $("#userButtonPanelWBJS").toggle();
     })
     .catch((error) => {
       console.error("Error:", error);
@@ -175,6 +173,4 @@ citeButton.addEventListener('click', function()  {
   let tooltip = document.getElementById('tooltipWBJS');
   tooltip.style.display = 'none';
 
-  //toggle the WBJS sidebar
-  $("#userButtonPanelWBJS").toggle();
 });
