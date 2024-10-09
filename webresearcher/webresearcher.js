@@ -87,7 +87,13 @@ class WBJS{
             queryParam: 'search'
           }
         },
-        ask: Ask 
+        ask: Ask,
+        attaches: {
+          class: AttachesTool,
+          config: {
+            endpoint: 'http://127.0.0.1:3000/uploadFile'
+          }
+        }
         },
       onChange: (api, event) => {
         // serverExport(notify=false);

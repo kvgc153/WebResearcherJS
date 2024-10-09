@@ -176,7 +176,13 @@ function displayNotes(parsedJSON){
               queryParam: 'search'
             }
           },
-          ask: Ask          
+          ask: Ask,
+          attaches: {
+            class: AttachesTool,
+            config: {
+              endpoint: 'http://127.0.0.1:3000/uploadFile'
+            }
+          }      
           },
         data:  foo_loaded['JSON'][foo_loaded_keys[k]],
         onReady: () =>{
