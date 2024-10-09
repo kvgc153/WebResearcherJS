@@ -19,7 +19,7 @@ class WBJS{
     var wrapperNode = document.createElement("div");
     wrapperNode.classList.add("ui-widget-content");
     wrapperNode.setAttribute("style", "display: inline-block;overflow:auto;");
-    wrapperNode.innerHTML= `<div id="tooltip${this.noteID}"> <div class='mover' id="mover${this.noteID}" ><h2>${"Note: "+note_count}</h2><button class="btn" id="closer${this.noteID}">Remove note</button></div></div>`;
+    wrapperNode.innerHTML= `<div id="tooltip${this.noteID}"> <div class='mover' id="mover${this.noteID}" ><div style="text-align:right"><button title="Remove note" class="btn btn-layered-3d--purple" id="closer${this.noteID}">&#10006;</button></div></div></div>`;
 
     document.body.appendChild(wrapperNode)
 
