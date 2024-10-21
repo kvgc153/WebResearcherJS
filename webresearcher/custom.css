@@ -237,7 +237,7 @@
   text-decoration: underline;
 }
 .tooltip {
-  position: absolute;
+  position: fixed;
   /* background-color: black;
   color: white; */
   /* padding: 5px; */

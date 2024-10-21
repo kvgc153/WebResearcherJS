@@ -13,9 +13,9 @@ function makeButton(innerText, id){
 function makeTooltip(){
     const tooltip = document.createElement('div');
     tooltip.id = 'tooltipWBJS';
-    tooltip.className = 'tooltip';
+    tooltip.className = 'userButtonPanelWBJSToggler';
     tooltip.style.display = 'none';
-    
+
     const btn1 = makeButton(
       innerText = "Summarize",
       id = "summarizeWBJS"
@@ -25,7 +25,6 @@ function makeTooltip(){
       innerText = "Quote",
       id = "citeWBJS"
     )
-
     const wrapperDiv = document.createElement('div');
     wrapperDiv.appendChild(btn1);
     wrapperDiv.appendChild(btn2);
@@ -43,7 +42,7 @@ makeTooltip();
 function showTooltip(event) {
   const selection = window.getSelection();
   let tooltip = document.getElementById('tooltipWBJS');
-
+  
 
   if (selection.toString().length > 0) {
 
@@ -73,6 +72,9 @@ function showTooltip(event) {
       tooltip.style.left = `${rect.left + window.scrollX}px`;
       tooltip.style.top = `${rect.bottom + window.scrollY}px`;
       tooltip.style.display = 'block';
+      tooltip.style.position = 'fixed';
+      tooltip.style.zIndex = '1000';
+
 
   } 
   else {
