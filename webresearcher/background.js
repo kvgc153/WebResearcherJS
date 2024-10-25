@@ -32,7 +32,7 @@ var jsFiles = [
   "webresearcher/handleMouseEvents.js",
   "webresearcher/export.js",
   "webresearcher/storage.js",
-  "webresearcher/webresearcher.js",
+  "webresearcher/webresearcher.js", 
   "webresearcher/tooltip.js",
 ];
 
