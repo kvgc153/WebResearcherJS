@@ -2,11 +2,11 @@ function makeButton(innerText, id){
   const button = document.createElement('button');
   button.innerText = innerText;
   button.style.zIndex = '1000';
-  button.style.backgroundColor = 'blue';
-  button.style.color = 'white';
+  // button.style.backgroundColor = 'blue';
+  // button.style.color = 'white';
   button.style.position = 'relative';
   button.id = id;  
-  button.className = 'btn'; 
+  button.className = 'btn btn-layered-3d--purple'; 
   return button
 }
 
@@ -66,15 +66,16 @@ function showTooltip(event) {
       const rect = range.getBoundingClientRect();
 
       userSeletedText = selection.toString();
-      console.log(userSeletedText);   
 
       // basically move the tooltip to the selected text
-      tooltip.style.left = `${rect.left + window.scrollX}px`;
-      tooltip.style.top = `${rect.bottom + window.scrollY}px`;
+      // tooltip.style.left = `${rect.left + window.scrollX}px`;
+      // tooltip.style.top = `${rect.bottom + window.scrollY}px`;
+      tooltip.style.top = rect.bottom  + 'px'; // 5px offset
+      tooltip.style.left = rect.x  + 'px';     // 5px offset
+
       tooltip.style.display = 'block';
       tooltip.style.position = 'fixed';
       tooltip.style.zIndex = '1000';
-
 
   } 
   else {
@@ -83,6 +84,7 @@ function showTooltip(event) {
 }
 document.addEventListener('mouseup', showTooltip);
 document.addEventListener('keyup', showTooltip);
+document.addEventListener('click', showTooltip);
 
 
 // When the summarize button is clicked, summarize the selected text
@@ -157,11 +159,9 @@ citeButton.addEventListener('click', function()  {
     "id": "xxxxxxxxxxxxxx",
     "blocks": [
       {
-      type: 'quote',
+      type: 'paragraph',
       data: {
-        text: selectedText.innerHTML,
-        caption: "",
-        alignment: "left"
+        text: selectedText.innerHTML
       }
     }
     ]
