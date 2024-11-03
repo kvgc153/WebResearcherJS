@@ -4,16 +4,44 @@ class Ask {
       title: 'Ask'
     };
   }
-  constructor({ data, api }) {
+  constructor({ api }) {
     this.api = api;
     this.messages = [];
+    this.test = "";
+    this.getPreviousMessages();
   }
+
+  async getPreviousMessages() {
+    try {
+      this.test = await this.api.saver.save();
+      for (var i = 0; i < this.test.blocks.length; i++) {
+        if(this.test.blocks[i].type == "image"){
+          console.log("ignoring image");
+        }
+        else{
+          try{
+            var message = {
+              "role":"assistant",
+              "content": this.test.blocks[i].data.text
+            }
+            this.messages.push(message)
+          } catch (error) {
+            console.error('Error saving data:', error);
+          }
+        }
+      }
+    } catch (error) {
+      console.error('Error saving data:', error);
+    }
+  }
+  
   sendMessage(userInput, input){
     var message = {
       "role":"user",
       "content": userInput 
     }
     this.messages.push(message)
+    $.notify("Sending message. Please wait.", "info");
     
     // Ask llama running in the background to answer question 
     fetch("http://localhost:11434/api/chat", {
@@ -61,9 +89,8 @@ class Ask {
           inputBlockID-1
         )
 
-        this.api.saver.save().then((savedData) => {
-          console.log(savedData);
-        });
+  
+
 
       })
       .catch((error) => {
@@ -104,9 +131,7 @@ class Ask {
     // Add event listener to capture input value
     button.addEventListener('click', () => {
       const userInput = input.innerText;
-      this.sendMessage(userInput, input);
-
-      
+      this.sendMessage(userInput, input);      
     });
     
     return container;
