@@ -22,11 +22,6 @@ var WBJS_HTML = {};
 var WBJS_CSS = {};
 var WBJS_JSON = {};
 
-// Ask server what the server of llama is 
-let llamaHost = notifyBackgroundPage(
-    greeting="llamaHost",
-    respond = sendNotification
-  );
 
 // Add Buttons to the page for control
 var htmlAppend = $("html").append(`
