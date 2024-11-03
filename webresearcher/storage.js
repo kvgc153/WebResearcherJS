@@ -36,16 +36,6 @@ function saveAllNotesWBJS(notify=true){
     data = dataPacket,
     respond = sendNotification
   );
-
-
-
-
-
-
-
-
-
-
   }
 }
 document.getElementById('saveNotesWBJS').addEventListener('click', saveAllNotesWBJS);

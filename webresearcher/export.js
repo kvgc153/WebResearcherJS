@@ -1,6 +1,3 @@
-//   // export Notes to Joplin using API
-
-
 async function serverExport(notify=false){
   if(note_count>1){
     document.getElementById('notesOnPage').innerHTML  = "<h5>Note List</h5>"; 

@@ -16,7 +16,7 @@ class Ask {
     this.messages.push(message)
     
     // Ask llama running in the background to answer question 
-    fetch("http://localhost:11434/api/chat ", {
+    fetch("http://localhost:11434/api/chat", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
