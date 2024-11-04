@@ -42,44 +42,10 @@ Example usage:
 http://0.0.0.0:3000/notesViewer?q=test
 ```
 
-Click [here](featuresAll.md) to learn about all the features of WBJS.
+Click [here](featuresAll.md) to learn about all the features of WBJS and [here](developerNotes.md) for developer notes.
 
-## Support for Llama3.2 (optional)
-
-As of v8.0.0, WBJS offers the following features incorporating Meta's Llama 3.2 that the user can run locally using ollama (See [here](https://ollama.com/library/llama3.2) for instructions). The speed of the responses will depend on your available computing resources.
-
-
-- **Summarize highlighted text :**
-
-<img width="100%" src="demo/summarize.gif">
-
-- **Continue having a conversation in the note** (For example, quiz yourself on your understanding). :
-
-<img width="100%" src="demo/ask.gif">
-
-All the text in the note will be used as context and sent to the mode
 
  
 # Buy me a Coffee :coffee:
 
 If you like this project and would like to support this work, please consider [buying me a cup of coffee](https://buymeacoffee.com/509si1f).
-
-
-### Development
-
-Checkout the notes posted [here](docs/docs.md) to understand how the extension code works and the notes posted [here](wbjs-server/README.md) to understand the server side implementation. Code, suggestions, and feedback are always welcome. 
-
-### Inspiration
-
-WBJS has been inspired by the following note taking projects:
-
-- [TiddlyWiki](https://tiddlywiki.com/)
-- [Joplin](https://joplinapp.org/)
-- [Logseq](https://github.com/logseq/logseq)
-- [Promnesia](https://github.com/karlicoss/promnesia)
-
-WBJS uses the following packages and is thankful to its developers for its continued maintainence 
-
-- [JQuery](https://jquery.com/)
-- [EditorJS](https://editorjs.io/)
-- [Express.js](https://expressjs.com/)
