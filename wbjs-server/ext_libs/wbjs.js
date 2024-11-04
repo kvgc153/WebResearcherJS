@@ -33,7 +33,7 @@ function displayNotes(data) {
             </div>
             <div class="result-url">http://${allDataKeys[i]}</div>
             <div class="result-summary">${edjsData['TAGS']}</div>
-            <button class="toggle-notes" onclick="toggleNotes(${i})">Show Notes</button>
+            <button class="toggle-notes" onclick="toggleNotes(${i})">Toggle Notes</button>
         `;
     
         if (foo_loaded_keys.length > 0) {
@@ -118,7 +118,8 @@ function toggleNotes(index) {
     notes.forEach(note => {
         if (note.style.display === 'none' || note.style.display === '') {
             note.style.display = 'block';
-        } else {
+        } 
+        else if(note.style.display === 'block') {
             note.style.display = 'none';
         }
     });
@@ -180,154 +181,3 @@ document.getElementById('search').addEventListener('keypress', function (e) {
 });
 
 document.getElementById('searchBtn').addEventListener('click', searchDB);
-document.getElementById('exporthBtn').addEventListener('click', () => {
-    var exportData = document.getElementById('note-container').innerHTML;
-    var exportData = `<!DOCTYPE html><html><head><title>Exported Notes</title></head>
-        <style>
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #f4f4f4;
-            padding: 20px;
-        }
-  
-        .note-content {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
-            grid-gap: 0.3em;
-            row-gap: 0.3em;
-        }
-
-        .note-display {
-            width: 100%;
-            height: 100%;
-            background-color: #f4f4f4;
-        }
-
-
-        .note {
-            border: 1px solid #ccc;
-            border-radius: 5px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-            padding: 20px;
-            height:500px;
-            overflow-y:scroll;
-            background-color: #fff;
-            transition: box-shadow 0.3s ease;
-        }
-        .note:hover {
-            box-shadow: 0 0 10px rgba(0, 0, 0, 1);
-            /* cursor: pointer; */
-            /* transform: scale(1.2,1.2); */
-            /* z-index: 100; */
-        }
-
-        .note-title {
-            font-size: 20px;
-            font-weight: bold;
-            margin-bottom: 10px;
-            width:100%;
-        }
-        .lastModified{
-          font-size:13px;
-        }
-        button {
-            margin-top: 20px;
-            padding: 10px 20px;
-            border: none;
-            border-radius: 5px;
-            background-color: #007BFF;
-            color: #fff;
-            font-size: 16px;
-            cursor: pointer;
-            transition: background-color 0.3s ease;
-        }
-        button:hover {
-            background-color: #0056b3;
-
-        }
-        .beautiful-button {
-            font-size: 1em;
-            padding: 10px;
-            color: #fff;
-            border: 2px solid #3498db;
-            border-radius: 5px;
-            background-color: #3498db;
-            cursor: pointer;
-            transition: all 0.15s;
-        }
-
-        .beautiful-button:hover {
-            color: #3498db;
-            background-color: #fff;
-
-        }
-        #search {
-            width: 400px;
-            height: 45px;
-            border: 1px solid #dfe1e5;
-            box-shadow: none;
-            border-radius: 24px;
-            padding: 0 20px;
-            margin: 20px 0;
-            font-size: 16px;
-            outline: none;
-        }
-
-        #search:focus {
-            box-shadow: 0 1px 6px 0 rgba(32,33,36,0.28);
-        }
-
-        .display-div {
-            position: fixed;
-            font-size: larger;
-            top: 0;
-            left: 0;
-            height: 10000px;
-            width: 100%;
-            z-index: 99;
-            background-color: #f4f4f4;
-            display: none;
-            border: 2px solid #ccc;
-            padding: 20px;
-            margin: 10px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-            transition: backdrop-filter 0.3s ease;
-        }
-
-
-    </style>
-    
-    <body>` + exportData ;
-    var exportData = exportData  + `
-    <script type="text/javascript" src= "ext_libs/jquery.min.js"></script>
-    <script type="text/javascript" src= "ext_libs/jquery.sidebar.min.js"></script>
-    <script type="text/javascript" src= "ext_libs/editorjs@latest.js"></script>
-    <script type="text/javascript" src= "ext_libs/code@latest.js"></script>
-    <script type="text/javascript" src= "ext_libs/edjsHTML.js"></script>
-    <script type="text/javascript" src= "ext_libs/header@latest.js"></script>
-    <script type="text/javascript" src= "ext_libs/list@latest.js"></script>
-    <script type="text/javascript" src= "ext_libs/marker@latest.js"></script>
-    <script type="text/javascript" src= "ext_libs/quote@latest.js"></script>
-    <script type="text/javascript" src= "ext_libs/simple-image@latest.js"></script>
-    <script type="text/javascript" src= "ext_libs/table@latest.js"></script>
-    
-    ` + "</body></html>";
-    // save as html file
-    var blob = new Blob([exportData], {type: "text/plain;charset=utf-8"});
-    
-    // Create a link element
-    var link = document.createElement("a");
-    link.href = URL.createObjectURL(blob);
-    link.download = "exportedNotes.html";
-    
-    // Append the link to the body
-    document.body.appendChild(link);
-    
-    // Programmatically click the link to trigger the download
-    link.click();
-    
-    // Remove the link from the document
-    document.body.removeChild(link);
-
-});
-

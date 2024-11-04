@@ -214,18 +214,30 @@ app.post('/uploadFile', (req, res) => {
         return res.status(500).send('Server Error');
       }
 
-      const responseJson = {
-        success: 1,
-        file: {
-          url: "http://127.0.0.1:3000/notes/" + file.originalFilename,
-          name: file.originalFilename,
-          size: file.size,
-          title: file.originalFilename
-        }
-      };
+      //If file is a pdf, then we will show it in the pdf viewer
+      if (file.originalFilename.endsWith('.pdf')) {
+        var responseJson = {
+          success: 1,
+          file: {
+            url: "http://127.0.0.1:3000/pdf.html?pdfUrl=notes/" + file.originalFilename,
+            name: file.originalFilename,
+            size: file.size,
+            title: file.originalFilename
+          }
+        };  
+      }
 
-      console.log('fields', fields);
-      console.log('files', files);
+      else{
+        var responseJson = {
+          success: 1,
+          file: {
+            url: "http://127.0.0.1:3000/notes/" + file.originalFilename,
+            name: file.originalFilename,
+            size: file.size,
+            title: file.originalFilename
+          }
+        };
+      }
       res.status(200).json(responseJson);
     });
   });
