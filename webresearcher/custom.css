@@ -1,9 +1,9 @@
 .userButtonPanelWBJS {
-  left: 92%; 
+  left: 94%; 
   bottom: 65%; 
   height: 7%; 
   position: fixed; 
-  width: 7%; 
+  width: 5%; 
   z-index:100;
   font-size: 14px;
   display: none;
@@ -11,7 +11,7 @@
 }
 
 .userButtonPanelWBJSToggler {
-  left: 95%; 
+  left: 94%; 
   bottom: 50%; 
   height: 7%; 
   position: fixed; 
