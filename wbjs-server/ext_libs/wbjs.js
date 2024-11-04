@@ -14,105 +14,116 @@ let colorsNotes = [
 
 ];
 
-function displayNotes(data){
+function displayNotes(data) {
     var allData = data;
     var allDataKeys = Object.keys(allData);
+
+    for (let i = 0; i < allDataKeys.length; i++) {
+        var edjsData = JSON.parse(allData[allDataKeys[i]]);
+        var foo_loaded_keys = Object.keys(edjsData['JSON']);
     
-    // Loop through all the notes 
-    for(let i=0;i<allDataKeys.length;i++){
-
-        var edjsData   = JSON.parse(allData[allDataKeys[i]]);
-        var foo_loaded_keys   = Object.keys(edjsData['JSON']);
-        var colorChosen = colorsNotes[Math.floor(Math.random()*colorsNotes.length)];
-        
-        var noteContent = document.createElement('div');
-        noteContent.className = 'note-content';
-        noteContent.id = 'note-content' + i;
-
-
+        var noteContentWrapper = document.createElement('div');
+        noteContentWrapper.className = 'note-content';
+    
         var noteContent1 = document.createElement('div');
-        // var editedTime = new Date(edjsData['JSON'][foo_loaded_keys[0]]['time']).toString();
-        noteContent1.innerHTML = "<h1>" + "<a href='" + 'http://' + allDataKeys[i] + "'>" + edjsData['TITLE'] + "</a></h1>" +  edjsData['TAGS'] + "<br>";
-
-
-
-        if(foo_loaded_keys.length>0){
+        noteContent1.className = 'result';
+        noteContent1.innerHTML = `
+            <div class="result-title">
+                <a href="http://${allDataKeys[i]}">${edjsData['TITLE']}</a>
+            </div>
+            <div class="result-url">http://${allDataKeys[i]}</div>
+            <div class="result-summary">${edjsData['TAGS']}</div>
+            <button class="toggle-notes" onclick="toggleNotes(${i})">Toggle Notes</button>
+        `;
+    
+        if (foo_loaded_keys.length > 0) {
             // Only insert div to page if there are notes
             document.getElementById('note-container').appendChild(noteContent1);
-            document.getElementById('note-container').appendChild(noteContent);
         }
-
-
-        for(let j=0;j<foo_loaded_keys.length;j++){
-
-
+    
+        for (let j = 0; j < foo_loaded_keys.length; j++) {
             var noteDiv = document.createElement('div');
             noteDiv.className = 'note';
-            noteDiv.style.backgroundColor = colorChosen;
             noteDiv.id = 'note' + note_count;
-
+    
             var titleInput = document.createElement('div');
             titleInput.className = 'note-title';
-            var titleCount = j+1;
-            var tagsDiv = '';
-           
-            var counter = j+1;
-
-            titleInput.innerHTML = `Note-${counter} <a href='http://${allDataKeys[i]}#tooltip${titleCount}'>[Edit]</a> <a href='http://0.0.0.0:3000/notesViewer?q=${allDataKeys[i]}#tooltip${titleCount}'>[Cite]</a><br>${tagsDiv}<br>`;
-
+            var titleCount = j + 1;
+    
+            titleInput.innerHTML = `
+                Note-${titleCount} 
+                <a href="http://${allDataKeys[i]}#tooltip${titleCount}">[Edit]</a> 
+                <a href="http://0.0.0.0:3000/notesViewer?q=${allDataKeys[i]}#tooltip${titleCount}">[Cite]</a>
+            `;
+    
             noteDiv.appendChild(titleInput);
-
-
-            document.getElementById('note-content' + i).appendChild(noteDiv);
-
+            noteContentWrapper.appendChild(noteDiv);
+    
             var edjsnote = new EditorJS({
-                holder: "note"+note_count,
+                holder: "note" + note_count,
                 tools: {
-                  header: {
-                    class: Header,
-                    inlineToolbar:true,
-                    config: {
-                    placeholder: 'Header'
+                    header: {
+                        class: Header,
+                        inlineToolbar: true,
+                        config: {
+                            placeholder: 'Header'
+                        },
+                        shortcut: 'CMD+SHIFT+H'
                     },
-                    shortcut: 'CMD+SHIFT+H'
-                  },
-                  image: SimpleImage,
-                  embed: {
-                    class: Embed,
-                    config: {
-                      services: {
-                        youtube: true,
-                        github: true,
-                        vimeo: true,
+                    image: SimpleImage,
+                    embed: {
+                        class: Embed,
+                        config: {
+                            services: {
+                                youtube: true,
+                                github: true,
+                                vimeo: true,
+                            }
+                        }
+                    },
+                    list: {
+                        class: List,
+                        inlineToolbar: true,
+                        shortcut: 'CMD+SHIFT+L'
+                    },
+                    quote: {
+                        class: Quote,
+                        inlineToolbar: true,
+                        config: {
+                            quotePlaceholder: 'Enter a quote',
+                            captionPlaceholder: 'Quote\'s author',
+                        },
+                        shortcut: 'CMD+SHIFT+O'
+                    },
+                    code: CodeTool,
+                    attaches: {
+                      class: AttachesTool,
+                      config: {
+                        endpoint: 'http://127.0.0.1:3000/uploadFile'
                       }
                     }
-                  },
-                  list: {
-                    class: List,
-                    inlineToolbar: true,
-                    shortcut: 'CMD+SHIFT+L'
-                  },
-                  quote: {
-                    class: Quote,
-                    inlineToolbar: true,
-                    config: {
-                    quotePlaceholder: 'Enter a quote',
-                    captionPlaceholder: 'Quote\'s author',
-                    },
-                    shortcut: 'CMD+SHIFT+O'
-                  },
-                  code: CodeTool,
-                  },
-                data:  edjsData['JSON'][foo_loaded_keys[j]],
+                },
+                data: edjsData['JSON'][foo_loaded_keys[j]],
                 readOnly: true
-
-              });
-                note_count+=1;
-
+            });
+            note_count += 1;
         }
+    
+        document.getElementById('note-container').appendChild(noteContentWrapper);
     }
 }
 
+function toggleNotes(index) {
+    var notes = document.querySelectorAll('.note-content')[index].querySelectorAll('.note');
+    notes.forEach(note => {
+        if (note.style.display === 'none' || note.style.display === '') {
+            note.style.display = 'block';
+        } 
+        else {
+            note.style.display = 'none';
+        }
+    });
+}
 
 // Search functionality/////
 function searchDB(){
@@ -170,154 +181,3 @@ document.getElementById('search').addEventListener('keypress', function (e) {
 });
 
 document.getElementById('searchBtn').addEventListener('click', searchDB);
-document.getElementById('exporthBtn').addEventListener('click', () => {
-    var exportData = document.getElementById('note-container').innerHTML;
-    var exportData = `<!DOCTYPE html><html><head><title>Exported Notes</title></head>
-        <style>
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #f4f4f4;
-            padding: 20px;
-        }
-  
-        .note-content {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
-            grid-gap: 0.3em;
-            row-gap: 0.3em;
-        }
-
-        .note-display {
-            width: 100%;
-            height: 100%;
-            background-color: #f4f4f4;
-        }
-
-
-        .note {
-            border: 1px solid #ccc;
-            border-radius: 5px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-            padding: 20px;
-            height:500px;
-            overflow-y:scroll;
-            background-color: #fff;
-            transition: box-shadow 0.3s ease;
-        }
-        .note:hover {
-            box-shadow: 0 0 10px rgba(0, 0, 0, 1);
-            /* cursor: pointer; */
-            /* transform: scale(1.2,1.2); */
-            /* z-index: 100; */
-        }
-
-        .note-title {
-            font-size: 20px;
-            font-weight: bold;
-            margin-bottom: 10px;
-            width:100%;
-        }
-        .lastModified{
-          font-size:13px;
-        }
-        button {
-            margin-top: 20px;
-            padding: 10px 20px;
-            border: none;
-            border-radius: 5px;
-            background-color: #007BFF;
-            color: #fff;
-            font-size: 16px;
-            cursor: pointer;
-            transition: background-color 0.3s ease;
-        }
-        button:hover {
-            background-color: #0056b3;
-
-        }
-        .beautiful-button {
-            font-size: 1em;
-            padding: 10px;
-            color: #fff;
-            border: 2px solid #3498db;
-            border-radius: 5px;
-            background-color: #3498db;
-            cursor: pointer;
-            transition: all 0.15s;
-        }
-
-        .beautiful-button:hover {
-            color: #3498db;
-            background-color: #fff;
-
-        }
-        #search {
-            width: 400px;
-            height: 45px;
-            border: 1px solid #dfe1e5;
-            box-shadow: none;
-            border-radius: 24px;
-            padding: 0 20px;
-            margin: 20px 0;
-            font-size: 16px;
-            outline: none;
-        }
-
-        #search:focus {
-            box-shadow: 0 1px 6px 0 rgba(32,33,36,0.28);
-        }
-
-        .display-div {
-            position: fixed;
-            font-size: larger;
-            top: 0;
-            left: 0;
-            height: 10000px;
-            width: 100%;
-            z-index: 99;
-            background-color: #f4f4f4;
-            display: none;
-            border: 2px solid #ccc;
-            padding: 20px;
-            margin: 10px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-            transition: backdrop-filter 0.3s ease;
-        }
-
-
-    </style>
-    
-    <body>` + exportData ;
-    var exportData = exportData  + `
-    <script type="text/javascript" src= "ext_libs/jquery.min.js"></script>
-    <script type="text/javascript" src= "ext_libs/jquery.sidebar.min.js"></script>
-    <script type="text/javascript" src= "ext_libs/editorjs@latest.js"></script>
-    <script type="text/javascript" src= "ext_libs/code@latest.js"></script>
-    <script type="text/javascript" src= "ext_libs/edjsHTML.js"></script>
-    <script type="text/javascript" src= "ext_libs/header@latest.js"></script>
-    <script type="text/javascript" src= "ext_libs/list@latest.js"></script>
-    <script type="text/javascript" src= "ext_libs/marker@latest.js"></script>
-    <script type="text/javascript" src= "ext_libs/quote@latest.js"></script>
-    <script type="text/javascript" src= "ext_libs/simple-image@latest.js"></script>
-    <script type="text/javascript" src= "ext_libs/table@latest.js"></script>
-    
-    ` + "</body></html>";
-    // save as html file
-    var blob = new Blob([exportData], {type: "text/plain;charset=utf-8"});
-    
-    // Create a link element
-    var link = document.createElement("a");
-    link.href = URL.createObjectURL(blob);
-    link.download = "exportedNotes.html";
-    
-    // Append the link to the body
-    document.body.appendChild(link);
-    
-    // Programmatically click the link to trigger the download
-    link.click();
-    
-    // Remove the link from the document
-    document.body.removeChild(link);
-
-});
-

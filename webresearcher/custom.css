@@ -1,9 +1,9 @@
 .userButtonPanelWBJS {
-  left: 92%; 
+  left: 94%; 
   bottom: 65%; 
   height: 7%; 
   position: fixed; 
-  width: 7%; 
+  width: 5%; 
   z-index:100;
   font-size: 14px;
   display: none;
@@ -11,7 +11,7 @@
 }
 
 .userButtonPanelWBJSToggler {
-  left: 95%; 
+  left: 94%; 
   bottom: 50%; 
   height: 7%; 
   position: fixed; 
@@ -23,8 +23,8 @@
 .WBJSNote {
   position: absolute;
   border: 2px solid #ddd;
-  height: 350px;
-  width: 350px;
+  height: 400px;
+  width: 500px;
   border: none;
   color: black;
   padding: 25px 75px 25px 25px;
@@ -235,4 +235,14 @@
 .toc ul li a:hover {
   color: #0056b3;
   text-decoration: underline;
+}
+.tooltip {
+  position: fixed;
+  /* background-color: black;
+  color: white; */
+  /* padding: 5px; */
+  /* border-radius: 5px; */
+  display: none;
+  z-index: 1000;
+  /* font-size: 12px; */
 }

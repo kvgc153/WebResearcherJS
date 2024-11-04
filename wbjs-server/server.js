@@ -4,6 +4,8 @@ const path = require('path');
 const fs = require('fs');
 const app = express();
 var cors = require('cors')
+const formidable = require('formidable');
+
 
 app.use(cors({credentials: true, origin: true}))
 app.use(express.static("ext_libs/"));
@@ -182,6 +184,64 @@ app.get('/searchWBJS', (req, res) => {
       res.json(result);
     });
   });
+
+
+// Endpoint to attach files
+
+app.post('/uploadFile', (req, res) => {
+  const form = new formidable.IncomingForm();
+  form.uploadDir = path.join(__dirname, 'notes');
+  form.keepExtensions = true;
+
+  form.parse(req, (err, fields, files) => {
+    if (err) {
+      console.log('Uploading error', err);
+      return res.status(500).json({ success: 0 });
+    }
+
+    const file = files['file'][0];
+    if (!file || !file.filepath || !file.originalFilename) {
+      console.log('File upload error: file, file.filepath, or file.originalFilename is undefined');
+      return res.status(400).json({ success: 0, message: 'File upload error' });
+    }
+
+    const oldPath = file.filepath;
+    const newPath = path.join(__dirname, 'notes', file.originalFilename);
+
+    fs.rename(oldPath, newPath, (err) => {
+      if (err) {
+        console.error('Error renaming file:', err);
+        return res.status(500).send('Server Error');
+      }
+
+      //If file is a pdf, then we will show it in the pdf viewer
+      if (file.originalFilename.endsWith('.pdf')) {
+        var responseJson = {
+          success: 1,
+          file: {
+            url: "http://127.0.0.1:3000/pdf.html?pdfUrl=notes/" + file.originalFilename,
+            name: file.originalFilename,
+            size: file.size,
+            title: file.originalFilename
+          }
+        };  
+      }
+
+      else{
+        var responseJson = {
+          success: 1,
+          file: {
+            url: "http://127.0.0.1:3000/notes/" + file.originalFilename,
+            name: file.originalFilename,
+            size: file.size,
+            title: file.originalFilename
+          }
+        };
+      }
+      res.status(200).json(responseJson);
+    });
+  });
+});
 
 // Endpoint to add data to database
 app.post('/data', (req, res) => {

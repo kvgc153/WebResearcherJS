@@ -1,7 +1,8 @@
 // class handing creation of notes 
 class WBJS{
-  constructor(noteID){
+  constructor(noteID,data=''){
     this.noteID = noteID;
+    this.data = data;
   }
 
   addAnchor(){
@@ -18,15 +19,19 @@ class WBJS{
     var wrapperNode = document.createElement("div");
     wrapperNode.classList.add("ui-widget-content");
     wrapperNode.setAttribute("style", "display: inline-block;overflow:auto;");
-    wrapperNode.innerHTML= `<div id="tooltip${this.noteID}"> <div class='mover' id="mover${this.noteID}" ><h2>${"Note: "+note_count}</h2></div></div>`;
+    wrapperNode.innerHTML= `<div id="tooltip${this.noteID}"> <div class='mover' id="mover${this.noteID}" ><div style="text-align:right"><button title="Remove note" class="btn btn-layered-3d--purple" id="closer${this.noteID}">&#10006;</button></div></div></div>`;
 
     document.body.appendChild(wrapperNode)
 
+    let closerId = "closer" + this.noteID
+
     // allows user to delete the imported annotation by clicking the right click after user confirmation
-    wrapperNode.addEventListener('contextmenu', function(ev) {
+    document.getElementById(closerId).addEventListener('click', function(ev) {
       if(confirm("Are you sure you want to delete this note?")){
         ev.preventDefault();
-        ev.target.remove();
+        ev.target.parentElement.parentElement.parentElement.remove();
+
+        // remove();
         return false;
        }},
     false);
@@ -39,6 +44,7 @@ class WBJS{
 
     editorJSObjs[this.noteID] = new EditorJS({
       holder: "tooltip"+this.noteID,
+      data: this.data,
       tools: {
         header: {
           class: Header,
@@ -79,6 +85,13 @@ class WBJS{
           config: {
             endpoint: 'http://127.0.0.1:3000/searchWBJS',
             queryParam: 'search'
+          }
+        },
+        ask: Ask,
+        attaches: {
+          class: AttachesTool,
+          config: {
+            endpoint: 'http://127.0.0.1:3000/uploadFile'
           }
         }
         },

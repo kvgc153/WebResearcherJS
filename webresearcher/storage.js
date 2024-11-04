@@ -36,16 +36,6 @@ function saveAllNotesWBJS(notify=true){
     data = dataPacket,
     respond = sendNotification
   );
-
-
-
-
-
-
-
-
-
-
   }
 }
 document.getElementById('saveNotesWBJS').addEventListener('click', saveAllNotesWBJS);
@@ -91,25 +81,30 @@ function displayNotes(parsedJSON){
     document.getElementById('notesOnPage').innerHTML += aFoo.outerHTML;
     ///////////////////////////////////////////////
     
-    var newNode1 = document.createElement("div");
-    newNode1.classList.add("ui-widget-content");
-    document.body.appendChild(newNode1)
-    newNode1.setAttribute("style", "display: inline-block; overflow:auto;");
 
+    var wrapperNode = document.createElement("div");
+    wrapperNode.classList.add("ui-widget-content");
+    wrapperNode.setAttribute("style", "display: inline-block;overflow:auto;");
+    wrapperNode.innerHTML= `<div id="tooltip${note_count}"> <div class='mover' id="mover${note_count}" ><div style="text-align:right"><button title="Remove note" class="btn btn-layered-3d--purple" id="closer${note_count}">&#10006;</button></div></div></div>`;
+    document.body.appendChild(wrapperNode)
+    
+    let closerId = "closer" + note_count
     // allows user to delete the imported annotation by clicking the right click after user confirmation
-    newNode1.addEventListener('contextmenu', function(ev) {
-    if(confirm("Are you sure you want to delete this note?")){
-      ev.preventDefault();
-      ev.target.remove();
-      return false;
-    }}, false);
+    document.getElementById(closerId).addEventListener('click', function(ev) {
+      if(confirm("Are you sure you want to delete this note?")){
+        ev.preventDefault();
+        ev.target.parentElement.parentElement.parentElement.remove();
 
-    /// Make div for note
-    newNode1.innerHTML= `
-      <div id=`+"tooltip" + note_count + ` class="WBJSNote"> 
-      <div class='mover' id=`+"mover" + note_count +  `><h2>${"Note: "+note_count}</h2></div>
-      </div>
-      `;
+        // remove();
+        return false;
+       }},
+    false);
+
+
+    var tooltipNode = document.getElementById("tooltip"+note_count);
+    tooltipNode.setAttribute("style","background-color:"+defaultNoteColor+";font-size:"+ defaultFont +";opacity:"+defaultOpacity);
+    tooltipNode.classList.add("WBJSNote")
+
     let notestyleProps = foo_loaded['CSS'][foo_loaded_keys[k]];
     let notestyleEl =   document.getElementById("tooltip"+note_count).style;
 
@@ -175,7 +170,14 @@ function displayNotes(parsedJSON){
               endpoint: 'http://127.0.0.1:3000/searchWBJS',
               queryParam: 'search'
             }
-          }          
+          },
+          ask: Ask,
+          attaches: {
+            class: AttachesTool,
+            config: {
+              endpoint: 'http://127.0.0.1:3000/uploadFile'
+            }
+          }      
           },
         data:  foo_loaded['JSON'][foo_loaded_keys[k]],
         onReady: () =>{
@@ -192,8 +194,8 @@ function displayNotes(parsedJSON){
       }
 
       });
-    $('#'+"mover"+note_count).mousedown(handle_mousedown); // move popper
 
+    $('#'+"mover"+note_count).mousedown(handle_mousedown); // move popper
     note_count+=1; // update note counter
   }
 }
