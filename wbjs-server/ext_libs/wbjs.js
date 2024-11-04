@@ -119,7 +119,7 @@ function toggleNotes(index) {
         if (note.style.display === 'none' || note.style.display === '') {
             note.style.display = 'block';
         } 
-        else if(note.style.display === 'block') {
+        else {
             note.style.display = 'none';
         }
     });
