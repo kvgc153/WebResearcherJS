@@ -36,8 +36,7 @@ var htmlAppend = $("html").append(`
     <div class="btn" style="width:100%; text-align: center; font-weight:1000"> 
         <div id="panelMover" style="cursor:grab">&#10021;</div>
         <div id="tagsList">
-            <input type="text" id="tagsWBJS" style="width:90%;font-family: inherit; font-size:15px; height:25px;" placeholder="Enter Tags: Comma-separated">
-            <br>
+            <textarea id="tagsWBJS" style="width:90%; font-family:inherit; font-size:15px; height:50px; overflow-y:auto;" placeholder="Enter Tags: Comma-separated"></textarea>            <br>
             <div id="showTags"></div>
         </div>
     </div>
@@ -60,3 +59,48 @@ var htmlAppend = $("html").append(`
 </div>
 `);
 $("#userButtonPanelWBJS").draggable();
+
+
+document.getElementById('tagsList').addEventListener('input', function() {
+    fetch("http://127.0.0.1:3000/getAllTags", { method: "POST" })
+    .then(response => response.json())
+    .then(data => {
+
+        var userTags = document.getElementById('tagsWBJS').value;
+        var userTagsArray = userTags.split(",");
+        var enteredTag = userTagsArray[userTagsArray.length - 1]; // This is the tag that the user has entered
+
+        // Do not show anything if the user has not entered anything
+        if(enteredTag == "") {
+            document.getElementById('showTags').innerHTML = "";
+            return;
+        }
+
+        // Search through the tags in the database to see if anything matches
+        var tagsDB = Object.keys(data);
+        tagsHTML = "";
+        let tagsContainer = document.getElementById('showTags');
+        tagsContainer.innerHTML =  "";
+
+        tagsDB.forEach(function(tag) {
+            if (tag.includes(enteredTag)) {
+                let tagDiv = document.createElement('button');
+                tagDiv.className = 'tag';
+                tagDiv.textContent = tag;
+                tagDiv.addEventListener('click', function() {
+                    let tags = document.getElementById('tagsWBJS').value;
+                    let tagsArray = tags.split(",");
+                    tagsArray[tagsArray.length - 1] = tag;
+                    document.getElementById('tagsWBJS').value = tagsArray.join(",") + ",";
+                    tagsContainer.innerHTML = "";
+                }); // onclick add tag and refresh the list
+                tagsContainer.appendChild(tagDiv);
+            }
+        }); 
+
+    })
+    .catch(error => {
+        console.error('Error:', error);
+    });
+
+});
