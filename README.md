@@ -19,7 +19,7 @@ A sqlite DB will be created in the same folder which will contain all the notes 
 
 ## How to take notes using WBJS?
 
-<img width="100%" src="demo/demo1.gif">
+<img width="100%" src="demo/demo_v801.gif">
 
 1. **Create a Note:** Click on the 'Make Note' button to start a note.
 
