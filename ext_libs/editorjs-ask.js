@@ -38,7 +38,7 @@ class Ask {
   sendMessage(userInput, input){
     var message = {
       "role":"user",
-      "content": userInput 
+      "content": userInput + ". Answer me only in HTML format."
     }
     this.messages.push(message)
     $.notify("Sending message. Please wait.", "info");

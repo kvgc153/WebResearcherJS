@@ -6,9 +6,10 @@
   width: 5%; 
   z-index:100;
   font-size: 14px;
-  display: none;
-  
+  display: none;  
+
 }
+
 
 .userButtonPanelWBJSToggler {
   left: 94%; 
@@ -193,7 +194,21 @@
   box-shadow: rgb(61, 135, 255) 0px 0px 0px 2px, rgb(214, 230, 255) 0px 0.625em 0px 0px;
 } 
 
-
+.tag {
+  display: inline-block;
+  background-color: #007BFF;
+  color: #ffffff;
+  border: 1px solid #0056b3;
+  border-radius: 15px;
+  padding: 5px 10px;
+  margin: 2px;
+  font-size: 14px;
+  transition: background-color 0.3s ease;
+}
+.tag:hover {
+  background-color: #0056b3;
+  cursor: pointer;
+}
 /* TOC Container */
 .toc {
   background-color: #f9f9f9;

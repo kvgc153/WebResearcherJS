@@ -32,6 +32,57 @@ db.run(`CREATE TABLE IF NOT EXISTS MyTable (key TEXT UNIQUE, value TEXT)`, (err)
   }
 });
 
+
+//Post process the database
+function processDB(){
+  let sql = `SELECT * FROM MyTable`;
+
+  let dbTags = new sqlite3.Database('./tags.db', (err) => {
+    if (err) {
+      console.error(err.message);
+    }
+    else{
+      console.log('Connected to the tags database.');
+    }
+  });
+
+  // Delete existing table if it exists
+  dbTags.run(`DROP TABLE IF EXISTS MyTable`, (err) => {});
+  
+  // Create table if not exists
+  dbTags.run(`CREATE TABLE IF NOT EXISTS MyTable (key TEXT UNIQUE, value TEXT)`, (err) => {
+    if (err) {
+      console.error(err.message);
+    }
+    else{
+      console.log('Table created if it did not exist.');
+    }
+  });
+
+  db.all(sql, [], (err, rows) => {
+    rows.forEach((row, index) => {
+      try{
+        let val  = JSON.parse(row['value']);
+        let sqlTags = `INSERT INTO MyTable VALUES (?, ?)`;
+        dbTags.run(sqlTags, [row['key'], val['TAGS']], function(err) {
+          if (err) {
+            console.error(err.message);
+          }
+        });
+
+      }catch(e){
+        console.error(e);
+        console.log("Error parsing tags for key: "+row['key']);
+        console.log("Ignoring this key"); 
+      }
+    });
+  });
+
+  dbTags.close();
+}
+processDB(); 
+
+
 app.get('/notesViewer', (req, res) => {
   res.sendFile(__dirname + '/notes.html');
 });
@@ -103,6 +154,40 @@ app.post('/getAll', (req, res) => {
     // console.log("Data found: ", result);
     res.json(result);
   });
+});
+
+// Endpoint to get all tags from database
+app.post('/getAllTags', (req, res) => {
+  let sql = `SELECT * FROM MyTable`;
+
+  let dbTags = new sqlite3.Database('./tags.db', (err) => {
+    if (err) {
+      console.error(err.message);
+    }
+    else{
+      console.log('Connected to the tags database.');
+    }
+  });
+
+  dbTags.all(sql, [], (err, rows) => {
+    if (err) {
+      throw err;
+    }
+
+    let result = {};
+    rows.forEach((row, index) => {
+      let tags = row['value'].split(",");
+      tags.forEach((tag, index) => {
+        if (!result[tag]) {
+          result[tag] = [];
+        }
+        result[tag].push(row['key']);
+      });
+    });
+    res.json(Object.keys(result));
+  });
+
+  dbTags.close();
 });
 
 // Endpoint to get data from database
@@ -270,6 +355,8 @@ app.post('/data', (req, res) => {
             res.json({ id: this.lastID });
         }
   });
+  // process the database 
+  processDB()
 });
 
 

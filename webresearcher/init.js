@@ -26,7 +26,7 @@ var WBJS_JSON = {};
 // Add Buttons to the page for control
 var htmlAppend = $("html").append(`
 <div id="userButtonPanelToggler" class="userButtonPanelWBJSToggler">
-    <button title="Open WebResearcherJS" class="btn btn-layered-3d btn-layered-3d--blue" style="width:100%; text-align: center;"><svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" fill="currentColor" class="bi bi-mortarboard-fill" viewBox="0 0 16 16">
+    <button title="Open WebResearcher-notes" class="btn btn-layered-3d btn-layered-3d--blue" style="width:100%; text-align: center;"><svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" fill="currentColor" class="bi bi-mortarboard-fill" viewBox="0 0 16 16">
   <path d="M8.211 2.047a.5.5 0 0 0-.422 0l-7.5 3.5a.5.5 0 0 0 .025.917l7.5 3a.5.5 0 0 0 .372 0L14 7.14V13a1 1 0 0 0-1 1v2h3v-2a1 1 0 0 0-1-1V6.739l.686-.275a.5.5 0 0 0 .025-.917z"/>
   <path d="M4.176 9.032a.5.5 0 0 0-.656.327l-.5 1.7a.5.5 0 0 0 .294.605l4.5 1.8a.5.5 0 0 0 .372 0l4.5-1.8a.5.5 0 0 0 .294-.605l-.5-1.7a.5.5 0 0 0-.656-.327L8 10.466z"/>
 </svg></button>
@@ -36,12 +36,11 @@ var htmlAppend = $("html").append(`
     <div class="btn" style="width:100%; text-align: center; font-weight:1000"> 
         <div id="panelMover" style="cursor:grab">&#10021;</div>
         <div id="tagsList">
-            <input type="text" id="tagsWBJS" style="width:90%;font-family: inherit; font-size:15px; height:25px;" placeholder="Enter Tags: Comma-separated">
-            <br>
+            <textarea id="tagsWBJS" style="width:90%; font-family:inherit; font-size:15px; height:50px; overflow-y:auto;" placeholder="Enter Tags: Comma-separated"></textarea>            <br>
             <div id="showTags"></div>
         </div>
     </div>
-	<div id = "notesOnPage" class="toc">
+	<div style="display:none" id = "notesOnPage" class="toc">
 
 	</div>	
     <div>
@@ -60,3 +59,48 @@ var htmlAppend = $("html").append(`
 </div>
 `);
 $("#userButtonPanelWBJS").draggable();
+
+
+document.getElementById('tagsList').addEventListener('input', function() {
+    fetch("http://127.0.0.1:3000/getAllTags", { method: "POST" })
+    .then(response => response.json())
+    .then(data => {
+
+        var userTags = document.getElementById('tagsWBJS').value;
+        var userTagsArray = userTags.split(",");
+        var enteredTag = userTagsArray[userTagsArray.length - 1]; // This is the tag that the user has entered
+
+        // Do not show anything if the user has not entered anything
+        if(enteredTag == "") {
+            document.getElementById('showTags').innerHTML = "";
+            return;
+        }
+
+        // Search through the tags in the database to see if anything matches
+        var tagsDB = Object.keys(data);
+        tagsHTML = "";
+        let tagsContainer = document.getElementById('showTags');
+        tagsContainer.innerHTML =  "";
+
+        tagsDB.forEach(function(tag) {
+            if (tag.includes(enteredTag)) {
+                let tagDiv = document.createElement('button');
+                tagDiv.className = 'tag';
+                tagDiv.textContent = tag;
+                tagDiv.addEventListener('click', function() {
+                    let tags = document.getElementById('tagsWBJS').value;
+                    let tagsArray = tags.split(",");
+                    tagsArray[tagsArray.length - 1] = tag;
+                    document.getElementById('tagsWBJS').value = tagsArray.join(",") + ",";
+                    tagsContainer.innerHTML = "";
+                }); // onclick add tag and refresh the list
+                tagsContainer.appendChild(tagDiv);
+            }
+        }); 
+
+    })
+    .catch(error => {
+        console.error('Error:', error);
+    });
+
+});
