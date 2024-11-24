@@ -10,6 +10,9 @@ console.log("inside background.js");
 //   title: "Start WebResearcherJS"
 // });
 
+let myAddonId = browser.runtime.getURL("");
+console.log(myAddonId);
+
 /////////////////////////////////////
 //// Load all modules to webpage ////
 /////////////////////////////////////

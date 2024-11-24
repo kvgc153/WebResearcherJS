@@ -40,7 +40,7 @@ var htmlAppend = $("html").append(`
             <div id="showTags"></div>
         </div>
     </div>
-	<div id = "notesOnPage" class="toc">
+	<div style="display:none" id = "notesOnPage" class="toc">
 
 	</div>	
     <div>

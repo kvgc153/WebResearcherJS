@@ -31,7 +31,6 @@ class WBJS{
         ev.preventDefault();
         ev.target.parentElement.parentElement.parentElement.remove();
 
-        // remove();
         return false;
        }},
     false);
