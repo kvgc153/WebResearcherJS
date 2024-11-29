@@ -54,6 +54,13 @@ function onError(error) {
   console.log(`Error: ${error}`);
 }
 
+function reloadTabs(tabs) {
+  for (const tab of tabs) {
+    console.log(tab.id);
+    browser.tabs.reload(tab.id);
+  }
+}
+
 // first wait for jquery, jquery-ui and others to load and then load all the small ones.. very poorly written code...
 function loadJQuery(tabID){
   const executing = browser.tabs.executeScript(tabID,{
@@ -141,7 +148,13 @@ function handleMessage(request, sender, sendResponse) {
           "Content-Type": "application/json",
         },          
     }
-    ).then(()=>{
+    )
+    .then(()=>{
+      // Reload the tabs with the current URL
+      browser.tabs.query({ url: sender.tab.url })
+      .then(reloadTabs, onError);
+    })
+    .then(()=>{
       return({
         response: "saved"
       })
