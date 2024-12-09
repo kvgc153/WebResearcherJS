@@ -5,13 +5,9 @@
 // browser.browserAction.onClicked.addListener(handleClick);
 
 console.log("inside background.js");
-// browser.contextMenus.create({
-//   id: "eat-page",
-//   title: "Start WebResearcherJS"
-// });
-
 let myAddonId = browser.runtime.getURL("");
-console.log(myAddonId);
+
+
 
 /////////////////////////////////////
 //// Load all modules to webpage ////
@@ -111,6 +107,8 @@ var serverHost  = "http://127.0.0.1:3000";
 
 var fetchServer = serverHost + "/getData";
 var postServer  = serverHost + `/data`;
+var registerServer = serverHost + `/register`;  
+
 
 function handleMessage(request, sender, sendResponse) {
   if(request.greeting == "trigger"){
@@ -128,6 +126,7 @@ function handleMessage(request, sender, sendResponse) {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
+        "token": myAddonId
       },
     })
       .then((response) => response.json())
@@ -146,6 +145,7 @@ function handleMessage(request, sender, sendResponse) {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
+          "token": myAddonId
         },          
     }
     )
@@ -172,10 +172,24 @@ browser.runtime.onMessage.addListener(handleMessage);
 
 ////////////////////////////////////////////////////////////
 
+browser.runtime.onInstalled.addListener(function() {
+  // Register firefox extension with the server
+  fetch(registerServer, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      "token": myAddonId
+    }),
+  })
+  .then((response) => response.json())
+  .then((data) => {
+    console.log("Registered with server");
+  })
+  .catch((error) => {
+    console.error('Error:', error);
+  });
 
 
-// browser.contextMenus.onClicked.addListener(function(info, tab) {
-//   if (info.menuItemId == "eat-page") {
-//       loadJQuery();
-//   }
-// });
+});

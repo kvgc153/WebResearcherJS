@@ -6,83 +6,29 @@ const app = express();
 var cors = require('cors')
 const formidable = require('formidable');
 
-
-app.use(cors({credentials: true, origin: true}))
+app.use(cors({credentials: true}))
 app.use(express.static("ext_libs/"));
 app.use('/notes', express.static('notes'))
 app.use(express.json({ limit: '200mb' }));
 
-// Connect to SQLite database
-let db = new sqlite3.Database('./my_database.db', (err) => {
-  if (err) {
-    console.error(err.message);
-  }
-  else{
-    console.log('Connected to the SQLite database.');
-  }
+
+
+// Connect to SQLite databases
+let db = new sqlite3.Database('./my_database.db', err => {
+  err ? console.error(err.message) : console.log('Connected to the SQLite database.')
+});
+
+let dbTags = new sqlite3.Database('./tags.db', err => {
+  err ? console.error(err.message) : console.log('Connected to the tags database.');
 });
 
 // Create table if not exists
 db.run(`CREATE TABLE IF NOT EXISTS MyTable (key TEXT UNIQUE, value TEXT)`, (err) => {
-  if (err) {
-    console.error(err.message);
-  }
-  else{
-    console.log('Table created if it did not exist.');
-  }
+  err ? console.error(err.message) : console.log('Table created if it did not exist.')
 });
 
 
-//Post process the database
-function processDB(){
-  let sql = `SELECT * FROM MyTable`;
-
-  let dbTags = new sqlite3.Database('./tags.db', (err) => {
-    if (err) {
-      console.error(err.message);
-    }
-    else{
-      console.log('Connected to the tags database.');
-    }
-  });
-
-  // Delete existing table if it exists
-  dbTags.run(`DROP TABLE IF EXISTS MyTable`, (err) => {});
-  
-  // Create table if not exists
-  dbTags.run(`CREATE TABLE IF NOT EXISTS MyTable (key TEXT UNIQUE, value TEXT)`, (err) => {
-    if (err) {
-      console.error(err.message);
-    }
-    else{
-      console.log('Table created if it did not exist.');
-    }
-  });
-
-  db.all(sql, [], (err, rows) => {
-    rows.forEach((row, index) => {
-      try{
-        let val  = JSON.parse(row['value']);
-        let sqlTags = `INSERT INTO MyTable VALUES (?, ?)`;
-        dbTags.run(sqlTags, [row['key'], val['TAGS']], function(err) {
-          if (err) {
-            console.error(err.message);
-          }
-        });
-
-      }catch(e){
-        console.error(e);
-        console.log("Error parsing tags for key: "+row['key']);
-        console.log("Ignoring this key"); 
-      }
-    });
-  });
-
-  dbTags.close();
-}
-processDB(); 
-
-
+///// Static webpages  //////
 app.get('/notesViewer', (req, res) => {
   res.sendFile(__dirname + '/notes.html');
 });
@@ -92,6 +38,13 @@ app.get('/home', (req, res) => {
 
 app.get('/pdf.html', (req, res) => {
   res.sendFile(__dirname + '/pdf.html');
+});
+
+let registeredExtensions = [] 
+app.post('/register', (req, res) => {
+  registeredExtensions.push(req.body.token)
+  console.log("Registered user");
+  res.json({ success: true });
 });
 
 app.get('/pdfViewer', (req, res) => {
@@ -135,39 +88,151 @@ app.get('/pdfViewer', (req, res) => {
   );
 });
 
+// Blank canvas for user to take notes 
+app.get('/canvas', (req, res) => {
 
+  // require user to provide title
+  const title  = req.query.title;
+  if (!title) {
+      res.status(400).send('Error. Could not make canvas. Title is required. Try again with a title. Example:http://127.0.0.1:3000/canvas?title=MyNotes');
+      return;
+  }
+
+  const uniqueId = Date.now();
+  const fileName = `page_${uniqueId}.html`;
+  const filePath = path.join('notes', fileName);
+
+  const htmlContent = `
+  <!DOCTYPE html>
+  <html>
+  <head>
+      <meta charset="UTF-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1">
+      <title>${title}</title>
+      <style>
+          body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            padding: 20px;
+        }
+      </style>
+  </head>
+  <body>
+      <div height="10000px" width="100%" id="wbjs-canvas" style="overflow-y:auto;background-color: #f4f4f4;">${"&nbsp;<br>".repeat(100) }</div>
+  </body>
+  </html>
+  `;
+  fs.writeFile(filePath, htmlContent, (err) => {
+      if (err) {
+          console.error('Error writing file:', err);
+          res.status(500).send('Server Error');
+          return;
+      }
+      res.redirect(`http://127.0.0.1:3000/notes/${fileName}`);
+  });
+});
+////////////////////////////
+
+
+
+
+
+//Post process the database
+function processDB(key=""){
+  // Delete existing table if it exists
+  dbTags.run(`DROP TABLE IF EXISTS MyTable`, (err) => {});  
+  // Create table if not exists
+  dbTags.run(`CREATE TABLE IF NOT EXISTS MyTable (key TEXT UNIQUE, value TEXT)`, (err) => {
+    err?  console.error(err.message) : console.log('Table created if it did not exist.')
+  });
+
+  if(key.length > 0){
+    //If key is provided, then we will only process that key
+    let sql = `SELECT * FROM MyTable WHERE key = ?`;
+
+    db.all(sql, [key], (err, rows) => {
+      rows.forEach((row, index) => {
+        try{
+          let val  = JSON.parse(row['value']);
+          let sqlTags = `INSERT INTO MyTable VALUES (?, ?)`;
+          dbTags.run(sqlTags, [row['key'], val['TAGS']], function(err) {
+            if (err) {
+              console.error(err.message);
+            }
+          });
+  
+        }catch(e){
+          console.error(e);
+          console.log("Error parsing tags for key: "+row['key']);
+          console.log("Ignoring this key"); 
+        }
+      });
+    });
+  }
+  else{
+    let sql = `SELECT * FROM MyTable`;
+
+    db.all(sql, [], (err, rows) => {
+      rows.forEach((row, index) => {
+        try{
+          let val  = JSON.parse(row['value']);
+          let sqlTags = `INSERT INTO MyTable VALUES (?, ?)`;
+          dbTags.run(sqlTags, [row['key'], val['TAGS']], function(err) {
+            if (err) {
+              console.error(err.message);
+            }
+          });
+  
+        }catch(e){
+          console.error(e);
+          console.log("Error parsing tags for key: "+row['key']);
+          console.log("Ignoring this key"); 
+        }
+      });
+    });
+  }
+
+}
+processDB(); 
+
+
+function processToken(token){
+  for(let i=0; i<registeredExtensions.length; i++){
+    if(token == registeredExtensions[i]){
+      return true;
+    }
+    else{
+      return false;
+    }
+  }
+}
 
 
 app.post('/getAll', (req, res) => {
-  let sql = `SELECT * FROM MyTable`;
+  //First authenticate user using header token
+  let token = req.headers['token'];
+  if(processToken(token)){
+    let sql = `SELECT * FROM MyTable`;
+    db.all(sql, [], (err, rows) => {
+      if (err) {
+        throw err;
+      }
 
-  db.all(sql, [], (err, rows) => {
-    if (err) {
-      throw err;
-    }
+      let result = {};
+      rows.forEach((row, index) => {
+        result[row['key']] = row['value'];
+      });
 
-    let result = {};
-    rows.forEach((row, index) => {
-      result[row['key']] = row['value'];
+      // console.log("Data found: ", result);
+      res.json(result);
     });
-
-    // console.log("Data found: ", result);
-    res.json(result);
-  });
+  }
 });
 
 // Endpoint to get all tags from database
 app.post('/getAllTags', (req, res) => {
-  let sql = `SELECT * FROM MyTable`;
 
-  let dbTags = new sqlite3.Database('./tags.db', (err) => {
-    if (err) {
-      console.error(err.message);
-    }
-    else{
-      console.log('Connected to the tags database.');
-    }
-  });
+  let sql = `SELECT * FROM MyTable`;
 
   dbTags.all(sql, [], (err, rows) => {
     if (err) {
@@ -184,18 +249,19 @@ app.post('/getAllTags', (req, res) => {
         result[tag].push(row['key']);
       });
     });
-    res.json(Object.keys(result));
+    res.json(result);
   });
-
-  dbTags.close();
 });
 
 // Endpoint to get data from database
 app.post('/getData', (req, res) => {
-  let key = req.body.key;
-  console.log("user asked for data with key: "+key);
-  // search key in database
-  let sql = `SELECT * FROM MyTable WHERE key = ?`;
+  let token = req.headers['token'];
+  if(processToken(token)){
+
+    let key = req.body.key;
+    console.log("user asked for data with key: "+key);
+    // search key in database
+    let sql = `SELECT * FROM MyTable WHERE key = ?`;
     db.get(sql, [key], (err, row) => {
         if (err) {
             throw err;
@@ -204,6 +270,7 @@ app.post('/getData', (req, res) => {
         res.json(row);
         
         });
+  }
 });
 
 // Endpoint to search data from database
@@ -330,80 +397,41 @@ app.post('/uploadFile', (req, res) => {
 
 // Endpoint to add data to database
 app.post('/data', (req, res) => {
-  let data = req.body;
-  let key  = Object.keys(data)[0];
-  let value = data[key];
-  console.log(req.body);
-  let sql = `INSERT INTO MyTable VALUES (?, ?)`;
-  db.run(sql, [key, value], function(err) {
-    if (err) {
-      console.error(err.message);
-      // If key already exists, update the value
-        if (err.message.includes('UNIQUE constraint failed')) {
-            console.log('Key already exists. Updating value.');
-            let sqlUPDATE = `UPDATE MyTable SET value = ? WHERE key = ?`;
-            db.run(sqlUPDATE, [value, key], function(err) {
-                if (err) {
-                    console.error(err.message);
-                    res.status(500).send('Internal server error');
-                    return;
-                }
-                res.json({ id: this.lastID });
-            });
-         }
-        } else {
-            res.json({ id: this.lastID });
-        }
-  });
-  // process the database 
-  processDB()
-});
 
+  let token = req.headers['token'];
+  if(processToken(token)){
 
-// Blank canvas for user to take notes 
-
-app.get('/canvas', (req, res) => {
-
-  // require user to provide title
-  const title  = req.query.title;
-  if (!title) {
-      res.status(400).send('Error. Could not make canvas. Title is required. Try again with a title. Example:http://127.0.0.1:3000/canvas?title=MyNotes');
-      return;
-  }
-
-  const uniqueId = Date.now();
-  const fileName = `page_${uniqueId}.html`;
-  const filePath = path.join('notes', fileName);
-
-  const htmlContent = `
-  <!DOCTYPE html>
-  <html>
-  <head>
-      <meta charset="UTF-8">
-      <meta name="viewport" content="width=device-width, initial-scale=1">
-      <title>${title}</title>
-      <style>
-          body {
-            font-family: Arial, sans-serif;
-            background-color: #f4f4f4;
-            padding: 20px;
-        }
-      </style>
-  </head>
-  <body>
-      <div height="10000px" width="100%" id="wbjs-canvas" style="overflow-y:auto;background-color: #f4f4f4;">${"&nbsp;<br>".repeat(100) }</div>
-  </body>
-  </html>
-  `;
-  fs.writeFile(filePath, htmlContent, (err) => {
+    let data = req.body;
+    let key  = Object.keys(data)[0];
+    let value = data[key];
+    console.log(req.body);
+    let sql = `INSERT INTO MyTable VALUES (?, ?)`;
+    db.run(sql, [key, value], function(err) {
       if (err) {
-          console.error('Error writing file:', err);
-          res.status(500).send('Server Error');
-          return;
-      }
-      res.redirect(`http://127.0.0.1:3000/notes/${fileName}`);
-  });
+        console.error(err.message);
+        // If key already exists, update the value
+          if (err.message.includes('UNIQUE constraint failed')) {
+              console.log('Key already exists. Updating value.');
+              let sqlUPDATE = `UPDATE MyTable SET value = ? WHERE key = ?`;
+              db.run(sqlUPDATE, [value, key], function(err) {
+                  if (err) {
+                      console.error(err.message);
+                      res.status(500).send('Internal server error');
+                      return;
+                  }
+                  res.json({ id: this.lastID });
+              });
+          }
+          } else {
+              res.json({ id: this.lastID });
+          }
+    });
+    // process the database 
+    processDB(key);
+  }
 });
+
+
 
 
 
