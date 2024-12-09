@@ -5,13 +5,9 @@
 // browser.browserAction.onClicked.addListener(handleClick);
 
 console.log("inside background.js");
-// browser.contextMenus.create({
-//   id: "eat-page",
-//   title: "Start WebResearcherJS"
-// });
-
 let myAddonId = browser.runtime.getURL("");
-console.log(myAddonId);
+
+
 
 /////////////////////////////////////
 //// Load all modules to webpage ////
@@ -52,6 +48,13 @@ function onExecuted(result) {
 function onError(error) {
   // alert(error);
   console.log(`Error: ${error}`);
+}
+
+function reloadTabs(tabs) {
+  for (const tab of tabs) {
+    console.log(tab.id);
+    browser.tabs.reload(tab.id);
+  }
 }
 
 // first wait for jquery, jquery-ui and others to load and then load all the small ones.. very poorly written code...
@@ -104,6 +107,8 @@ var serverHost  = "http://127.0.0.1:3000";
 
 var fetchServer = serverHost + "/getData";
 var postServer  = serverHost + `/data`;
+var registerServer = serverHost + `/register`;  
+
 
 function handleMessage(request, sender, sendResponse) {
   if(request.greeting == "trigger"){
@@ -121,6 +126,7 @@ function handleMessage(request, sender, sendResponse) {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
+        "token": myAddonId
       },
     })
       .then((response) => response.json())
@@ -139,9 +145,16 @@ function handleMessage(request, sender, sendResponse) {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
+          "token": myAddonId
         },          
     }
-    ).then(()=>{
+    )
+    .then(()=>{
+      // Reload the tabs with the current URL
+      browser.tabs.query({ url: sender.tab.url })
+      .then(reloadTabs, onError);
+    })
+    .then(()=>{
       return({
         response: "saved"
       })
@@ -159,10 +172,24 @@ browser.runtime.onMessage.addListener(handleMessage);
 
 ////////////////////////////////////////////////////////////
 
+browser.runtime.onInstalled.addListener(function() {
+  // Register firefox extension with the server
+  fetch(registerServer, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      "token": myAddonId
+    }),
+  })
+  .then((response) => response.json())
+  .then((data) => {
+    console.log("Registered with server");
+  })
+  .catch((error) => {
+    console.error('Error:', error);
+  });
 
 
-// browser.contextMenus.onClicked.addListener(function(info, tab) {
-//   if (info.menuItemId == "eat-page") {
-//       loadJQuery();
-//   }
-// });
+});
