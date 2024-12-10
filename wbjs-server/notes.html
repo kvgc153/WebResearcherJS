@@ -9,10 +9,12 @@
             padding: 20px;
         }
         .note-content {
+            position:relative;
+            left:7%;
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
             grid-gap: 0.3em;
-            width: 70%;
+            width: 60%;
             margin: 0 auto;
             row-gap: 0.3em;
         }
@@ -44,18 +46,18 @@
         }
 
         .toggle-notes {
-            margin-top: 10px;
-            padding: 5px 10px;
-            font-size: 14px;
-            color: #fff;
-            background-color: #4285f4;
+            margin-top: 6px;
+            padding: 3px 6px;
+            font-size: 11px;
+            color: #000000;
+            background-color: #007bff4a;
             border: none;
             border-radius: 4px;
             cursor: pointer;
         }
 
         .toggle-notes:hover {
-            background-color: #357ae8;
+            background-color: #0057b350;
         }
         button {
             margin-top: 20px;
@@ -93,7 +95,7 @@
             height: 45px;
             border: 1px solid #dfe1e5;
             box-shadow: none;
-            border-radius: 24px;
+            border-radius: 6px;
             padding: 0 20px;
             margin: 20px 0;
             font-size: 16px;
@@ -141,12 +143,14 @@
         }
 
         .result {
+            position: relative;
+            left:7%;
             background-color: #fff;
             padding: 20px;
             margin-bottom: 20px;
             margin: 5px auto;
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-            width: 71%;
+            width: 60%;
         }
 
         .result-title a {
@@ -164,6 +168,22 @@
             font-size: 14px;
             color: #545454;
         }
+        .tagSidebar {
+            display: inline-block;
+            background-color: #007bff4a;
+            color: #000000;
+            border: 1px solid #0057b35b;
+            border-radius: 5px;
+            padding: 5px 10px;
+            margin: 2px;
+            font-size: 14px;
+            transition: background-color 0.3s ease;
+            font-family: 'Courier New', Courier, monospace;
+        }
+        .tagSidebar:hover {
+        background-color: #0057b350;
+        cursor: pointer;
+        }
     </style>
 </head>
 <body>
@@ -172,11 +192,11 @@
     <div id ="searchDiv">
         <input type="text" id='search' placeholder="search"> </input>
         <button id ="searchBtn"> Search </button>
-        <!-- <button id ="exporthBtn"> Export </button> -->
     </div> 
   </h2>
   <div id="display" class="display-div"> </div>
   <div id="note-container"></div>
+  <div id="tags-container" style="position:absolute; height:100%; left:8%; top:25%; background-color:#ffffff1d; width:15%; font-family: 'Courier New', Courier, monospace;"> </div>
   <script type="text/javascript" src= "jquery.min.js"></script>
   <script type="text/javascript" src= "jquery.sidebar.min.js"></script>
   <script type="text/javascript" src= "editorjs@latest.js"></script>

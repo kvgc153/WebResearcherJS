@@ -42,8 +42,9 @@ app.get('/pdf.html', (req, res) => {
 
 let registeredExtensions = [] 
 app.post('/register', (req, res) => {
-  registeredExtensions.push(req.body.token)
+  registeredExtensions.push(req.body.token);
   console.log("Registered user");
+  console.log("Users registered: ", registeredExtensions);
   res.json({ success: true });
 });
 

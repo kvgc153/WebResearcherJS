@@ -13,6 +13,31 @@ let colorsNotes = [
     "rgba(255, 235, 245, 0.95)"  // Light Pink
 
 ];
+let notesDB = {};
+
+// Get all tags 
+fetch("http://127.0.0.1:3000/getAllTags", { method: "POST" })
+.then(response => response.json())
+.then(data => {
+
+    var tagsDB = Object.keys(data);
+    let tagsContainer = document.getElementById('tags-container');
+    tagsContainer.innerHTML =  "<h5>Tags</h5>";
+
+    tagsDB.forEach(function(tag) {
+        if(tag.length>0){
+            let tagDiv = document.createElement('button');
+            tagDiv.className = 'tagSidebar';
+            tagDiv.textContent = tag;
+            tagDiv.addEventListener('click', function() {   
+                window.location.href = "http://127.0.0.1:3000/notesViewer?q=" + tag;
+            });
+
+            tagsContainer.appendChild(tagDiv);
+        }
+       
+    }); 
+});
 
 function displayNotes(data) {
     var allData = data;
@@ -53,7 +78,7 @@ function displayNotes(data) {
             titleInput.innerHTML = `
                 Note-${titleCount} 
                 <a href="http://${allDataKeys[i]}#tooltip${titleCount}">[Edit]</a> 
-                <a href="http://0.0.0.0:3000/notesViewer?q=${allDataKeys[i]}#tooltip${titleCount}">[Cite]</a>
+                <a href="http://127.0.0.1:3000/notesViewer?q=${allDataKeys[i]}#tooltip${titleCount}">[Cite]</a>
             `;
     
             noteDiv.appendChild(titleInput);
@@ -155,7 +180,7 @@ function searchDB(){
 const queryString = window.location.search; 
 const urlParams = new URLSearchParams(queryString);
 const urlSearch = urlParams.get('q') || '';
-
+document.getElementById('search').value = urlSearch;
 
 var dataPacket = {};
 dataPacket['key'] = urlSearch;
