@@ -26,6 +26,11 @@ A sqlite DB will be created in the same folder which will contain all the notes 
 
 
 ## Endpoints to server
+
+When the firefox extension is installed, it automatically registers the extension
+with the server if the server is running. 
+All communications to the server must require a token parameter. See below for an example.
+
 - /getAll -- gets all the notes in the database. 
 ```javascript 
 var dataPacket = {};
@@ -35,6 +40,7 @@ fetch(`http://127.0.0.1:3000/getAll`,
         method: "POST",
         headers: {
         "Content-Type": "application/json",
+        "token": "moz-extension://........" 
         },
     }).then((results) => {
         results.json().then((data) => {
@@ -54,6 +60,8 @@ fetch(`http://127.0.0.1:3000/search`,
     method: "POST",
     headers: {
     "Content-Type": "application/json",
+    "token": "moz-extension://........" 
+
     },
 }).then((results) => {
     results.json().then((data) => {
@@ -109,6 +117,8 @@ fetch("http://127.0.0.1:3000/data",
     method: "POST",
     headers: {
       "Content-Type": "application/json",
+      "token": "moz-extension://........" 
+
     },          
 }
 );
