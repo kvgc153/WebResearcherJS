@@ -41,10 +41,28 @@ app.get('/pdf.html', (req, res) => {
 });
 
 let registeredExtensions = [] 
+// Load registered users from file
+fs.readFile('registeredUsers.json', 'utf8', (err, data) => {
+  if (err) {
+      console.error('Error reading file:', err);
+      return;
+  }
+  registeredExtensions = JSON.parse(data);
+  console.log("Users registered: ", registeredExtensions);
+});
+
 app.post('/register', (req, res) => {
   registeredExtensions.push(req.body.token);
   console.log("Registered user");
   console.log("Users registered: ", registeredExtensions);
+  // save registered users to file 
+  fs.writeFile('registeredUsers.json', JSON.stringify(registeredExtensions), (err) => {
+    if (err) {
+        console.error('Error writing file:', err);
+        res.status(500).send('Server Error');
+        return;
+    }
+  });
   res.json({ success: true });
 });
 
@@ -129,7 +147,7 @@ app.get('/canvas', (req, res) => {
           res.status(500).send('Server Error');
           return;
       }
-      res.redirect(`http://127.0.0.1:3000/notes/${fileName}`);
+      res.redirect(HOSTSTRING + `/notes/${fileName}`);
   });
 });
 ////////////////////////////
@@ -315,7 +333,7 @@ app.get('/searchWBJS', (req, res) => {
 
         try{
           let resultFoo = {};
-          resultFoo["href"] = "http://127.0.0.1:3000/notesViewer?q=" + row['key'];
+          resultFoo["href"] = HOSTSTRING + "/notesViewer?q=" + row['key'];
           let val  = JSON.parse(row['value']);
           console.log(val);
           resultFoo["name"] = val['TITLE'];
@@ -372,7 +390,7 @@ app.post('/uploadFile', (req, res) => {
         var responseJson = {
           success: 1,
           file: {
-            url: "http://127.0.0.1:3000/pdf.html?pdfUrl=notes/" + file.originalFilename,
+            url: HOSTSTRING + "/pdf.html?pdfUrl=notes/" + file.originalFilename,
             name: file.originalFilename,
             size: file.size,
             title: file.originalFilename
@@ -384,7 +402,7 @@ app.post('/uploadFile', (req, res) => {
         var responseJson = {
           success: 1,
           file: {
-            url: "http://127.0.0.1:3000/notes/" + file.originalFilename,
+            url: HOSTSTRING + "/notes/" + file.originalFilename,
             name: file.originalFilename,
             size: file.size,
             title: file.originalFilename
@@ -434,9 +452,11 @@ app.post('/data', (req, res) => {
 
 
 
-
+HOSTSERVER = "127.0.0.1"
+HOSTPORT   = 3000
+HOSTSTRING = 'http://' + HOSTSERVER + ":" + HOSTPORT
 
 // Start server
-app.listen(3000,"127.0.0.1", () => {
-  console.log('Server is running on port 3000');
+app.listen(HOSTPORT,HOSTSERVER, () => {
+  console.log('Server is running on port' + HOSTPORT);
 });
