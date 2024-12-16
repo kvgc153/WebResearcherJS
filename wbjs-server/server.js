@@ -220,10 +220,8 @@ function processToken(token){
     if(token == registeredExtensions[i]){
       return true;
     }
-    else{
-      return false;
-    }
   }
+  return false;
 }
 
 
@@ -275,6 +273,7 @@ app.post('/getAllTags', (req, res) => {
 // Endpoint to get data from database
 app.post('/getData', (req, res) => {
   let token = req.headers['token'];
+  console.log(processToken(token)); 
   if(processToken(token)){
 
     let key = req.body.key;
