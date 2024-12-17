@@ -26,6 +26,10 @@ let dbTags = new sqlite3.Database('./tags.db', err => {
 db.run(`CREATE TABLE IF NOT EXISTS MyTable (key TEXT UNIQUE, value TEXT)`, (err) => {
   err ? console.error(err.message) : console.log('Table created if it did not exist.')
 });
+// Create table if not exists
+dbTags.run(`CREATE TABLE IF NOT EXISTS MyTable (key TEXT UNIQUE, value TEXT)`, (err) => {
+  err?  console.error(err.message) : console.log('Table created if it did not exist.')
+});
 
 
 ///// Static webpages  //////
@@ -158,12 +162,6 @@ app.get('/canvas', (req, res) => {
 
 //Post process the database
 function processDB(key=""){
-  // Delete existing table if it exists
-  dbTags.run(`DROP TABLE IF EXISTS MyTable`, (err) => {});  
-  // Create table if not exists
-  dbTags.run(`CREATE TABLE IF NOT EXISTS MyTable (key TEXT UNIQUE, value TEXT)`, (err) => {
-    err?  console.error(err.message) : console.log('Table created if it did not exist.')
-  });
 
   if(key.length > 0){
     //If key is provided, then we will only process that key
@@ -173,7 +171,7 @@ function processDB(key=""){
       rows.forEach((row, index) => {
         try{
           let val  = JSON.parse(row['value']);
-          let sqlTags = `INSERT INTO MyTable VALUES (?, ?)`;
+          let sqlTags =  `UPDATE MyTable SET value = ? WHERE key = ?`;
           dbTags.run(sqlTags, [row['key'], val['TAGS']], function(err) {
             if (err) {
               console.error(err.message);
@@ -190,6 +188,9 @@ function processDB(key=""){
   }
   else{
     let sql = `SELECT * FROM MyTable`;
+
+    // Delete existing table if it exists
+    dbTags.run(`DROP TABLE IF EXISTS MyTable`, (err) => {});  
 
     db.all(sql, [], (err, rows) => {
       rows.forEach((row, index) => {
@@ -212,7 +213,10 @@ function processDB(key=""){
   }
 
 }
-processDB(); 
+async function initFns(){
+  await processDB(key="");
+}
+initFns();
 
 
 function processToken(token){
