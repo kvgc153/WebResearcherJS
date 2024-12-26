@@ -1,8 +1,8 @@
 {
 	"manifest_version": 2,
 	"name": "WebResearcherJS",
-	"version": "8.0.2",
-	"description": "https://github.com/kvgc153/WebResearcherJS-extension",
+	"version": "8.0.3",
+	"description": "https://github.com/kvgc153/WebResearcherJS",
 
 	"permissions": [
 		"<all_urls>", "activeTab", "tabs","contextMenus"
