@@ -1,3 +1,20 @@
+function readabilityProcess(message) {
+  console.log("Readability process completed");
+  webpageReadability = message.response;
+}
+
+var dataPacket = {};
+dataPacket['bodyHTML'] = document.body.outerHTML;
+
+var webpageReadability = "";
+// Get the readability of the current webpage 
+let readableOutput = notifyBackgroundPage(
+  greeting="readability",
+  data = JSON.stringify(dataPacket),
+  respond = readabilityProcess,
+);
+
+
 class Ask {
   static get toolbox() {
     return {
@@ -7,10 +24,11 @@ class Ask {
   constructor({ api }) {
     this.api = api;
     this.messages = [];
+
     // Grab the entire innertext of the current webpage
     this.messages.push({
       "role": "system",
-      "content":  "ALWAYS answer the following questions using the following text ONLY. Text : " + document.body.innerText 
+      "content":  "ALWAYS answer the following questions using the following text ONLY. Text : " + webpageReadability
     });
 
 

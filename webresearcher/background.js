@@ -107,6 +107,7 @@ var serverHost  = "http://127.0.0.1:3000";
 
 var fetchServer = serverHost + "/getData";
 var postServer  = serverHost + `/data`;
+var readabilityServer  = serverHost + `/readability`;
 var registerServer = serverHost + `/register`;  
 
 
@@ -166,6 +167,24 @@ function handleMessage(request, sender, sendResponse) {
      
 
   }
+
+  else if (request.greeting == "readability"){
+    return fetch(readabilityServer, {
+      body: request.data, 
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "token": myAddonId
+      },
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        return({ 
+          response: data.textContent 
+        }); 
+      })
+
+  }  
 }
 // Trigger loading of modules //
 browser.runtime.onMessage.addListener(handleMessage);
