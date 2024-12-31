@@ -58,7 +58,7 @@ function displayNotes(data) {
             </div>
             <div class="result-url">http://${allDataKeys[i]}</div>
             <div class="result-summary">${edjsData['TAGS']}</div>
-            <button class="toggle-notes" onclick="toggleNotes(${i})">Toggle Notes</button>
+            <button class="toggle-notes" onclick="toggleNotes(${i})">Expand &darr;</button>
         `;
     
         if (foo_loaded_keys.length > 0) {
@@ -78,7 +78,6 @@ function displayNotes(data) {
             titleInput.innerHTML = `
                 Note-${titleCount} 
                 <a href="http://${allDataKeys[i]}#tooltip${titleCount}">[Edit]</a> 
-                <a href="http://127.0.0.1:3000/notesViewer?q=${allDataKeys[i]}#tooltip${titleCount}">[Cite]</a>
             `;
     
             noteDiv.appendChild(titleInput);
