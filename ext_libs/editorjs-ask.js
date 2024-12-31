@@ -69,7 +69,7 @@ class Ask {
     $.notify("Sending message. Please wait.", "info");
     
     // Ask llama running in the background to answer question 
-    fetch("http://localhost:11434/api/chat", {
+    fetch(LLMWBJSserver, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

@@ -126,7 +126,7 @@ summarizeButton.addEventListener('click', function()  {
   $.notify("Summarizing the text. Please wait...", "info");
   
   // Call API to summarize the text
-  fetch("http://localhost:11434/api/chat ", {
+  fetch(LLMWBJSserver, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",

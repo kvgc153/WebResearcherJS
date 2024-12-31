@@ -22,6 +22,7 @@ var WBJS_HTML = {};
 var WBJS_CSS = {};
 var WBJS_JSON = {};
 
+let LLMWBJSserver = "http://127.0.0.1:11434/api/chat";
 
 // Add Buttons to the page for control
 var htmlAppend = $("html").append(`

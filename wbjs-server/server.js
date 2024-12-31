@@ -6,6 +6,9 @@ const app = express();
 var cors = require('cors')
 const formidable = require('formidable');
 
+const { Readability } = require('@mozilla/readability');
+const { JSDOM } = require('jsdom');
+
 app.use(cors({credentials: true}))
 app.use(express.static("ext_libs/"));
 app.use('/notes', express.static('notes'))
@@ -299,6 +302,16 @@ app.post('/getData', (req, res) => {
         });
   }
 });
+
+app.post('/readability', (req, res) => {
+
+  let bodyHTML = req.body.bodyHTML;
+
+  var doc = new JSDOM(bodyHTML);
+  let reader = new Readability(doc.window.document);
+  let article = reader.parse();
+  res.json({textContent: article.textContent});
+});  
 
 // Endpoint to search data from database
 
