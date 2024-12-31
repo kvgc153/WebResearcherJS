@@ -8,6 +8,9 @@ const formidable = require('formidable');
 
 const { Readability } = require('@mozilla/readability');
 const { JSDOM } = require('jsdom');
+const { stdin: input, stdout: output } = require('node:process');
+const readline = require('readline');
+
 
 app.use(cors({credentials: true}))
 app.use(express.static("ext_libs/"));
@@ -58,19 +61,22 @@ fs.readFile('registeredUsers.json', 'utf8', (err, data) => {
   console.log("Users registered: ", registeredExtensions);
 });
 
+
 app.post('/register', (req, res) => {
-  registeredExtensions.push(req.body.token);
-  console.log("Registered user");
-  console.log("Users registered: ", registeredExtensions);
-  // save registered users to file 
-  fs.writeFile('registeredUsers.json', JSON.stringify(registeredExtensions), (err) => {
-    if (err) {
-        console.error('Error writing file:', err);
-        res.status(500).send('Server Error');
-        return;
-    }
-  });
-  res.json({ success: true });
+  if(req.headers['origin'].includes("moz-extension://")){
+    registeredExtensions.push(req.body.token);
+    console.log("Registered user");
+    console.log("Users registered: ", registeredExtensions);
+    // save registered users to file 
+    fs.writeFile('registeredUsers.json', JSON.stringify(registeredExtensions), (err) => {
+      if (err) {
+          console.error('Error writing file:', err);
+          res.status(500).send('Server Error');
+          return;
+      }
+    });
+    res.json({ success: true });
+  }
 });
 
 app.get('/pdfViewer', (req, res) => {
@@ -285,18 +291,18 @@ app.post('/getAllTags', (req, res) => {
 // Endpoint to get data from database
 app.post('/getData', (req, res) => {
   let token = req.headers['token'];
-  console.log(processToken(token)); 
+  // console.log(processToken(token)); 
   if(processToken(token)){
 
     let key = req.body.key;
-    console.log("user asked for data with key: "+key);
+    // console.log("user asked for data with key: "+key);
     // search key in database
     let sql = `SELECT * FROM MyTable WHERE key = ?`;
     db.get(sql, [key], (err, row) => {
         if (err) {
             throw err;
         }
-        console.log("data found");
+        // console.log("data found");
         res.json(row);
         
         });
@@ -317,7 +323,7 @@ app.post('/readability', (req, res) => {
 
 app.post('/search', (req, res) => {
   let key = "%" + req.body.key + "%";
-  console.log("user asked to search for : "+key);
+  // console.log("user asked to search for : "+key);
 
   let sql = `SELECT * FROM MyTable WHERE value LIKE ?`;
 
@@ -340,7 +346,7 @@ app.post('/search', (req, res) => {
 app.get('/searchWBJS', (req, res) => {
   const searchString = req.query.search
   let key = "%" + searchString + "%";
-  console.log("user from WBJS asked to search for : "+key);
+  // console.log("user from WBJS asked to search for : "+key);
 
   let sql = `SELECT * FROM MyTable WHERE value LIKE ?`;
 
@@ -356,7 +362,7 @@ app.get('/searchWBJS', (req, res) => {
           let resultFoo = {};
           resultFoo["href"] = HOSTSTRING + "/notesViewer?q=" + row['key'];
           let val  = JSON.parse(row['value']);
-          console.log(val);
+          // console.log(val);
           resultFoo["name"] = val['TITLE'];
           resultFoo["description"] = val['TAGS'];
 
@@ -371,7 +377,7 @@ app.get('/searchWBJS', (req, res) => {
         items: itemsPacked
       };
 
-      console.log(result);
+      // console.log(result);
       res.setHeader('Content-Type', 'application/json');
       res.json(result);
     });
@@ -444,8 +450,7 @@ app.post('/data', (req, res) => {
     let data = req.body;
     let key  = Object.keys(data)[0];
     let value = data[key];
-    console.log(req.body);
-    let sql = `INSERT INTO MyTable VALUES (?, ?)`;
+    // console.log(req.body);
     db.run(sql, [key, value], function(err) {
       if (err) {
         console.error(err.message);
