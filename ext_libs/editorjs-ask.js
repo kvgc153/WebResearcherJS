@@ -59,7 +59,6 @@ class Ask {
       body: JSON.stringify({
         "model": "llama3.2",
         "stream": false,
-        "temperature": 0, 
         "messages": this.messages 
 
       }),

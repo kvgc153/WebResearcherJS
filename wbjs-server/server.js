@@ -171,7 +171,7 @@ function processDB(key=""){
       rows.forEach((row, index) => {
         try{
           let val  = JSON.parse(row['value']);
-          let sqlTags =  `UPDATE MyTable SET value = ? WHERE key = ?`;
+          let sqlTags = `REPLACE INTO MyTable (key, value) VALUES (?, ?)`;
           dbTags.run(sqlTags, [row['key'], val['TAGS']], function(err) {
             if (err) {
               console.error(err.message);
@@ -190,13 +190,13 @@ function processDB(key=""){
     let sql = `SELECT * FROM MyTable`;
 
     // Delete existing table if it exists
-    dbTags.run(`DROP TABLE IF EXISTS MyTable`, (err) => {});  
+    // dbTags.run(`DROP TABLE IF EXISTS MyTable`, (err) => {});  
 
     db.all(sql, [], (err, rows) => {
       rows.forEach((row, index) => {
         try{
           let val  = JSON.parse(row['value']);
-          let sqlTags = `INSERT INTO MyTable VALUES (?, ?)`;
+          let sqlTags = `REPLACE INTO MyTable (key, value) VALUES (?, ?)`;
           dbTags.run(sqlTags, [row['key'], val['TAGS']], function(err) {
             if (err) {
               console.error(err.message);
@@ -213,10 +213,8 @@ function processDB(key=""){
   }
 
 }
-async function initFns(){
-  await processDB(key="");
-}
-initFns();
+
+processDB(key="");
 
 
 function processToken(token){
@@ -262,15 +260,22 @@ app.post('/getAllTags', (req, res) => {
 
     let result = {};
     rows.forEach((row, index) => {
-      let tags = row['value'].split(",");
-      tags.forEach((tag, index) => {
+      //Remove whitespaces 
+      let tags = row['value'].replace(/\s/g, '');
+      //Now split the tags
+      let tagsSplit = tags.split(",");
+      tagsSplit.forEach((tag, index) => {
         if (!result[tag]) {
           result[tag] = [];
         }
         result[tag].push(row['key']);
       });
     });
-    res.json(result);
+    // Get all keys 
+    let keys = Object.keys(result);
+    keys.sort();
+    let sortedResult = {'tags': keys};
+    res.json(sortedResult);
   });
 });
 

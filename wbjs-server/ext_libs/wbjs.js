@@ -20,7 +20,7 @@ fetch("http://127.0.0.1:3000/getAllTags", { method: "POST" })
 .then(response => response.json())
 .then(data => {
 
-    var tagsDB = Object.keys(data);
+    var tagsDB = data['tags'];
     let tagsContainer = document.getElementById('tags-container');
     tagsContainer.innerHTML =  "<h5>Tags</h5>";
 
