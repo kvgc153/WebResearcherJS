@@ -27,6 +27,7 @@ var jsFiles = [
   "ext_libs/link-autocomplete.js",
   "ext_libs/editorjs-ask.js",
   "ext_libs/attaches@latest.js",
+  "ext_libs/editorjs-undo.js",
   "webresearcher/init.js",
   "webresearcher/handleMouseEvents.js",
   "webresearcher/export.js",
@@ -191,24 +192,24 @@ browser.runtime.onMessage.addListener(handleMessage);
 
 ////////////////////////////////////////////////////////////
 
-browser.runtime.onInstalled.addListener(function() {
-  // Register firefox extension with the server
-  fetch(registerServer, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({
-      "token": myAddonId
-    }),
-  })
-  .then((response) => response.json())
-  .then((data) => {
-    console.log("Registered with server");
-  })
-  .catch((error) => {
-    console.error('Error:', error);
-  });
+// browser.runtime.onInstalled.addListener(function() {
+//   // Register firefox extension with the server
+//   fetch(registerServer, {
+//     method: "POST",
+//     headers: {
+//       "Content-Type": "application/json",
+//     },
+//     body: JSON.stringify({
+//       "token": myAddonId
+//     }),
+//   })
+//   .then((response) => response.json())
+//   .then((data) => {
+//     console.log("Registered with server");
+//   })
+//   .catch((error) => {
+//     console.error('Error:', error);
+//   });
 
 
-});
+// });

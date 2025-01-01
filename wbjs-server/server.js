@@ -50,6 +50,7 @@ app.get('/pdf.html', (req, res) => {
   res.sendFile(__dirname + '/pdf.html');
 });
 
+
 let registeredExtensions = [] 
 // Load registered users from file
 fs.readFile('registeredUsers.json', 'utf8', (err, data) => {
