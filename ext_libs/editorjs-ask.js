@@ -5,6 +5,8 @@ function readabilityProcess(message) {
 
 var dataPacket = {};
 dataPacket['bodyHTML'] = document.body.outerHTML;
+dataPacket['url'] = window.location.href;
+dataPacket['title'] = document.title;
 
 var webpageReadability = "";
 // Get the readability of the current webpage 
