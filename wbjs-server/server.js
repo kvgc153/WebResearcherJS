@@ -326,12 +326,12 @@ app.post('/readability', (req, res) => {
   let article = reader.parse();
   //Store the article in the database
   let sql = `INSERT INTO MyTable VALUES (?, ?)`;
-  dbReadability.run(sql, [article.title, JSON.stringify(article)], function(err) {
+  dbReadability.run(sql, [req.body.url, JSON.stringify(article)], function(err) {
     if (err) {
       if(err.message.includes('UNIQUE constraint failed')){ 
         console.log('Key already exists. Updating value.');
         let sqlUPDATE = `UPDATE MyTable SET value = ? WHERE key = ?`;
-        dbReadability.run(sqlUPDATE, [JSON.stringify(article), article.title], function(err) {
+        dbReadability.run(sqlUPDATE, [JSON.stringify(article), req.body.url], function(err) {
           if (err) {
             console.error(err.message);
           }
