@@ -28,6 +28,10 @@ let dbTags = new sqlite3.Database('./tags.db', err => {
   err ? console.error(err.message) : console.log('Connected to the tags database.');
 });
 
+let dbReadability = new sqlite3.Database('./readability.db', err => { 
+  err ? console.error(err.message) : console.log('Connected to the readability database.');
+});
+
 // Create table if not exists
 db.run(`CREATE TABLE IF NOT EXISTS MyTable (key TEXT UNIQUE, value TEXT)`, (err) => {
   err ? console.error(err.message) : console.log('Table created if it did not exist.')
@@ -37,6 +41,9 @@ dbTags.run(`CREATE TABLE IF NOT EXISTS MyTable (key TEXT UNIQUE, value TEXT)`, (
   err?  console.error(err.message) : console.log('Table created if it did not exist.')
 });
 
+dbReadability.run(`CREATE TABLE IF NOT EXISTS MyTable (key TEXT UNIQUE, value TEXT)`, (err) => {
+  err?  console.error(err.message) : console.log('Table created if it did not exist.')
+});
 
 ///// Static webpages  //////
 app.get('/notesViewer', (req, res) => {
@@ -317,6 +324,21 @@ app.post('/readability', (req, res) => {
   var doc = new JSDOM(bodyHTML);
   let reader = new Readability(doc.window.document);
   let article = reader.parse();
+  //Store the article in the database
+  let sql = `INSERT INTO MyTable VALUES (?, ?)`;
+  dbReadability.run(sql, [article.title, JSON.stringify(article)], function(err) {
+    if (err) {
+      if(err.message.includes('UNIQUE constraint failed')){ 
+        console.log('Key already exists. Updating value.');
+        let sqlUPDATE = `UPDATE MyTable SET value = ? WHERE key = ?`;
+        dbReadability.run(sqlUPDATE, [JSON.stringify(article), article.title], function(err) {
+          if (err) {
+            console.error(err.message);
+          }
+        });
+      }
+    }
+  });
   res.json({textContent: article.textContent});
 });  
 
@@ -452,6 +474,7 @@ app.post('/data', (req, res) => {
     let key  = Object.keys(data)[0];
     let value = data[key];
     // console.log(req.body);
+    let sql = `INSERT INTO MyTable VALUES (?, ?)`;
     db.run(sql, [key, value], function(err) {
       if (err) {
         console.error(err.message);
