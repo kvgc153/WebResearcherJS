@@ -317,6 +317,53 @@ app.post('/getData', (req, res) => {
   }
 });
 
+const ignoredWebsites = {
+  email: [
+    "mail.google.com", 
+    "outlook.live.com", 
+    "mail.yahoo.com", 
+    "www.icloud.com/mail", 
+    "www.protonmail.com", 
+    "mail.aol.com", 
+    "www.zoho.com/mail", 
+    "www.gmx.com", 
+    "www.fastmail.com", 
+    "www.tutanota.com", 
+    "mail.com", 
+    "www.runbox.com"
+  ],
+  banks: [
+    "www.chase.com", 
+    "www.bankofamerica.com", 
+    "www.wellsfargo.com", 
+    "www.citi.com", 
+    "www.usbank.com", 
+    "www.capitalone.com", 
+    "www.pnc.com", 
+    "www.tdbank.com", 
+    "www.suntrust.com", 
+    "www.bbt.com", 
+    "www.regions.com", 
+    "www.schwab.com", 
+    "www.fidelity.com", 
+    "www.paypal.com", 
+    "www.ally.com", 
+    "www.discover.com", 
+    "www.hsbc.com", 
+    "www.usaa.com"
+  ]
+};
+
+function isUrlInIgnoredWebsites(url) {
+  const urlDomain = url.replace(/https?:\/\//, "").split("/")[0]; // Extract domain from URL
+  for (const category in websites) {
+    if (ignoredWebsites[category].includes(urlDomain)) {
+      return true;
+    }
+  }
+  return false;
+}
+
 app.post('/readability', (req, res) => {
 
   let bodyHTML = req.body.bodyHTML;
@@ -326,19 +373,21 @@ app.post('/readability', (req, res) => {
   let article = reader.parse();
   //Store the article in the database
   let sql = `INSERT INTO MyTable VALUES (?, ?)`;
-  dbReadability.run(sql, [req.body.url, JSON.stringify(article)], function(err) {
-    if (err) {
-      if(err.message.includes('UNIQUE constraint failed')){ 
-        console.log('Key already exists. Updating value.');
-        let sqlUPDATE = `UPDATE MyTable SET value = ? WHERE key = ?`;
-        dbReadability.run(sqlUPDATE, [JSON.stringify(article), req.body.url], function(err) {
-          if (err) {
-            console.error(err.message);
-          }
-        });
+  if(isUrlInIgnoredWebsites(req.body.url)){
+    dbReadability.run(sql, [req.body.url, JSON.stringify(article)], function(err) {
+      if (err) {
+        if(err.message.includes('UNIQUE constraint failed')){ 
+          console.log('Key already exists. Updating value.');
+          let sqlUPDATE = `UPDATE MyTable SET value = ? WHERE key = ?`;
+          dbReadability.run(sqlUPDATE, [JSON.stringify(article), req.body.url], function(err) {
+            if (err) {
+              console.error(err.message);
+            }
+          });
+        }
       }
-    }
-  });
+    });
+  }
   res.json({textContent: article.textContent});
 });  
 
