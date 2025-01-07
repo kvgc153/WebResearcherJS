@@ -78,7 +78,7 @@ document.getElementById('tagsList').addEventListener('input', function() {
         }
 
         // Search through the tags in the database to see if anything matches
-        var tagsDB = Object.keys(data);
+        var tagsDB = data['tags'];
         tagsHTML = "";
         let tagsContainer = document.getElementById('showTags');
         tagsContainer.innerHTML =  "";
