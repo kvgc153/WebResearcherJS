@@ -1,3 +1,22 @@
+function readabilityProcess(message) {
+  console.log("Readability process completed");
+  webpageReadability = message.response;
+}
+
+var dataPacket = {};
+dataPacket['bodyHTML'] = document.body.outerHTML;
+dataPacket['url'] = window.location.href;
+dataPacket['title'] = document.title;
+
+var webpageReadability = "";
+// Get the readability of the current webpage 
+let readableOutput = notifyBackgroundPage(
+  greeting="readability",
+  data = JSON.stringify(dataPacket),
+  respond = readabilityProcess,
+);
+
+
 class Ask {
   static get toolbox() {
     return {
@@ -7,6 +26,14 @@ class Ask {
   constructor({ api }) {
     this.api = api;
     this.messages = [];
+
+    // Grab the entire innertext of the current webpage
+    this.messages.push({
+      "role": "system",
+      "content":  "ALWAYS answer the following questions using the following text ONLY. Text : " + webpageReadability
+    });
+
+
     this.test = "";
     this.getPreviousMessages();
   }
@@ -38,13 +65,13 @@ class Ask {
   sendMessage(userInput, input){
     var message = {
       "role":"user",
-      "content": userInput + ". Answer me only in HTML format."
+      "content": userInput + ". Answer me only in HTML format and only use this conversation to answer."
     }
     this.messages.push(message)
     $.notify("Sending message. Please wait.", "info");
     
     // Ask llama running in the background to answer question 
-    fetch("http://localhost:11434/api/chat", {
+    fetch(LLMWBJSserver, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

@@ -6,6 +6,12 @@ const app = express();
 var cors = require('cors')
 const formidable = require('formidable');
 
+const { Readability } = require('@mozilla/readability');
+const { JSDOM } = require('jsdom');
+const { stdin: input, stdout: output } = require('node:process');
+const readline = require('readline');
+
+
 app.use(cors({credentials: true}))
 app.use(express.static("ext_libs/"));
 app.use('/notes', express.static('notes'))
@@ -22,6 +28,10 @@ let dbTags = new sqlite3.Database('./tags.db', err => {
   err ? console.error(err.message) : console.log('Connected to the tags database.');
 });
 
+let dbReadability = new sqlite3.Database('./readability.db', err => { 
+  err ? console.error(err.message) : console.log('Connected to the readability database.');
+});
+
 // Create table if not exists
 db.run(`CREATE TABLE IF NOT EXISTS MyTable (key TEXT UNIQUE, value TEXT)`, (err) => {
   err ? console.error(err.message) : console.log('Table created if it did not exist.')
@@ -31,6 +41,9 @@ dbTags.run(`CREATE TABLE IF NOT EXISTS MyTable (key TEXT UNIQUE, value TEXT)`, (
   err?  console.error(err.message) : console.log('Table created if it did not exist.')
 });
 
+dbReadability.run(`CREATE TABLE IF NOT EXISTS MyTable (key TEXT UNIQUE, value TEXT)`, (err) => {
+  err?  console.error(err.message) : console.log('Table created if it did not exist.')
+});
 
 ///// Static webpages  //////
 app.get('/notesViewer', (req, res) => {
@@ -44,6 +57,7 @@ app.get('/pdf.html', (req, res) => {
   res.sendFile(__dirname + '/pdf.html');
 });
 
+
 let registeredExtensions = [] 
 // Load registered users from file
 fs.readFile('registeredUsers.json', 'utf8', (err, data) => {
@@ -55,19 +69,22 @@ fs.readFile('registeredUsers.json', 'utf8', (err, data) => {
   console.log("Users registered: ", registeredExtensions);
 });
 
+
 app.post('/register', (req, res) => {
-  registeredExtensions.push(req.body.token);
-  console.log("Registered user");
-  console.log("Users registered: ", registeredExtensions);
-  // save registered users to file 
-  fs.writeFile('registeredUsers.json', JSON.stringify(registeredExtensions), (err) => {
-    if (err) {
-        console.error('Error writing file:', err);
-        res.status(500).send('Server Error');
-        return;
-    }
-  });
-  res.json({ success: true });
+  if(req.headers['origin'].includes("moz-extension://")){
+    registeredExtensions.push(req.body.token);
+    console.log("Registered user");
+    console.log("Users registered: ", registeredExtensions);
+    // save registered users to file 
+    fs.writeFile('registeredUsers.json', JSON.stringify(registeredExtensions), (err) => {
+      if (err) {
+          console.error('Error writing file:', err);
+          res.status(500).send('Server Error');
+          return;
+      }
+    });
+    res.json({ success: true });
+  }
 });
 
 app.get('/pdfViewer', (req, res) => {
@@ -171,7 +188,7 @@ function processDB(key=""){
       rows.forEach((row, index) => {
         try{
           let val  = JSON.parse(row['value']);
-          let sqlTags =  `UPDATE MyTable SET value = ? WHERE key = ?`;
+          let sqlTags = `REPLACE INTO MyTable (key, value) VALUES (?, ?)`;
           dbTags.run(sqlTags, [row['key'], val['TAGS']], function(err) {
             if (err) {
               console.error(err.message);
@@ -190,13 +207,13 @@ function processDB(key=""){
     let sql = `SELECT * FROM MyTable`;
 
     // Delete existing table if it exists
-    dbTags.run(`DROP TABLE IF EXISTS MyTable`, (err) => {});  
+    // dbTags.run(`DROP TABLE IF EXISTS MyTable`, (err) => {});  
 
     db.all(sql, [], (err, rows) => {
       rows.forEach((row, index) => {
         try{
           let val  = JSON.parse(row['value']);
-          let sqlTags = `INSERT INTO MyTable VALUES (?, ?)`;
+          let sqlTags = `REPLACE INTO MyTable (key, value) VALUES (?, ?)`;
           dbTags.run(sqlTags, [row['key'], val['TAGS']], function(err) {
             if (err) {
               console.error(err.message);
@@ -213,10 +230,8 @@ function processDB(key=""){
   }
 
 }
-async function initFns(){
-  await processDB(key="");
-}
-initFns();
+
+processDB(key="");
 
 
 function processToken(token){
@@ -262,44 +277,125 @@ app.post('/getAllTags', (req, res) => {
 
     let result = {};
     rows.forEach((row, index) => {
-      let tags = row['value'].split(",");
-      tags.forEach((tag, index) => {
+      //Remove whitespaces 
+      let tags = row['value'].replace(/\s/g, '');
+      //Now split the tags
+      let tagsSplit = tags.split(",");
+      tagsSplit.forEach((tag, index) => {
         if (!result[tag]) {
           result[tag] = [];
         }
         result[tag].push(row['key']);
       });
     });
-    res.json(result);
+    // Get all keys 
+    let keys = Object.keys(result);
+    keys.sort();
+    let sortedResult = {'tags': keys};
+    res.json(sortedResult);
   });
 });
 
 // Endpoint to get data from database
 app.post('/getData', (req, res) => {
   let token = req.headers['token'];
-  console.log(processToken(token)); 
+  // console.log(processToken(token)); 
   if(processToken(token)){
 
     let key = req.body.key;
-    console.log("user asked for data with key: "+key);
+    // console.log("user asked for data with key: "+key);
     // search key in database
     let sql = `SELECT * FROM MyTable WHERE key = ?`;
     db.get(sql, [key], (err, row) => {
         if (err) {
             throw err;
         }
-        console.log("data found");
+        // console.log("data found");
         res.json(row);
         
         });
   }
 });
 
+const ignoredWebsites = {
+  email: [
+    "mail.google.com", 
+    "outlook.live.com", 
+    "mail.yahoo.com", 
+    "www.icloud.com/mail", 
+    "www.protonmail.com", 
+    "mail.aol.com", 
+    "www.zoho.com/mail", 
+    "www.gmx.com", 
+    "www.fastmail.com", 
+    "www.tutanota.com", 
+    "mail.com", 
+    "www.runbox.com"
+  ],
+  banks: [
+    "www.chase.com", 
+    "www.bankofamerica.com", 
+    "www.wellsfargo.com", 
+    "www.citi.com", 
+    "www.usbank.com", 
+    "www.capitalone.com", 
+    "www.pnc.com", 
+    "www.tdbank.com", 
+    "www.suntrust.com", 
+    "www.bbt.com", 
+    "www.regions.com", 
+    "www.schwab.com", 
+    "www.fidelity.com", 
+    "www.paypal.com", 
+    "www.ally.com", 
+    "www.discover.com", 
+    "www.hsbc.com", 
+    "www.usaa.com"
+  ]
+};
+
+function isUrlInIgnoredWebsites(url) {
+  const urlDomain = url.replace(/https?:\/\//, "").split("/")[0]; // Extract domain from URL
+  for (const category in websites) {
+    if (ignoredWebsites[category].includes(urlDomain)) {
+      return true;
+    }
+  }
+  return false;
+}
+
+app.post('/readability', (req, res) => {
+
+  let bodyHTML = req.body.bodyHTML;
+
+  var doc = new JSDOM(bodyHTML);
+  let reader = new Readability(doc.window.document);
+  let article = reader.parse();
+  //Store the article in the database
+  let sql = `INSERT INTO MyTable VALUES (?, ?)`;
+  if(isUrlInIgnoredWebsites(req.body.url)){
+    dbReadability.run(sql, [req.body.url, JSON.stringify(article)], function(err) {
+      if (err) {
+        if(err.message.includes('UNIQUE constraint failed')){ 
+          console.log('Key already exists. Updating value.');
+          let sqlUPDATE = `UPDATE MyTable SET value = ? WHERE key = ?`;
+          dbReadability.run(sqlUPDATE, [JSON.stringify(article), req.body.url], function(err) {
+            if (err) {
+              console.error(err.message);
+            }
+          });
+        }
+      }
+    });
+  }
+  res.json({textContent: article.textContent});
+});  
+
 // Endpoint to search data from database
 
 app.post('/search', (req, res) => {
   let key = "%" + req.body.key + "%";
-  console.log("user asked to search for : "+key);
+  // console.log("user asked to search for : "+key);
 
   let sql = `SELECT * FROM MyTable WHERE value LIKE ?`;
 
@@ -322,7 +418,7 @@ app.post('/search', (req, res) => {
 app.get('/searchWBJS', (req, res) => {
   const searchString = req.query.search
   let key = "%" + searchString + "%";
-  console.log("user from WBJS asked to search for : "+key);
+  // console.log("user from WBJS asked to search for : "+key);
 
   let sql = `SELECT * FROM MyTable WHERE value LIKE ?`;
 
@@ -338,7 +434,7 @@ app.get('/searchWBJS', (req, res) => {
           let resultFoo = {};
           resultFoo["href"] = HOSTSTRING + "/notesViewer?q=" + row['key'];
           let val  = JSON.parse(row['value']);
-          console.log(val);
+          // console.log(val);
           resultFoo["name"] = val['TITLE'];
           resultFoo["description"] = val['TAGS'];
 
@@ -353,7 +449,7 @@ app.get('/searchWBJS', (req, res) => {
         items: itemsPacked
       };
 
-      console.log(result);
+      // console.log(result);
       res.setHeader('Content-Type', 'application/json');
       res.json(result);
     });
@@ -426,7 +522,7 @@ app.post('/data', (req, res) => {
     let data = req.body;
     let key  = Object.keys(data)[0];
     let value = data[key];
-    console.log(req.body);
+    // console.log(req.body);
     let sql = `INSERT INTO MyTable VALUES (?, ?)`;
     db.run(sql, [key, value], function(err) {
       if (err) {

@@ -27,6 +27,7 @@ var jsFiles = [
   "ext_libs/link-autocomplete.js",
   "ext_libs/editorjs-ask.js",
   "ext_libs/attaches@latest.js",
+  "ext_libs/editorjs-undo.js",
   "webresearcher/init.js",
   "webresearcher/handleMouseEvents.js",
   "webresearcher/export.js",
@@ -107,6 +108,7 @@ var serverHost  = "http://127.0.0.1:3000";
 
 var fetchServer = serverHost + "/getData";
 var postServer  = serverHost + `/data`;
+var readabilityServer  = serverHost + `/readability`;
 var registerServer = serverHost + `/register`;  
 
 
@@ -166,30 +168,48 @@ function handleMessage(request, sender, sendResponse) {
      
 
   }
+
+  else if (request.greeting == "readability"){
+    return fetch(readabilityServer, {
+      body: request.data, 
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "token": myAddonId
+      },
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        return({ 
+          response: data.textContent 
+        }); 
+      })
+
+  }  
 }
 // Trigger loading of modules //
 browser.runtime.onMessage.addListener(handleMessage);
 
 ////////////////////////////////////////////////////////////
 
-browser.runtime.onInstalled.addListener(function() {
-  // Register firefox extension with the server
-  fetch(registerServer, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({
-      "token": myAddonId
-    }),
-  })
-  .then((response) => response.json())
-  .then((data) => {
-    console.log("Registered with server");
-  })
-  .catch((error) => {
-    console.error('Error:', error);
-  });
+// browser.runtime.onInstalled.addListener(function() {
+//   // Register firefox extension with the server
+//   fetch(registerServer, {
+//     method: "POST",
+//     headers: {
+//       "Content-Type": "application/json",
+//     },
+//     body: JSON.stringify({
+//       "token": myAddonId
+//     }),
+//   })
+//   .then((response) => response.json())
+//   .then((data) => {
+//     console.log("Registered with server");
+//   })
+//   .catch((error) => {
+//     console.error('Error:', error);
+//   });
 
 
-});
+// });

@@ -22,6 +22,7 @@ var WBJS_HTML = {};
 var WBJS_CSS = {};
 var WBJS_JSON = {};
 
+let LLMWBJSserver = "http://127.0.0.1:11434/api/chat";
 
 // Add Buttons to the page for control
 var htmlAppend = $("html").append(`
@@ -77,7 +78,7 @@ document.getElementById('tagsList').addEventListener('input', function() {
         }
 
         // Search through the tags in the database to see if anything matches
-        var tagsDB = Object.keys(data);
+        var tagsDB = data['tags'];
         tagsHTML = "";
         let tagsContainer = document.getElementById('showTags');
         tagsContainer.innerHTML =  "";
