@@ -78,6 +78,7 @@ function displayNotes(data) {
             titleInput.innerHTML = `
                 Note-${titleCount} 
                 <a href="http://${allDataKeys[i]}#tooltip${titleCount}">[Edit]</a> 
+                <a href="http://127.0.0.1:3000/notesViewer?q=${allDataKeys[i]}#tooltip${titleCount}">[Cite]</a>
             `;
     
             noteDiv.appendChild(titleInput);
@@ -134,6 +135,11 @@ function displayNotes(data) {
         }
     
         document.getElementById('note-container').appendChild(noteContentWrapper);
+    }
+    if(allDataKeys.length < 10){
+        for(let i = 0; i < 10 - allDataKeys.length; i++){
+            toggleNotes(i);
+        }
     }
 }
 
