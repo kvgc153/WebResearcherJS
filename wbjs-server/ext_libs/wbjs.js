@@ -21,20 +21,23 @@ fetch("http://127.0.0.1:3000/getAllTags", { method: "POST" })
 .then(data => {
 
     var tagsDB = data['tags'];
+    var tagsOccurences = data['occurences'];
     let tagsContainer = document.getElementById('tags-container');
     tagsContainer.innerHTML =  "<h5>Tags</h5>";
 
+    var count = 0;
     tagsDB.forEach(function(tag) {
         if(tag.length>0){
             let tagDiv = document.createElement('button');
             tagDiv.className = 'tagSidebar';
-            tagDiv.textContent = tag;
+            tagDiv.textContent = tag + " (" + tagsOccurences[count] + ")";
             tagDiv.addEventListener('click', function() {   
                 window.location.href = "http://127.0.0.1:3000/notesViewer?q=" + tag;
             });
 
             tagsContainer.appendChild(tagDiv);
         }
+        count +=1;
        
     }); 
 });

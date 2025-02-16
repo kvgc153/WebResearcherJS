@@ -291,7 +291,14 @@ app.post('/getAllTags', (req, res) => {
     // Get all keys 
     let keys = Object.keys(result);
     keys.sort();
-    let sortedResult = {'tags': keys};
+
+    // Find how many times each tag is used
+    let occurences = [];
+    keys.forEach((key, index) => {
+      occurences.push(result[key].length);
+    });
+
+    let sortedResult = {'tags': keys, 'occurences': occurences};
     res.json(sortedResult);
   });
 });
