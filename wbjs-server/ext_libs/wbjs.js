@@ -140,7 +140,7 @@ function displayNotes(data) {
         document.getElementById('note-container').appendChild(noteContentWrapper);
     }
     if(allDataKeys.length < 10){
-        for(let i = 0; i < 10 - allDataKeys.length; i++){
+        for(let i = 0; i < 10; i++){
             toggleNotes(i);
         }
     }
