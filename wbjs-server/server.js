@@ -363,7 +363,7 @@ const ignoredWebsites = {
 
 function isUrlInIgnoredWebsites(url) {
   const urlDomain = url.replace(/https?:\/\//, "").split("/")[0]; // Extract domain from URL
-  for (const category in websites) {
+  for (const category in ignoredWebsites) {
     if (ignoredWebsites[category].includes(urlDomain)) {
       return true;
     }
@@ -395,6 +395,7 @@ app.post('/readability', (req, res) => {
       }
     });
   }
+
   res.json({textContent: article.textContent});
 });  
 

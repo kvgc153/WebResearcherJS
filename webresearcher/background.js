@@ -27,7 +27,6 @@ var jsFiles = [
   "ext_libs/link-autocomplete.js",
   "ext_libs/editorjs-ask.js",
   "ext_libs/attaches@latest.js",
-  "ext_libs/editorjs-undo.js",
   "webresearcher/init.js",
   "webresearcher/handleMouseEvents.js",
   "webresearcher/export.js",
