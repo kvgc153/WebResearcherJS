@@ -65,7 +65,7 @@ class Ask {
   sendMessage(userInput, input){
     var message = {
       "role":"user",
-      "content": userInput + ". Answer me only in HTML format and only use this conversation to answer."
+      "content": userInput + ". Answer me only in HTML format and only use direct quotes from the provided to answer."
     }
     this.messages.push(message)
     $.notify("Sending message. Please wait.", "info");
@@ -79,8 +79,10 @@ class Ask {
       body: JSON.stringify({
         "model": "llama3.2",
         "stream": false,
-        "messages": this.messages 
-
+        "messages": this.messages,
+        "options": {
+          "temperature": 0
+        }
       }),
     })
       .then((response) => response.json())
