@@ -65,7 +65,7 @@ class Ask {
   sendMessage(userInput, input){
     var message = {
       "role":"user",
-      "content": userInput + ". Answer me only in HTML format and only use direct quotes from the provided to answer."
+      "content": userInput + ". Answer me only in HTML format and ONLY provide verbatim text from provided document as response. "
     }
     this.messages.push(message)
     $.notify("Sending message. Please wait.", "info");
