@@ -70,22 +70,22 @@ fs.readFile('registeredUsers.json', 'utf8', (err, data) => {
 });
 
 
-app.post('/register', (req, res) => {
-  if(req.headers['origin'].includes("moz-extension://")){
-    registeredExtensions.push(req.body.token);
-    console.log("Registered user");
-    console.log("Users registered: ", registeredExtensions);
-    // save registered users to file 
-    fs.writeFile('registeredUsers.json', JSON.stringify(registeredExtensions), (err) => {
-      if (err) {
-          console.error('Error writing file:', err);
-          res.status(500).send('Server Error');
-          return;
-      }
-    });
-    res.json({ success: true });
-  }
-});
+// app.post('/register', (req, res) => {
+//   if(req.headers['origin'].includes("moz-extension://")){
+//     registeredExtensions.push(req.body.token);
+//     console.log("Registered user");
+//     console.log("Users registered: ", registeredExtensions);
+//     // save registered users to file 
+//     fs.writeFile('registeredUsers.json', JSON.stringify(registeredExtensions), (err) => {
+//       if (err) {
+//           console.error('Error writing file:', err);
+//           res.status(500).send('Server Error');
+//           return;
+//       }
+//     });
+//     res.json({ success: true });
+//   }
+// });
 
 app.get('/pdfViewer', (req, res) => {
   // glob pdf files from folder
@@ -236,7 +236,7 @@ processDB(key="");
 
 function processToken(token){
   for(let i=0; i<registeredExtensions.length; i++){
-    if(token == registeredExtensions[i]){
+    if(token === registeredExtensions[i]){
       return true;
     }
   }
@@ -306,11 +306,13 @@ app.post('/getAllTags', (req, res) => {
 // Endpoint to get data from database
 app.post('/getData', (req, res) => {
   let token = req.headers['token'];
+  console.log("user asked for data with key: "+req.body.key);
+  console.log("user token: "+token);
+
   // console.log(processToken(token)); 
   if(processToken(token)){
 
     let key = req.body.key;
-    // console.log("user asked for data with key: "+key);
     // search key in database
     let sql = `SELECT * FROM MyTable WHERE key = ?`;
     db.get(sql, [key], (err, row) => {
@@ -395,8 +397,15 @@ app.post('/readability', (req, res) => {
       }
     });
   }
+  try {
+    res.json({textContent: article.textContent});
+    
+  } catch (error) {
+    console.error("Error parsing article: ", error);
+    // Handle the error gracefully
+    res.json({textContent: ""});
 
-  res.json({textContent: article.textContent});
+  }
 });  
 
 // Endpoint to search data from database
