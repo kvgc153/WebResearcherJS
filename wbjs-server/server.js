@@ -306,9 +306,6 @@ app.post('/getAllTags', (req, res) => {
 // Endpoint to get data from database
 app.post('/getData', (req, res) => {
   let token = req.headers['token'];
-  console.log("user asked for data with key: "+req.body.key);
-  console.log("user token: "+token);
-
   // console.log(processToken(token)); 
   if(processToken(token)){
 
