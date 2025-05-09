@@ -408,7 +408,7 @@ app.post('/readability', (req, res) => {
 // Endpoint to search data from database
 
 app.post('/search', (req, res) => {
-  let key = "%" + req.body.key + "%";
+  let key = "%" + req.body.key + " %";
   // console.log("user asked to search for : "+key);
 
   let sql = `SELECT * FROM MyTable WHERE value LIKE ?`;
@@ -431,7 +431,7 @@ app.post('/search', (req, res) => {
 //End point for EDJS search
 app.get('/searchWBJS', (req, res) => {
   const searchString = req.query.search
-  let key = "%" + searchString + "%";
+  let key = "%" + searchString + " %";
   // console.log("user from WBJS asked to search for : "+key);
 
   let sql = `SELECT * FROM MyTable WHERE value LIKE ?`;
