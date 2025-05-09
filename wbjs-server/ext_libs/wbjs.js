@@ -32,7 +32,7 @@ fetch("http://127.0.0.1:3000/getAllTags", { method: "POST" })
             tagDiv.className = 'tagSidebar';
             tagDiv.textContent = tag + " (" + tagsOccurences[count] + ")";
             tagDiv.addEventListener('click', function() {   
-                window.location.href = "http://127.0.0.1:3000/notesViewer?q=" + tag;
+                window.location.href = "http://127.0.0.1:3000/notesViewer?q=" + tag + "&tag=true";
             });
 
             tagsContainer.appendChild(tagDiv);
@@ -188,10 +188,12 @@ function searchDB(){
 const queryString = window.location.search; 
 const urlParams = new URLSearchParams(queryString);
 const urlSearch = urlParams.get('q') || '';
+const tagFlag   = urlParams.get('tag') || false;
 document.getElementById('search').value = urlSearch;
 
 var dataPacket = {};
 dataPacket['key'] = urlSearch;
+dataPacket['tag'] = tagFlag;
 
 fetch(`http://127.0.0.1:3000/search`,
 {

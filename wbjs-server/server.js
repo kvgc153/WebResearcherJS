@@ -408,8 +408,14 @@ app.post('/readability', (req, res) => {
 // Endpoint to search data from database
 
 app.post('/search', (req, res) => {
-  let key = "%" + req.body.key + " %";
-  // console.log("user asked to search for : "+key);
+  let tagFlag = req.body.tag;
+  let key     = "";
+  if(tagFlag){
+    key = "%" + req.body.key + ",%";
+  }
+  else{
+    key = "%" + req.body.key + " %";
+  }
 
   let sql = `SELECT * FROM MyTable WHERE value LIKE ?`;
 
