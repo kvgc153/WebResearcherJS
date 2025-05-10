@@ -414,7 +414,13 @@ app.post('/search', (req, res) => {
     key = "%" + req.body.key + ",%";
   }
   else{
-    key = "%" + req.body.key + " %";
+    // Check if the key is a url 
+    if(req.body.key.includes("/")){
+      key = "%" + req.body.key + "%";
+    }
+    else{
+      key = "%" + req.body.key + " %";
+    }
   }
 
   let sql = `SELECT * FROM MyTable WHERE value LIKE ?`;
