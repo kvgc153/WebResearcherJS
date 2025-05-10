@@ -70,22 +70,22 @@ fs.readFile('registeredUsers.json', 'utf8', (err, data) => {
 });
 
 
-app.post('/register', (req, res) => {
-  if(req.headers['origin'].includes("moz-extension://")){
-    registeredExtensions.push(req.body.token);
-    console.log("Registered user");
-    console.log("Users registered: ", registeredExtensions);
-    // save registered users to file 
-    fs.writeFile('registeredUsers.json', JSON.stringify(registeredExtensions), (err) => {
-      if (err) {
-          console.error('Error writing file:', err);
-          res.status(500).send('Server Error');
-          return;
-      }
-    });
-    res.json({ success: true });
-  }
-});
+// app.post('/register', (req, res) => {
+//   if(req.headers['origin'].includes("moz-extension://")){
+//     registeredExtensions.push(req.body.token);
+//     console.log("Registered user");
+//     console.log("Users registered: ", registeredExtensions);
+//     // save registered users to file 
+//     fs.writeFile('registeredUsers.json', JSON.stringify(registeredExtensions), (err) => {
+//       if (err) {
+//           console.error('Error writing file:', err);
+//           res.status(500).send('Server Error');
+//           return;
+//       }
+//     });
+//     res.json({ success: true });
+//   }
+// });
 
 app.get('/pdfViewer', (req, res) => {
   // glob pdf files from folder
@@ -236,7 +236,7 @@ processDB(key="");
 
 function processToken(token){
   for(let i=0; i<registeredExtensions.length; i++){
-    if(token == registeredExtensions[i]){
+    if(token === registeredExtensions[i]){
       return true;
     }
   }
@@ -291,7 +291,14 @@ app.post('/getAllTags', (req, res) => {
     // Get all keys 
     let keys = Object.keys(result);
     keys.sort();
-    let sortedResult = {'tags': keys};
+
+    // Find how many times each tag is used
+    let occurences = [];
+    keys.forEach((key, index) => {
+      occurences.push(result[key].length);
+    });
+
+    let sortedResult = {'tags': keys, 'occurences': occurences};
     res.json(sortedResult);
   });
 });
@@ -303,7 +310,6 @@ app.post('/getData', (req, res) => {
   if(processToken(token)){
 
     let key = req.body.key;
-    // console.log("user asked for data with key: "+key);
     // search key in database
     let sql = `SELECT * FROM MyTable WHERE key = ?`;
     db.get(sql, [key], (err, row) => {
@@ -356,7 +362,7 @@ const ignoredWebsites = {
 
 function isUrlInIgnoredWebsites(url) {
   const urlDomain = url.replace(/https?:\/\//, "").split("/")[0]; // Extract domain from URL
-  for (const category in websites) {
+  for (const category in ignoredWebsites) {
     if (ignoredWebsites[category].includes(urlDomain)) {
       return true;
     }
@@ -388,14 +394,34 @@ app.post('/readability', (req, res) => {
       }
     });
   }
-  res.json({textContent: article.textContent});
+  try {
+    res.json({textContent: article.textContent});
+    
+  } catch (error) {
+    console.error("Error parsing article: ", error);
+    // Handle the error gracefully
+    res.json({textContent: ""});
+
+  }
 });  
 
 // Endpoint to search data from database
 
 app.post('/search', (req, res) => {
-  let key = "%" + req.body.key + "%";
-  // console.log("user asked to search for : "+key);
+  let tagFlag = req.body.tag;
+  let key     = "";
+  if(tagFlag){
+    key = "%" + req.body.key + ",%";
+  }
+  else{
+    // Check if the key is a url 
+    if(req.body.key.includes("/")){
+      key = "%" + req.body.key + "%";
+    }
+    else{
+      key = "%" + req.body.key + " %";
+    }
+  }
 
   let sql = `SELECT * FROM MyTable WHERE value LIKE ?`;
 
@@ -417,7 +443,7 @@ app.post('/search', (req, res) => {
 //End point for EDJS search
 app.get('/searchWBJS', (req, res) => {
   const searchString = req.query.search
-  let key = "%" + searchString + "%";
+  let key = "%" + searchString + " %";
   // console.log("user from WBJS asked to search for : "+key);
 
   let sql = `SELECT * FROM MyTable WHERE value LIKE ?`;

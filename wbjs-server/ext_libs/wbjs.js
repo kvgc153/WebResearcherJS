@@ -21,20 +21,23 @@ fetch("http://127.0.0.1:3000/getAllTags", { method: "POST" })
 .then(data => {
 
     var tagsDB = data['tags'];
+    var tagsOccurences = data['occurences'];
     let tagsContainer = document.getElementById('tags-container');
     tagsContainer.innerHTML =  "<h5>Tags</h5>";
 
+    var count = 0;
     tagsDB.forEach(function(tag) {
         if(tag.length>0){
             let tagDiv = document.createElement('button');
             tagDiv.className = 'tagSidebar';
-            tagDiv.textContent = tag;
+            tagDiv.textContent = tag + " (" + tagsOccurences[count] + ")";
             tagDiv.addEventListener('click', function() {   
-                window.location.href = "http://127.0.0.1:3000/notesViewer?q=" + tag;
+                window.location.href = "http://127.0.0.1:3000/notesViewer?q=" + tag + "&tag=true";
             });
 
             tagsContainer.appendChild(tagDiv);
         }
+        count +=1;
        
     }); 
 });
@@ -137,7 +140,7 @@ function displayNotes(data) {
         document.getElementById('note-container').appendChild(noteContentWrapper);
     }
     if(allDataKeys.length < 10){
-        for(let i = 0; i < 10 - allDataKeys.length; i++){
+        for(let i = 0; i < 10; i++){
             toggleNotes(i);
         }
     }
@@ -185,10 +188,12 @@ function searchDB(){
 const queryString = window.location.search; 
 const urlParams = new URLSearchParams(queryString);
 const urlSearch = urlParams.get('q') || '';
+const tagFlag   = urlParams.get('tag') || false;
 document.getElementById('search').value = urlSearch;
 
 var dataPacket = {};
 dataPacket['key'] = urlSearch;
+dataPacket['tag'] = tagFlag;
 
 fetch(`http://127.0.0.1:3000/search`,
 {
