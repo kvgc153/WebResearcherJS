@@ -15,6 +15,8 @@ const readline = require('readline');
 app.use(cors({credentials: true}))
 app.use(express.static("ext_libs/"));
 app.use('/notes', express.static('notes'))
+app.use('/notes/videos/', express.static('notes/videos'))
+
 app.use(express.json({ limit: '200mb' }));
 
 
@@ -57,6 +59,9 @@ app.get('/pdf.html', (req, res) => {
   res.sendFile(__dirname + '/pdf.html');
 });
 
+app.get('/video.html', (req, res) => {
+  res.sendFile(__dirname + '/video.html');
+});
 
 let registeredExtensions = [] 
 // Load registered users from file
@@ -69,23 +74,6 @@ fs.readFile('registeredUsers.json', 'utf8', (err, data) => {
   console.log("Users registered: ", registeredExtensions);
 });
 
-
-// app.post('/register', (req, res) => {
-//   if(req.headers['origin'].includes("moz-extension://")){
-//     registeredExtensions.push(req.body.token);
-//     console.log("Registered user");
-//     console.log("Users registered: ", registeredExtensions);
-//     // save registered users to file 
-//     fs.writeFile('registeredUsers.json', JSON.stringify(registeredExtensions), (err) => {
-//       if (err) {
-//           console.error('Error writing file:', err);
-//           res.status(500).send('Server Error');
-//           return;
-//       }
-//     });
-//     res.json({ success: true });
-//   }
-// });
 
 app.get('/pdfViewer', (req, res) => {
   // glob pdf files from folder
@@ -128,6 +116,71 @@ app.get('/pdfViewer', (req, res) => {
   );
 });
 
+app.get('/videoViewer', (req, res) => {
+  // glob video files from folder
+  const folderPath = path.join(__dirname, 'notes', 'videos');
+  fs.readdir(folderPath, (err, files) => {
+      if (err) {
+          console.error('Error reading folder:', err);
+      }
+      const videoFiles = files.filter(file => file.endsWith('.mp4') || file.endsWith('.webm') || file.endsWith('.ogg'));
+
+      // generate html content
+      const htmlContent = `
+      <!DOCTYPE html>
+      <html>
+      <head>
+          <meta charset="UTF-8">
+          <title>Saved Videos</title>
+          <style>
+              body {
+                  font-family: Arial, sans-serif;
+                  background-color: #f4f4f4;
+                  padding: 20px;
+              }
+              .video-container {
+                  display: flex;
+                  flex-wrap: wrap;
+                  justify-content: center;
+                  gap: 20px;
+              }
+              .video-item {
+                  width: 300px;
+                  text-align: center;
+              }
+              .thumbnail {
+                  width: 100%;
+                  height: auto;
+                  border: 1px solid #ccc;
+                  border-radius: 5px;
+                  cursor: pointer;
+              }
+              a {
+                  text-decoration: none;
+                  color: black;
+              }
+              a:hover {
+                  color: blue;
+              }
+          </style>
+      </head>
+      <body>
+          <h1 style="text-align:center">Saved Videos</h1>
+          <div class="video-container">
+            ${videoFiles.map(videoFile => `
+              <div class="video-item">
+                  <video src="/notes/videos/${encodeURI(videoFile)}" alt="${videoFile}" width=100%></video>
+                  <h4> <a href="/video.html?videoUrl=${encodeURI(`notes/videos/${videoFile}`)}" target="_blank">${videoFile}
+                  </a> </h4>
+              </div>
+            `).join('')}
+          </div>
+      </body>
+      </html>
+      `;
+      res.send(htmlContent);
+  });
+});
 // Blank canvas for user to take notes 
 app.get('/canvas', (req, res) => {
 

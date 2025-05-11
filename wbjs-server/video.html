@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Video Loader</title>
+    <style>
+        iframe {
+            width: 70%;
+            height: 700px;
+        }
+    </style>
+</head>
+<body>
+    <iframe id="videoFrame"></iframe>
+
+    <script>
+
+        function getParameterByName(name, url) {
+            if (!url) url = window.location.href;
+            name = name.replace(/[\[\]]/g, '\\$&');
+            var regex = new RegExp('[?&]' + name + '(=([^&#]*)|&|#|$)'),
+                results = regex.exec(url);
+            if (!results) return null;
+            if (!results[2]) return '';
+            return decodeURIComponent(results[2].replace(/\+/g, ' '));
+        }
+
+        var pdfUrl = getParameterByName('videoUrl');
+        if (pdfUrl) {
+            
+            document.getElementById('videoFrame').src = pdfUrl;
+        }
+    </script>
+</body>
+</html>
