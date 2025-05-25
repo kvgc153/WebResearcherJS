@@ -48,7 +48,7 @@ dbClean.run(`CREATE TABLE IF NOT EXISTS MyTable (key TEXT UNIQUE, uid TEXT, titl
   err ? console.error(err.message) : console.log('Table created if it did not exist.')
 });
 
-dbReadability.run(`CREATE TABLE IF NOT EXISTS MyTable (key TEXT UNIQUE, value TEXT)`, (err) => {
+dbReadability.run(`CREATE TABLE IF NOT EXISTS MyTable (key TEXT UNIQUE, input TEXT, html TEXT, text TEXT, excerpt TEXT, title TEXT, length INT)`, (err) => {
   err?  console.error(err.message) : console.log('Table created if it did not exist.')
 });
 
@@ -499,14 +499,16 @@ app.post('/readability', (req, res) => {
   let reader = new Readability(doc.window.document);
   let article = reader.parse();
   //Store the article in the database
-  let sql = `INSERT INTO MyTable VALUES (?, ?)`;
+  let sql = `INSERT INTO MyTable VALUES (?, ?, ?, ?, ?, ?, ?)`;
   if(isUrlInIgnoredWebsites(req.body.url)){
-    dbReadability.run(sql, [req.body.url, JSON.stringify(article)], function(err) {
+
+    let val = article;
+    dbReadability.run(sql, [req.body.url, bodyHTML, val['content'], val['textContent'], val['excerpt'], val['title'], val['length']], function(err) {
       if (err) {
         if(err.message.includes('UNIQUE constraint failed')){ 
           console.log('Key already exists. Updating value.');
-          let sqlUPDATE = `UPDATE MyTable SET value = ? WHERE key = ?`;
-          dbReadability.run(sqlUPDATE, [JSON.stringify(article), req.body.url], function(err) {
+          let sqlUPDATE = `UPDATE MyTable SET VALUES (?, ?, ?, ?, ?, ?) WHERE key = ?`;
+          dbReadability.run(sqlUPDATE, [ bodyHTML,val['content'], val['textContent'], val['excerpt'], val['title'], val['length'], req.body.url], function(err) {
             if (err) {
               console.error(err.message);
             }
