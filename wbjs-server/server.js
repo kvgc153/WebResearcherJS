@@ -443,6 +443,9 @@ const ignoredWebsites = {
     "www.instagram.com", 
     "www.linkedin.com", 
     "www.reddit.com", 
+    "old.reddit.com",
+    "www.tumblr.com",
+    "www.quora.com",
     "www.pinterest.com", 
     "www.snapchat.com", 
     "www.tiktok.com", 
@@ -462,6 +465,16 @@ const ignoredWebsites = {
     "www.macys.com", 
     "www.kohls.com", 
     "www.sears.com"
+  ],
+  searchEngines: [
+    "www.google.com", 
+    "www.bing.com", 
+    "www.yahoo.com", 
+    "www.duckduckgo.com", 
+    "www.ask.com", 
+    "www.aol.com", 
+    "www.yandex.com", 
+    "www.baidu.com"
   ],
   custom:[
     HOSTSERVER + ":" + HOSTPORT // Add the server itself to the ignored list
