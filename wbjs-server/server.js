@@ -236,69 +236,6 @@ app.get('/canvas', (req, res) => {
 
 //Post process the database
 function processDB(key=""){
-
-  if(key.length > 0){
-    //If key is provided, then we will only process that key
-    let sql = `SELECT * FROM MyTable WHERE key = ?`;
-    // Update dbClean database
-    db.all(sql, [key], (err, rows) => {
-      rows.forEach((row, index) => {
-        try{
-          let val  = JSON.parse(row['value']);          
-
-          let key = row['key'];
-
-          let uid = crypto.createHash('md5').update(row['key']).digest('hex');
-             
-          let title = val['TITLE'] || "";
-          let tags = val['TAGS'] || "";
-
-          let cleanedNotes = val["JSON"];
-          // Remove all the Images from the notes to make it easier to search
-          let cleanedNotesKeys = Object.keys(cleanedNotes);
-          cleanedNotesKeys.forEach((key, index) => {
-            let blocks = cleanedNotes[key]["blocks"];
-            blocks.forEach((block,blockindex) => {
-              if(block['type'] === 'image'){
-                  // Write the image to a file 
-                  let imageUrl = block['data']['url'];
-                  let base64Data = imageUrl.replace(/^data:image\/png;base64,/, "");
-                  let imageSave = path.join(__dirname, 'notes', 'images', uid + "_" + index + "_" + blockindex + ".png");
-
-                  fs.writeFile(imageSave, base64Data, 'base64', function(err) {
-                    console.log(err);
-                  });
-                  
-                  // set the data to empty string
-                  cleanedNotes[key]["blocks"][blockindex]["data"] = {};
-                }
-            });
-          });
-
-          // let notes = JSON.stringify(val['JSON']) || "";
-          let notes = JSON.stringify(cleanedNotes) || "";
-          let summary= "";
-          let user = "root";
-          let css =  JSON.stringify(val['CSS']) || ""; 
-          let meta = "";
-          let notesText = "";
-          let value  = row['value'] || "";
-          let sqlTags = `REPLACE INTO MyTable (key, uid, title, tags, notes, notesText, summary, user, css, meta, value) VALUES (?,?,?,?,?,?,?,?,?,?,?)`;
-          dbClean.run(sqlTags, [key,uid, title, tags, notes, notesText, summary, user, css, meta, value], function(err) {
-            if (err) {
-              console.error(err.message);
-            }
-          });
-  
-        }catch(e){
-          console.error(e);
-          console.log("Error parsing tags for key: "+row['key']);
-          console.log("Ignoring this key"); 
-        }
-      });
-    }); 
-  }
-  else{
     let sql = `SELECT * FROM MyTable`;
 
     // Update dbClean database
@@ -369,8 +306,6 @@ function processDB(key=""){
         }
       });
     });
-
-  }
 
 }
 
@@ -575,9 +510,9 @@ app.post('/search', (req, res) => {
   else{
     key = "%" + req.body.key + "%";
 
-    let sql = `SELECT key,value,notesText FROM MyTable WHERE notesText LIKE ?`;
+    let sql = `SELECT key,value,notesText FROM MyTable WHERE notesText LIKE ? OR key LIKE ? OR title LIKE ?`;
 
-    dbClean.all(sql, [key], (err, rows) => {
+    dbClean.all(sql, [key,key,key], (err, rows) => {
       if (err) {
         throw err;
       }
@@ -599,9 +534,9 @@ app.get('/searchWBJS', (req, res) => {
   let key = "%" + searchString + " %";
   // console.log("user from WBJS asked to search for : "+key);
 
-  let sql = `SELECT * FROM MyTable WHERE value LIKE ?`;
+  let sql = `SELECT key,title,tags,notesText FROM MyTable WHERE notesText LIKE ? OR key LIKE ? OR title LIKE ?`;
 
-    db.all(sql, [key], (err, rows) => {
+    dbClean.all(sql, [key, key, key], (err, rows) => {
       if (err) {
         throw err;
       }
@@ -612,10 +547,8 @@ app.get('/searchWBJS', (req, res) => {
         try{
           let resultFoo = {};
           resultFoo["href"] = HOSTSTRING + "/notesViewer?q=" + row['key'];
-          let val  = JSON.parse(row['value']);
-          // console.log(val);
-          resultFoo["name"] = val['TITLE'];
-          resultFoo["description"] = val['TAGS'];
+          resultFoo["name"] = row['title'];
+          resultFoo["description"] = row['tags']
 
           itemsPacked.push(resultFoo);
         }catch(e){
