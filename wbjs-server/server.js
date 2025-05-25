@@ -43,7 +43,7 @@ let dbReadability = new sqlite3.Database('./readability.db', err => {
 db.run(`CREATE TABLE IF NOT EXISTS MyTable (key TEXT UNIQUE, value TEXT)`, (err) => {
   err ? console.error(err.message) : console.log('Table created if it did not exist.')
 });
-dbClean.run(`CREATE TABLE IF NOT EXISTS MyTable (key TEXT UNIQUE, uid TEXT, title TEXT, tags TEXT, notes TEXT, notesText TEXT, summary TEXT, user TEXT, css TEXT, meta TEXT)`, (err) => {
+dbClean.run(`CREATE TABLE IF NOT EXISTS MyTable (key TEXT UNIQUE, uid TEXT, title TEXT, tags TEXT, notes TEXT, notesText TEXT, summary TEXT, user TEXT, css TEXT, meta TEXT, value TEXT)`, (err) => {
   err ? console.error(err.message) : console.log('Table created if it did not exist.')
 });
 
@@ -282,8 +282,9 @@ function processDB(key=""){
           let css =  JSON.stringify(val['CSS']) || ""; 
           let meta = "";
           let notesText = "";
-          let sqlTags = `REPLACE INTO MyTable (key, uid, title, tags, notes, notesText, summary, user, css, meta) VALUES (?,?,?,?,?,?,?,?,?,?)`;
-          dbClean.run(sqlTags, [key,uid, title, tags, notes, notesText, summary, user, css, meta], function(err) {
+          let value  = row['value'] || "";
+          let sqlTags = `REPLACE INTO MyTable (key, uid, title, tags, notes, notesText, summary, user, css, meta, value) VALUES (?,?,?,?,?,?,?,?,?,?,?)`;
+          dbClean.run(sqlTags, [key,uid, title, tags, notes, notesText, summary, user, css, meta, value], function(err) {
             if (err) {
               console.error(err.message);
             }
@@ -352,12 +353,14 @@ function processDB(key=""){
           let user = "root";
           let css =  JSON.stringify(val['CSS']) || ""; 
           let meta = "";
-          let sqlTags = `REPLACE INTO MyTable (key, uid, title, tags, notes, notesText, summary, user, css, meta) VALUES (?,?,?,?,?,?,?,?,?,?)`;
-          dbClean.run(sqlTags, [key, uid, title, tags, notes, notesText, summary, user, css, meta], function(err) {
+          let value  = row['value'] || "";
+          let sqlTags = `REPLACE INTO MyTable (key, uid, title, tags, notes, notesText, summary, user, css, meta, value) VALUES (?,?,?,?,?,?,?,?,?,?,?)`;
+          dbClean.run(sqlTags, [key,uid, title, tags, notes, notesText, summary, user, css, meta, value], function(err) {
             if (err) {
               console.error(err.message);
             }
           });
+  
   
         }catch(e){
           console.error(e);
@@ -552,25 +555,41 @@ app.post('/search', (req, res) => {
   let key     = "";
   if(tagFlag){
     key = "%" + req.body.key + "%";
+
+    let sql = `SELECT key,value,tags FROM MyTable WHERE tags LIKE ?`;
+
+    dbClean.all(sql, [key], (err, rows) => {
+      if (err) {
+        throw err;
+      }
+
+      let result = {};
+      rows.forEach((row, index) => {
+        result[row['key']] = row['value'];
+      });
+
+      res.json(result);
+    });
+
   }
   else{
     key = "%" + req.body.key + "%";
-  }
 
-  let sql = `SELECT * FROM MyTable WHERE value LIKE ?`;
+    let sql = `SELECT key,value,notesText FROM MyTable WHERE notesText LIKE ?`;
 
-  db.all(sql, [key], (err, rows) => {
-    if (err) {
-      throw err;
-    }
+    dbClean.all(sql, [key], (err, rows) => {
+      if (err) {
+        throw err;
+      }
 
-    let result = {};
-    rows.forEach((row, index) => {
-      result[row['key']] = row['value'];
+      let result = {};
+      rows.forEach((row, index) => {
+        result[row['key']] = row['value'];
+      });
+
+      res.json(result);
     });
-
-    res.json(result);
-  });
+  }
 });
 
 
