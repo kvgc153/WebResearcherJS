@@ -372,8 +372,8 @@ function processDB(key=""){
                     console.log(err);
                   });
                   
-                  // set the data to empty string
-                  cleanedNotes[key]["blocks"][blockindex]["data"] = {};
+                  // Replace the url with the saved image path
+                  cleanedNotes[key]["blocks"][blockindex]["data"]["url"] = HOSTSERVER + ":" + HOSTPORT + "/notes/images/" + uid + "_" + index + "_" + blockindex + ".png";
                 }
             });
           });
