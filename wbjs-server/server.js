@@ -5,6 +5,7 @@ const fs = require('fs');
 const app = express();
 var cors = require('cors')
 const formidable = require('formidable');
+const crypto = require('crypto');
 
 const { Readability } = require('@mozilla/readability');
 const { JSDOM } = require('jsdom');
@@ -15,6 +16,7 @@ const readline = require('readline');
 app.use(cors({credentials: true}))
 app.use(express.static("ext_libs/"));
 app.use('/notes', express.static('notes'))
+app.use('/notes/images/', express.static('notes/images'))
 app.use('/notes/videos/', express.static('notes/videos'))
 
 app.use(express.json({ limit: '200mb' }));
@@ -41,7 +43,7 @@ let dbReadability = new sqlite3.Database('./readability.db', err => {
 db.run(`CREATE TABLE IF NOT EXISTS MyTable (key TEXT UNIQUE, value TEXT)`, (err) => {
   err ? console.error(err.message) : console.log('Table created if it did not exist.')
 });
-dbClean.run(`CREATE TABLE IF NOT EXISTS MyTable (key TEXT UNIQUE, title TEXT, tags TEXT, notes TEXT, summary TEXT, user TEXT, css TEXT, meta TEXT)`, (err) => {
+dbClean.run(`CREATE TABLE IF NOT EXISTS MyTable (key TEXT UNIQUE, uid TEXT, title TEXT, tags TEXT, notes TEXT, summary TEXT, user TEXT, css TEXT, meta TEXT)`, (err) => {
   err ? console.error(err.message) : console.log('Table created if it did not exist.')
 });
 dbTags.run(`CREATE TABLE IF NOT EXISTS MyTable (key TEXT UNIQUE, value TEXT)`, (err) => {
@@ -269,15 +271,42 @@ function processDB(key=""){
           let val  = JSON.parse(row['value']);          
 
           let key = row['key'];
+
+          let uid = crypto.createHash('md5').update(row['key']).digest('hex');
+             
           let title = val['TITLE'] || "";
           let tags = val['TAGS'] || "";
-          let notes = val['JSON'] || "";
+
+          let cleanedNotes = val["JSON"];
+          // Remove all the Images from the notes to make it easier to search
+          let cleanedNotesKeys = Object.keys(cleanedNotes);
+          cleanedNotesKeys.forEach((key, index) => {
+            let blocks = cleanedNotes[key]["blocks"];
+            blocks.forEach((block,blockindex) => {
+              if(block['type'] === 'image'){
+                  // Write the image to a file 
+                  let imageUrl = block['data']['url'];
+                  let base64Data = imageUrl.replace(/^data:image\/png;base64,/, "");
+                  let imageSave = path.join(__dirname, 'notes', 'images', uid + "_" + index + "_" + blockindex + ".png");
+
+                  fs.writeFile(imageSave, base64Data, 'base64', function(err) {
+                    console.log(err);
+                  });
+                  
+                  // set the data to empty string
+                  cleanedNotes[key]["blocks"][blockindex]["data"] = {};
+                }
+            });
+          });
+
+          // let notes = JSON.stringify(val['JSON']) || "";
+          let notes = JSON.stringify(cleanedNotes) || "";
           let summary= "";
           let user = "root";
-          let css = val['CSS'] || ""; 
+          let css =  JSON.stringify(val['CSS']) || ""; 
           let meta = "";
-          let sqlTags = `REPLACE INTO MyTable (key, title, tags, notes, summary, user, css, meta) VALUES (?,?,?,?,?,?,?,?)`;
-          dbClean.run(sqlTags, [key, title, tags, notes, summary, user, css, meta], function(err) {
+          let sqlTags = `REPLACE INTO MyTable (key, uid, title, tags, notes, summary, user, css, meta) VALUES (?,?,?,?,?,?,?,?,?)`;
+          dbClean.run(sqlTags, [key,uid, title, tags, notes, summary, user, css, meta], function(err) {
             if (err) {
               console.error(err.message);
             }
@@ -316,11 +345,14 @@ function processDB(key=""){
 
     // Update dbClean database
     db.all(sql, [], (err, rows) => {
-      rows.forEach((row, index) => {
+      rows.forEach((row, rowIdx) => {
         try{
           let val  = JSON.parse(row['value']);          
 
           let key = row['key'];
+
+          let uid = crypto.createHash('md5').update(row['key']).digest('hex');
+             
           let title = val['TITLE'] || "";
           let tags = val['TAGS'] || "";
 
@@ -331,6 +363,15 @@ function processDB(key=""){
             let blocks = cleanedNotes[key]["blocks"];
             blocks.forEach((block,blockindex) => {
               if(block['type'] === 'image'){
+                  // Write the image to a file 
+                  let imageUrl = block['data']['url'];
+                  let base64Data = imageUrl.replace(/^data:image\/png;base64,/, "");
+                  let imageSave = path.join(__dirname, 'notes', 'images', uid + "_" + index + "_" + blockindex + ".png");
+
+                  fs.writeFile(imageSave, base64Data, 'base64', function(err) {
+                    console.log(err);
+                  });
+                  
                   // set the data to empty string
                   cleanedNotes[key]["blocks"][blockindex]["data"] = {};
                 }
@@ -343,8 +384,8 @@ function processDB(key=""){
           let user = "root";
           let css =  JSON.stringify(val['CSS']) || ""; 
           let meta = "";
-          let sqlTags = `REPLACE INTO MyTable (key, title, tags, notes, summary, user, css, meta) VALUES (?,?,?,?,?,?,?,?)`;
-          dbClean.run(sqlTags, [key, title, tags, notes, summary, user, css, meta], function(err) {
+          let sqlTags = `REPLACE INTO MyTable (key, uid, title, tags, notes, summary, user, css, meta) VALUES (?,?,?,?,?,?,?,?,?)`;
+          dbClean.run(sqlTags, [key, uid, title, tags, notes, summary, user, css, meta], function(err) {
             if (err) {
               console.error(err.message);
             }
