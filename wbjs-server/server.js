@@ -12,10 +12,11 @@ const { JSDOM } = require('jsdom');
 const { stdin: input, stdout: output } = require('node:process');
 const readline = require('readline');
 
-const DEBUG = (message) => {
-  const timestamp = new Date().toISOString();
-  console.log(`${timestamp} - ${message}`);
-};
+
+HOSTSERVER = "127.0.0.1"
+HOSTPORT   = 3000
+HOSTSTRING = 'http://' + HOSTSERVER + ":" + HOSTPORT
+
 
 app.use(cors({credentials: true}))
 app.use(express.static("ext_libs/"));
@@ -435,6 +436,35 @@ const ignoredWebsites = {
     "www.discover.com", 
     "www.hsbc.com", 
     "www.usaa.com"
+  ],
+  socialMedia: [
+    "www.facebook.com", 
+    "www.twitter.com", 
+    "www.instagram.com", 
+    "www.linkedin.com", 
+    "www.reddit.com", 
+    "www.pinterest.com", 
+    "www.snapchat.com", 
+    "www.tiktok.com", 
+    "www.youtube.com", 
+    "www.whatsapp.com", 
+    "www.telegram.org"
+  ],
+  shopping: [
+    "www.amazon.com", 
+    "www.ebay.com", 
+    "www.walmart.com", 
+    "www.target.com", 
+    "www.bestbuy.com", 
+    "www.costco.com", 
+    "www.homedepot.com", 
+    "www.lowes.com", 
+    "www.macys.com", 
+    "www.kohls.com", 
+    "www.sears.com"
+  ],
+  custom:[
+    HOSTSERVER + ":" + HOSTPORT // Add the server itself to the ignored list
   ]
 };
 
@@ -442,10 +472,10 @@ function isUrlInIgnoredWebsites(url) {
   const urlDomain = url.replace(/https?:\/\//, "").split("/")[0]; // Extract domain from URL
   for (const category in ignoredWebsites) {
     if (ignoredWebsites[category].includes(urlDomain)) {
-      return true;
+      return false;
     }
   }
-  return false;
+  return true;
 }
 
 app.post('/readability', (req, res) => {
@@ -663,9 +693,6 @@ app.post('/data', (req, res) => {
 
 
 
-HOSTSERVER = "127.0.0.1"
-HOSTPORT   = 3000
-HOSTSTRING = 'http://' + HOSTSERVER + ":" + HOSTPORT
 
 // Start server
 app.listen(HOSTPORT,HOSTSERVER, () => {
