@@ -12,6 +12,10 @@ const { JSDOM } = require('jsdom');
 const { stdin: input, stdout: output } = require('node:process');
 const readline = require('readline');
 
+const DEBUG = (message) => {
+  const timestamp = new Date().toISOString();
+  console.log(`${timestamp} - ${message}`);
+};
 
 app.use(cors({credentials: true}))
 app.use(express.static("ext_libs/"));
@@ -31,10 +35,6 @@ let dbClean = new sqlite3.Database('./my_database_clean.db', err => {
   err ? console.error(err.message) : console.log('Connected to the SQLite database.')
 });
 
-let dbTags = new sqlite3.Database('./tags.db', err => {
-  err ? console.error(err.message) : console.log('Connected to the tags database.');
-});
-
 let dbReadability = new sqlite3.Database('./readability.db', err => { 
   err ? console.error(err.message) : console.log('Connected to the readability database.');
 });
@@ -43,11 +43,8 @@ let dbReadability = new sqlite3.Database('./readability.db', err => {
 db.run(`CREATE TABLE IF NOT EXISTS MyTable (key TEXT UNIQUE, value TEXT)`, (err) => {
   err ? console.error(err.message) : console.log('Table created if it did not exist.')
 });
-dbClean.run(`CREATE TABLE IF NOT EXISTS MyTable (key TEXT UNIQUE, uid TEXT, title TEXT, tags TEXT, notes TEXT, summary TEXT, user TEXT, css TEXT, meta TEXT)`, (err) => {
+dbClean.run(`CREATE TABLE IF NOT EXISTS MyTable (key TEXT UNIQUE, uid TEXT, title TEXT, tags TEXT, notes TEXT, notesText TEXT, summary TEXT, user TEXT, css TEXT, meta TEXT)`, (err) => {
   err ? console.error(err.message) : console.log('Table created if it did not exist.')
-});
-dbTags.run(`CREATE TABLE IF NOT EXISTS MyTable (key TEXT UNIQUE, value TEXT)`, (err) => {
-  err?  console.error(err.message) : console.log('Table created if it did not exist.')
 });
 
 dbReadability.run(`CREATE TABLE IF NOT EXISTS MyTable (key TEXT UNIQUE, value TEXT)`, (err) => {
@@ -243,27 +240,6 @@ function processDB(key=""){
   if(key.length > 0){
     //If key is provided, then we will only process that key
     let sql = `SELECT * FROM MyTable WHERE key = ?`;
-
-    // Update Tags database
-    db.all(sql, [key], (err, rows) => {
-      rows.forEach((row, index) => {
-        try{
-          let val  = JSON.parse(row['value']);
-          let sqlTags = `REPLACE INTO MyTable (key, value) VALUES (?, ?)`;
-          dbTags.run(sqlTags, [row['key'], val['TAGS']], function(err) {
-            if (err) {
-              console.error(err.message);
-            }
-          });
-  
-        }catch(e){
-          console.error(e);
-          console.log("Error parsing tags for key: "+row['key']);
-          console.log("Ignoring this key"); 
-        }
-      });
-    });
-
     // Update dbClean database
     db.all(sql, [key], (err, rows) => {
       rows.forEach((row, index) => {
@@ -305,8 +281,9 @@ function processDB(key=""){
           let user = "root";
           let css =  JSON.stringify(val['CSS']) || ""; 
           let meta = "";
-          let sqlTags = `REPLACE INTO MyTable (key, uid, title, tags, notes, summary, user, css, meta) VALUES (?,?,?,?,?,?,?,?,?)`;
-          dbClean.run(sqlTags, [key,uid, title, tags, notes, summary, user, css, meta], function(err) {
+          let notesText = "";
+          let sqlTags = `REPLACE INTO MyTable (key, uid, title, tags, notes, notesText, summary, user, css, meta) VALUES (?,?,?,?,?,?,?,?,?,?)`;
+          dbClean.run(sqlTags, [key,uid, title, tags, notes, notesText, summary, user, css, meta], function(err) {
             if (err) {
               console.error(err.message);
             }
@@ -323,26 +300,6 @@ function processDB(key=""){
   else{
     let sql = `SELECT * FROM MyTable`;
 
-    // Update Tags database
-    db.all(sql, [], (err, rows) => {
-      rows.forEach((row, index) => {
-        try{
-          let val  = JSON.parse(row['value']);
-          let sqlTags = `REPLACE INTO MyTable (key, value) VALUES (?, ?)`;
-          dbTags.run(sqlTags, [row['key'], val['TAGS']], function(err) {
-            if (err) {
-              console.error(err.message);
-            }
-          });
-  
-        }catch(e){
-          console.error(e);
-          console.log("Error parsing tags for key: "+row['key']);
-          console.log("Ignoring this key"); 
-        }
-      });
-    });
-
     // Update dbClean database
     db.all(sql, [], (err, rows) => {
       rows.forEach((row, rowIdx) => {
@@ -355,6 +312,8 @@ function processDB(key=""){
              
           let title = val['TITLE'] || "";
           let tags = val['TAGS'] || "";
+          let notesText = "";
+
 
           let cleanedNotes = val["JSON"];
           // Remove all the Images from the notes to make it easier to search
@@ -375,17 +334,26 @@ function processDB(key=""){
                   // Replace the url with the saved image path
                   cleanedNotes[key]["blocks"][blockindex]["data"]["url"] = HOSTSERVER + ":" + HOSTPORT + "/notes/images/" + uid + "_" + index + "_" + blockindex + ".png";
                 }
+                if(block['type'] === 'paragraph' || block['type'] === 'header'){
+                  notesText += block['data']['text'] + "\n";
+                }
+                if(block['type'] === 'code'){
+                  notesText += block['data']['code'] + "\n";
+                }
+                if(block['type'] === 'list'){
+                  notesText += block['data']['items'].join("\n") + "\n";
+                }
+
+
             });
           });
-
-          // let notes = JSON.stringify(val['JSON']) || "";
           let notes = JSON.stringify(cleanedNotes) || "";
           let summary= "";
           let user = "root";
           let css =  JSON.stringify(val['CSS']) || ""; 
           let meta = "";
-          let sqlTags = `REPLACE INTO MyTable (key, uid, title, tags, notes, summary, user, css, meta) VALUES (?,?,?,?,?,?,?,?,?)`;
-          dbClean.run(sqlTags, [key, uid, title, tags, notes, summary, user, css, meta], function(err) {
+          let sqlTags = `REPLACE INTO MyTable (key, uid, title, tags, notes, notesText, summary, user, css, meta) VALUES (?,?,?,?,?,?,?,?,?,?)`;
+          dbClean.run(sqlTags, [key, uid, title, tags, notes, notesText, summary, user, css, meta], function(err) {
             if (err) {
               console.error(err.message);
             }
@@ -440,9 +408,9 @@ app.post('/getAll', (req, res) => {
 // Endpoint to get all tags from database
 app.post('/getAllTags', (req, res) => {
 
-  let sql = `SELECT * FROM MyTable`;
+  let sql = `SELECT key,tags FROM MyTable`;
 
-  dbTags.all(sql, [], (err, rows) => {
+  dbClean.all(sql, [], (err, rows) => {
     if (err) {
       throw err;
     }
@@ -450,7 +418,7 @@ app.post('/getAllTags', (req, res) => {
     let result = {};
     rows.forEach((row, index) => {
       //Remove whitespaces 
-      let tags = row['value'].replace(/\s/g, '');
+      let tags = row['tags'].replace(/\s/g, '');
       //Now split the tags
       let tagsSplit = tags.split(",");
       tagsSplit.forEach((tag, index) => {
