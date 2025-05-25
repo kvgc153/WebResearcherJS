@@ -25,6 +25,9 @@ app.use(express.json({ limit: '200mb' }));
 let db = new sqlite3.Database('./my_database.db', err => {
   err ? console.error(err.message) : console.log('Connected to the SQLite database.')
 });
+let dbClean = new sqlite3.Database('./my_database_clean.db', err => {
+  err ? console.error(err.message) : console.log('Connected to the SQLite database.')
+});
 
 let dbTags = new sqlite3.Database('./tags.db', err => {
   err ? console.error(err.message) : console.log('Connected to the tags database.');
@@ -38,7 +41,9 @@ let dbReadability = new sqlite3.Database('./readability.db', err => {
 db.run(`CREATE TABLE IF NOT EXISTS MyTable (key TEXT UNIQUE, value TEXT)`, (err) => {
   err ? console.error(err.message) : console.log('Table created if it did not exist.')
 });
-// Create table if not exists
+dbClean.run(`CREATE TABLE IF NOT EXISTS MyTable (key TEXT UNIQUE, title TEXT, tags TEXT, notes TEXT, summary TEXT, user TEXT, css TEXT, meta TEXT)`, (err) => {
+  err ? console.error(err.message) : console.log('Table created if it did not exist.')
+});
 dbTags.run(`CREATE TABLE IF NOT EXISTS MyTable (key TEXT UNIQUE, value TEXT)`, (err) => {
   err?  console.error(err.message) : console.log('Table created if it did not exist.')
 });
@@ -237,6 +242,7 @@ function processDB(key=""){
     //If key is provided, then we will only process that key
     let sql = `SELECT * FROM MyTable WHERE key = ?`;
 
+    // Update Tags database
     db.all(sql, [key], (err, rows) => {
       rows.forEach((row, index) => {
         try{
@@ -255,13 +261,40 @@ function processDB(key=""){
         }
       });
     });
+
+    // Update dbClean database
+    db.all(sql, [key], (err, rows) => {
+      rows.forEach((row, index) => {
+        try{
+          let val  = JSON.parse(row['value']);          
+
+          let key = row['key'];
+          let title = val['TITLE'] || "";
+          let tags = val['TAGS'] || "";
+          let notes = val['JSON'] || "";
+          let summary= "";
+          let user = "root";
+          let css = val['CSS'] || ""; 
+          let meta = "";
+          let sqlTags = `REPLACE INTO MyTable (key, title, tags, notes, summary, user, css, meta) VALUES (?,?,?,?,?,?,?,?)`;
+          dbClean.run(sqlTags, [key, title, tags, notes, summary, user, css, meta], function(err) {
+            if (err) {
+              console.error(err.message);
+            }
+          });
+  
+        }catch(e){
+          console.error(e);
+          console.log("Error parsing tags for key: "+row['key']);
+          console.log("Ignoring this key"); 
+        }
+      });
+    }); 
   }
   else{
     let sql = `SELECT * FROM MyTable`;
 
-    // Delete existing table if it exists
-    // dbTags.run(`DROP TABLE IF EXISTS MyTable`, (err) => {});  
-
+    // Update Tags database
     db.all(sql, [], (err, rows) => {
       rows.forEach((row, index) => {
         try{
@@ -280,6 +313,51 @@ function processDB(key=""){
         }
       });
     });
+
+    // Update dbClean database
+    db.all(sql, [], (err, rows) => {
+      rows.forEach((row, index) => {
+        try{
+          let val  = JSON.parse(row['value']);          
+
+          let key = row['key'];
+          let title = val['TITLE'] || "";
+          let tags = val['TAGS'] || "";
+
+          let cleanedNotes = val["JSON"];
+          // Remove all the Images from the notes to make it easier to search
+          let cleanedNotesKeys = Object.keys(cleanedNotes);
+          cleanedNotesKeys.forEach((key, index) => {
+            let blocks = cleanedNotes[key]["blocks"];
+            blocks.forEach((block,blockindex) => {
+              if(block['type'] === 'image'){
+                  // set the data to empty string
+                  cleanedNotes[key]["blocks"][blockindex]["data"] = {};
+                }
+            });
+          });
+
+          // let notes = JSON.stringify(val['JSON']) || "";
+          let notes = JSON.stringify(cleanedNotes) || "";
+          let summary= "";
+          let user = "root";
+          let css =  JSON.stringify(val['CSS']) || ""; 
+          let meta = "";
+          let sqlTags = `REPLACE INTO MyTable (key, title, tags, notes, summary, user, css, meta) VALUES (?,?,?,?,?,?,?,?)`;
+          dbClean.run(sqlTags, [key, title, tags, notes, summary, user, css, meta], function(err) {
+            if (err) {
+              console.error(err.message);
+            }
+          });
+  
+        }catch(e){
+          console.error(e);
+          console.log("Error parsing tags for key: "+row['key']);
+          console.log("Ignoring this key"); 
+        }
+      });
+    });
+
   }
 
 }
@@ -464,16 +542,10 @@ app.post('/search', (req, res) => {
   let tagFlag = req.body.tag;
   let key     = "";
   if(tagFlag){
-    key = "%" + req.body.key + ",%";
+    key = "%" + req.body.key + "%";
   }
   else{
-    // Check if the key is a url 
-    if(req.body.key.includes("/")){
-      key = "%" + req.body.key + "%";
-    }
-    else{
-      key = "%" + req.body.key + " %";
-    }
+    key = "%" + req.body.key + "%";
   }
 
   let sql = `SELECT * FROM MyTable WHERE value LIKE ?`;
