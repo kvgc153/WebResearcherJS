@@ -3,14 +3,14 @@
 <head>
     <title>PDF Loader</title>
     <style>
-        iframe {
+        #pdfFrame {
             width: 70%;
             height: 100000px;
         }
     </style>
 </head>
 <body>
-    <iframe id="pdfFrame"></iframe>
+    <object type='application/pdf' id="pdfFrame"></object>
 
     <script>
 
@@ -27,7 +27,7 @@
         var pdfUrl = getParameterByName('pdfUrl');
         if (pdfUrl) {
             
-            document.getElementById('pdfFrame').src = pdfUrl;
+            document.getElementById('pdfFrame').data = pdfUrl;
         }
     </script>
 </body>
