@@ -11,11 +11,14 @@ const { Readability } = require('@mozilla/readability');
 const { JSDOM } = require('jsdom');
 const { stdin: input, stdout: output } = require('node:process');
 const readline = require('readline');
-
+const fetch = require("node-fetch");
+const logger = require('log-timestamp');
 
 HOSTSERVER = "127.0.0.1"
 HOSTPORT   = 3000
 HOSTSTRING = 'http://' + HOSTSERVER + ":" + HOSTPORT
+
+LLMWBJSserver = "http://127.0.0.1:11434/api/chat";
 
 
 app.use(cors({credentials: true}))
@@ -265,9 +268,10 @@ function processDB(key=""){
                   let imageUrl = block['data']['url'];
                   let base64Data = imageUrl.replace(/^data:image\/png;base64,/, "");
                   let imageSave = path.join(__dirname, 'notes', 'images', uid + "_" + index + "_" + blockindex + ".png");
+                  
 
                   fs.writeFile(imageSave, base64Data, 'base64', function(err) {
-                    console.log(err);
+                    console.error(err);
                   });
                   
                   // Replace the url with the saved image path
@@ -312,6 +316,83 @@ function processDB(key=""){
 
 processDB(key="");
 
+function suggestReading(){
+  console.log("Fetching suggested reading material based on notes...");
+  sql = `SELECT key, tags FROM MyTable`;
+  dbClean.all(sql, [], (err, rows) => {
+    if (err) {
+      throw err;
+    }
+    let result = {};
+    rows.forEach((row, index) => {
+      //Remove whitespaces 
+      let tags = row['tags'].replace(/\s/g, '');
+      //Now split the tags
+      let tagsSplit = tags.split(",");
+      tagsSplit.forEach((tag, index) => {
+        if (!result[tag]) {
+          result[tag] = [];
+        }
+        result[tag].push(row['key']);
+      });
+    });
+    // Get all keys 
+    let keys = Object.keys(result);
+    let notesText = keys.join(", ");
+    console.log("Notes text: \n" + notesText);
+
+    var messages = [{
+      "role":"user",
+      "content": "Your job is to suggest 10 other unique and exciting topics I should read based on the tags I provide you. Answer ONLY in HTML unordered lists and do not repeat. Print only the lists. Here are the tags:" + notesText
+    }]; 
+
+    console.log("Sending request to LLM server for suggested reading...")
+
+    let suggestedReadingLLM = "";
+
+
+    fetch(LLMWBJSserver, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        "model": "llama3.2",
+        "stream": false,
+        "messages": messages,
+      }),
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        // console.log("Suggested reading : \n " + data.message.content);
+        suggestedReadingLLM = data.message.content;
+        // Save the suggested reading to a file
+        fs.writeFile('suggestedReading.html', suggestedReadingLLM, (err) => {
+          if (err) {
+            console.error('Error writing file:', err);
+          } else {
+            console.log('Suggested reading saved to suggestedReading.html');
+          }
+        });
+      })
+    });
+  }
+
+suggestReading();
+
+app.post('/getSuggestedReading', (req, res) => {
+  // Read the suggested reading file
+  fs.readFile('suggestedReading.html', 'utf8', (err, data) => {
+    let dataPacket = {};
+    dataPacket['suggestedReading'] = data;
+    res.json(JSON.stringify(dataPacket));
+
+    if(err){
+      console.error('Error reading file:', err);
+      res.status(500).send('Server Error');
+    }
+  });
+});
 
 function processToken(token){
   for(let i=0; i<registeredExtensions.length; i++){
@@ -478,9 +559,13 @@ const ignoredWebsites = {
 
 function isUrlInIgnoredWebsites(url) {
   const urlDomain = url.replace(/https?:\/\//, "").split("/")[0]; // Extract domain from URL
+  // Check if the domain is in any of the ignored categories
   for (const category in ignoredWebsites) {
-    if (ignoredWebsites[category].includes(urlDomain)) {
-      return false;
+    for (const domain of ignoredWebsites[category]) {
+      if (urlDomain.includes(domain)) {
+        console.log(`URL ${url} is in the ignored category: ${category}`);
+        return true; // URL is in the ignored list
+      }
     }
   }
   return true;

@@ -10,11 +10,11 @@
         }
         .note-content {
             position:relative;
-            left:9%;
+            left:3%;
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
             grid-gap: 0.3em;
-            width: 70%;
+            width: 54%;
             margin: 0 auto;
             row-gap: 0.3em;
         }
@@ -111,7 +111,7 @@
         .display-div {
             position: fixed;
             font-size: larger;
-            top: 0;
+            top: 0%;
             left: 0;
             height: 10000px;
             width: 100%;
@@ -146,13 +146,13 @@
 
         .result {
             position: relative;
-            left:9%;
+            left:3%;
             background-color: #fff;
             padding: 20px;
             margin-bottom: 20px;
             margin: 5px auto;
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-            width: 70%;
+            width: 55%;
         }
 
         .result-title a {
@@ -178,7 +178,7 @@
             border-radius: 5px;
             padding: 5px 10px;
             margin: 2px;
-            font-size: 14px;
+            font-size: 12px;
             transition: background-color 0.3s ease;
             font-family: 'Courier New', Courier, monospace;
         }
@@ -198,7 +198,9 @@
   </h2>
   <div id="display" class="display-div"> </div>
   <div id="note-container"></div>
-  <div id="tags-container" style="position:absolute; height:100%; left:7%; top:25%; background-color:#ffffff1d; width:15%; font-family: 'Courier New', Courier, monospace;"> </div>
+  <div id="tags-container" style="position:absolute; overflow-y: true; height:100%; left:7%; top:15%; background-color:#ffffff1d; width:15%; font-family: 'Courier New', Courier, monospace;"> </div>
+  <div id="suggested-reading" style="position:absolute; height:100%; left:83%; top:15%; background-color:#ffffff1d; width:12%;" > </div>
+ 
   <script type="text/javascript" src= "jquery.min.js"></script>
   <script type="text/javascript" src= "jquery.sidebar.min.js"></script>
   <script type="text/javascript" src= "editorjs@latest.js"></script>
