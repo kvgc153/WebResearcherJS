@@ -15,6 +15,17 @@ let colorsNotes = [
 ];
 let notesDB = {};
 
+// Get suggested reading 
+fetch("http://127.0.0.1:3000/getSuggestedReading", { method: "POST" })
+.then(response => response.json())
+.then(data => {
+    console.log(data);
+    var parsed_data = JSON.parse(data);
+    var suggestedReading = parsed_data['suggestedReading'];
+    let suggestedContainer = document.getElementById('suggested-reading');
+    suggestedContainer.innerHTML = "<h5>Suggested reading topics:</h5>" + suggestedReading;
+});
+
 // Get all tags 
 fetch("http://127.0.0.1:3000/getAllTags", { method: "POST" })
 .then(response => response.json())

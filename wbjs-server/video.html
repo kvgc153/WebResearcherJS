@@ -1,16 +1,16 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>PDF Loader</title>
+    <title>Video Loader</title>
     <style>
-        #pdfFrame {
+        #videoFrame {
             width: 70%;
-            height: 100000px;
+            height: 700px;
         }
     </style>
 </head>
 <body>
-    <object type='application/pdf' id="pdfFrame"></object>
+    <video controls="true" id="videoFrame"></video>
 
     <script>
 
@@ -24,10 +24,10 @@
             return decodeURIComponent(results[2].replace(/\+/g, ' '));
         }
 
-        var pdfUrl = getParameterByName('pdfUrl');
+        var pdfUrl = getParameterByName('videoUrl');
         if (pdfUrl) {
             
-            document.getElementById('pdfFrame').data = pdfUrl;
+            document.getElementById('videoFrame').src = pdfUrl;
         }
     </script>
 </body>
