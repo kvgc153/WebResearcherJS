@@ -31,7 +31,7 @@ app.use(express.json({ limit: '200mb' }));
 
 
 
-// Connect to SQLite databases
+/////////////// Connect to SQLite databases ////////////////////////
 let db = new sqlite3.Database('./my_database.db', err => {
   err ? console.error(err.message) : console.log('Connected to the SQLite database.')
 });
@@ -55,6 +55,256 @@ dbReadability.run(`CREATE TABLE IF NOT EXISTS MyTable (key TEXT UNIQUE, input TE
   err?  console.error(err.message) : console.log('Table created if it did not exist.')
 });
 
+///////////////////// USEFUL FUNCTIONS /////////////////
+function processToken(token){
+  for(let i=0; i<registeredExtensions.length; i++){
+    if(token === registeredExtensions[i]){
+      return true;
+    }
+  }
+  return false;
+}
+
+//Post process the database
+function processDB(key=""){
+    let sql = `SELECT * FROM MyTable`;
+
+    // Update dbClean database
+    db.all(sql, [], (err, rows) => {
+      rows.forEach((row, rowIdx) => {
+        try{
+          let val  = JSON.parse(row['value']);          
+
+          let key = row['key'];
+
+          let uid = crypto.createHash('md5').update(row['key']).digest('hex');
+             
+          let title = val['TITLE'] || "";
+          let tags = val['TAGS'] || "";
+          let notesText = "";
+
+
+          let cleanedNotes = val["JSON"];
+          // Remove all the Images from the notes to make it easier to search
+          let cleanedNotesKeys = Object.keys(cleanedNotes);
+          cleanedNotesKeys.forEach((key, index) => {
+            let blocks = cleanedNotes[key]["blocks"];
+            blocks.forEach((block,blockindex) => {
+              if(block['type'] === 'image'){
+                  // Write the image to a file 
+                  let imageUrl = block['data']['url'];
+                  let base64Data = imageUrl.replace(/^data:image\/png;base64,/, "");
+                  let imageSave = path.join(__dirname, 'notes', 'images', uid + "_" + index + "_" + blockindex + ".png");
+                  
+
+                  fs.writeFile(imageSave, base64Data, 'base64', function(err) {
+                    console.error(err);
+                  });
+                  
+                  // Replace the url with the saved image path
+                  cleanedNotes[key]["blocks"][blockindex]["data"]["url"] = HOSTSERVER + ":" + HOSTPORT + "/notes/images/" + uid + "_" + index + "_" + blockindex + ".png";
+                }
+                if(block['type'] === 'paragraph' || block['type'] === 'header'){
+                  notesText += block['data']['text'] + "\n";
+                }
+                if(block['type'] === 'code'){
+                  notesText += block['data']['code'] + "\n";
+                }
+                if(block['type'] === 'list'){
+                  notesText += block['data']['items'].join("\n") + "\n";
+                }
+
+
+            });
+          });
+          let notes = JSON.stringify(cleanedNotes) || "";
+          let summary= "";
+          let user = "root";
+          let css =  JSON.stringify(val['CSS']) || ""; 
+          let meta = "";
+          let value  = row['value'] || "";
+          let sqlTags = `REPLACE INTO MyTable (key, uid, title, tags, notes, notesText, summary, user, css, meta, value) VALUES (?,?,?,?,?,?,?,?,?,?,?)`;
+          dbClean.run(sqlTags, [key,uid, title, tags, notes, notesText, summary, user, css, meta, value], function(err) {
+            if (err) {
+              console.error(err.message);
+            }
+          });
+  
+  
+        }catch(e){
+          console.error(e);
+          console.log("Error parsing tags for key: "+row['key']);
+          console.log("Ignoring this key"); 
+        }
+      });
+    });
+
+}
+
+
+function suggestReading(){
+  console.log("Fetching suggested reading material based on notes...");
+  sql = `SELECT key, tags FROM MyTable`;
+  dbClean.all(sql, [], (err, rows) => {
+    if (err) {
+      throw err;
+    }
+    let result = {};
+    rows.forEach((row, index) => {
+      //Remove whitespaces 
+      let tags = row['tags'].replace(/\s/g, '');
+      //Now split the tags
+      let tagsSplit = tags.split(",");
+      tagsSplit.forEach((tag, index) => {
+        if (!result[tag]) {
+          result[tag] = [];
+        }
+        result[tag].push(row['key']);
+      });
+    });
+    // Get all keys 
+    let keys = Object.keys(result);
+    let notesText = keys.join(", ");
+    console.log("Notes text: \n" + notesText);
+
+    var messages = [{
+      "role":"user",
+      "content": "Your job is to suggest 10 other unique and exciting topics I should read based on the tags I provide you. Answer me ONLY in HTML unordered lists and do not repeat. Print only the HTML for the lists. Here are the tags:" + notesText
+    }]; 
+
+    console.log("Sending request to LLM server for suggested reading...")
+
+    let suggestedReadingLLM = "";
+
+
+    fetch(LLMWBJSserver, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        "model": "llama3.2",
+        "stream": false,
+        "messages": messages,
+      }),
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        suggestedReadingLLM = data.message.content;
+        // Save the suggested reading to a file
+        fs.writeFile('suggestedReading.txt', suggestedReadingLLM,(err) => {
+          if (err) {
+            console.error('Error writing file:', err);
+          } else {
+            console.log('Suggested reading saved to suggestedReading.txt');
+          }
+        });
+      })
+    });
+  }
+
+const ignoredWebsites = {
+  email: [
+    "mail.google.com", 
+    "outlook.live.com", 
+    "mail.yahoo.com", 
+    "icloud.com/mail", 
+    "protonmail.com", 
+    "mail.aol.com", 
+    "zoho.com/mail"
+  ],
+  banks: [
+    "chase.com", 
+    "bankofamerica.com", 
+    "wellsfargo.com", 
+    "citi.com", 
+    "usbank.com", 
+    "capitalone.com", 
+    "pnc.com", 
+    "tdbank.com", 
+    "suntrust.com", 
+    "bbt.com", 
+    "regions.com", 
+    "schwab.com", 
+    "fidelity.com", 
+    "paypal.com", 
+    "ally.com", 
+    "discover.com", 
+    "hsbc.com", 
+    "usaa.com"
+  ],
+  socialMedia: [
+    "facebook.com", 
+    "twitter.com", 
+    "instagram.com", 
+    "linkedin.com", 
+    "reddit.com", 
+    "reddit.com",
+    "tumblr.com",
+    "quora.com",
+    "pinterest.com", 
+    "snapchat.com", 
+    "tiktok.com", 
+    "youtube.com", 
+    "whatsapp.com", 
+    "telegram.org"
+  ],
+  shopping: [
+    "amazon.com", 
+    "ebay.com", 
+    "walmart.com", 
+    "target.com", 
+    "bestbuy.com", 
+    "costco.com", 
+    "homedepot.com", 
+    "lowes.com", 
+    "macys.com", 
+    "kohls.com", 
+    "sears.com"
+  ],
+  searchEngines: [
+    "google.com", 
+    "bing.com", 
+    "yahoo.com", 
+    "duckduckgo.com", 
+    "ask.com", 
+    "aol.com", 
+    "yandex.com", 
+    "baidu.com"
+  ],
+  custom:[
+    HOSTSERVER + ":" + HOSTPORT // Add the server itself to the ignored list
+  ]
+};
+
+function isUrlInIgnoredWebsites(url) {
+  const urlDomain = url.replace(/https?:\/\//, "").split("/")[0]; // Extract domain from URL
+  // Check if the domain is in any of the ignored categories
+  for (const category in ignoredWebsites) {
+    for (const domain of ignoredWebsites[category]) {
+      if (urlDomain.includes(domain)) {
+        console.log(`URL ${url} is in the ignored category: ${category}`);
+        return true; // URL is in the ignored list
+      }
+    }
+  }
+  return true;
+}
+
+let registeredExtensions = [] 
+// Load registered users from file
+fs.readFile('registeredUsers.json', 'utf8', (err, data) => {
+  if (err) {
+      console.error('Error reading file:', err);
+      return;
+  }
+  registeredExtensions = JSON.parse(data);
+  console.log("Users registered: ", registeredExtensions);
+});
+
+
+
+
 ///// Static webpages  //////
 app.get('/notesViewer', (req, res) => {
   res.sendFile(__dirname + '/notes.html');
@@ -71,16 +321,6 @@ app.get('/video.html', (req, res) => {
   res.sendFile(__dirname + '/video.html');
 });
 
-let registeredExtensions = [] 
-// Load registered users from file
-fs.readFile('registeredUsers.json', 'utf8', (err, data) => {
-  if (err) {
-      console.error('Error reading file:', err);
-      return;
-  }
-  registeredExtensions = JSON.parse(data);
-  console.log("Users registered: ", registeredExtensions);
-});
 
 
 app.get('/pdfViewer', (req, res) => {
@@ -235,154 +475,12 @@ app.get('/canvas', (req, res) => {
 ////////////////////////////
 
 
-
-
-
-//Post process the database
-function processDB(key=""){
-    let sql = `SELECT * FROM MyTable`;
-
-    // Update dbClean database
-    db.all(sql, [], (err, rows) => {
-      rows.forEach((row, rowIdx) => {
-        try{
-          let val  = JSON.parse(row['value']);          
-
-          let key = row['key'];
-
-          let uid = crypto.createHash('md5').update(row['key']).digest('hex');
-             
-          let title = val['TITLE'] || "";
-          let tags = val['TAGS'] || "";
-          let notesText = "";
-
-
-          let cleanedNotes = val["JSON"];
-          // Remove all the Images from the notes to make it easier to search
-          let cleanedNotesKeys = Object.keys(cleanedNotes);
-          cleanedNotesKeys.forEach((key, index) => {
-            let blocks = cleanedNotes[key]["blocks"];
-            blocks.forEach((block,blockindex) => {
-              if(block['type'] === 'image'){
-                  // Write the image to a file 
-                  let imageUrl = block['data']['url'];
-                  let base64Data = imageUrl.replace(/^data:image\/png;base64,/, "");
-                  let imageSave = path.join(__dirname, 'notes', 'images', uid + "_" + index + "_" + blockindex + ".png");
-                  
-
-                  fs.writeFile(imageSave, base64Data, 'base64', function(err) {
-                    console.error(err);
-                  });
-                  
-                  // Replace the url with the saved image path
-                  cleanedNotes[key]["blocks"][blockindex]["data"]["url"] = HOSTSERVER + ":" + HOSTPORT + "/notes/images/" + uid + "_" + index + "_" + blockindex + ".png";
-                }
-                if(block['type'] === 'paragraph' || block['type'] === 'header'){
-                  notesText += block['data']['text'] + "\n";
-                }
-                if(block['type'] === 'code'){
-                  notesText += block['data']['code'] + "\n";
-                }
-                if(block['type'] === 'list'){
-                  notesText += block['data']['items'].join("\n") + "\n";
-                }
-
-
-            });
-          });
-          let notes = JSON.stringify(cleanedNotes) || "";
-          let summary= "";
-          let user = "root";
-          let css =  JSON.stringify(val['CSS']) || ""; 
-          let meta = "";
-          let value  = row['value'] || "";
-          let sqlTags = `REPLACE INTO MyTable (key, uid, title, tags, notes, notesText, summary, user, css, meta, value) VALUES (?,?,?,?,?,?,?,?,?,?,?)`;
-          dbClean.run(sqlTags, [key,uid, title, tags, notes, notesText, summary, user, css, meta, value], function(err) {
-            if (err) {
-              console.error(err.message);
-            }
-          });
-  
-  
-        }catch(e){
-          console.error(e);
-          console.log("Error parsing tags for key: "+row['key']);
-          console.log("Ignoring this key"); 
-        }
-      });
-    });
-
-}
-
 processDB(key="");
-
-function suggestReading(){
-  console.log("Fetching suggested reading material based on notes...");
-  sql = `SELECT key, tags FROM MyTable`;
-  dbClean.all(sql, [], (err, rows) => {
-    if (err) {
-      throw err;
-    }
-    let result = {};
-    rows.forEach((row, index) => {
-      //Remove whitespaces 
-      let tags = row['tags'].replace(/\s/g, '');
-      //Now split the tags
-      let tagsSplit = tags.split(",");
-      tagsSplit.forEach((tag, index) => {
-        if (!result[tag]) {
-          result[tag] = [];
-        }
-        result[tag].push(row['key']);
-      });
-    });
-    // Get all keys 
-    let keys = Object.keys(result);
-    let notesText = keys.join(", ");
-    console.log("Notes text: \n" + notesText);
-
-    var messages = [{
-      "role":"user",
-      "content": "Your job is to suggest 10 other unique and exciting topics I should read based on the tags I provide you. Answer ONLY in HTML unordered lists and do not repeat. Print only the lists. Here are the tags:" + notesText
-    }]; 
-
-    console.log("Sending request to LLM server for suggested reading...")
-
-    let suggestedReadingLLM = "";
-
-
-    fetch(LLMWBJSserver, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        "model": "llama3.2",
-        "stream": false,
-        "messages": messages,
-      }),
-    })
-      .then((response) => response.json())
-      .then((data) => {
-        // console.log("Suggested reading : \n " + data.message.content);
-        suggestedReadingLLM = data.message.content;
-        // Save the suggested reading to a file
-        fs.writeFile('suggestedReading.html', suggestedReadingLLM, (err) => {
-          if (err) {
-            console.error('Error writing file:', err);
-          } else {
-            console.log('Suggested reading saved to suggestedReading.html');
-          }
-        });
-      })
-    });
-  }
-
 suggestReading();
 
 app.post('/getSuggestedReading', (req, res) => {
   // Read the suggested reading file
-  fs.readFile('suggestedReading.html', 'utf8', (err, data) => {
+  fs.readFile('suggestedReading.txt', 'utf8', (err, data) => {
     let dataPacket = {};
     dataPacket['suggestedReading'] = data;
     res.json(JSON.stringify(dataPacket));
@@ -394,19 +492,13 @@ app.post('/getSuggestedReading', (req, res) => {
   });
 });
 
-function processToken(token){
-  for(let i=0; i<registeredExtensions.length; i++){
-    if(token === registeredExtensions[i]){
-      return true;
-    }
-  }
-  return false;
-}
 
 
 app.post('/getAll', (req, res) => {
   //First authenticate user using header token
   let token = req.headers['token'];
+  console.log("[LOG] getAll called with token: ", token);
+
   if(processToken(token)){
     let sql = `SELECT * FROM MyTable`;
     db.all(sql, [], (err, rows) => {
@@ -467,6 +559,8 @@ app.post('/getAllTags', (req, res) => {
 app.post('/getData', (req, res) => {
   let token = req.headers['token'];
   // console.log(processToken(token)); 
+  console.log("[LOG] getData called with token: ", token);
+  
   if(processToken(token)){
 
     let key = req.body.key;
@@ -483,93 +577,7 @@ app.post('/getData', (req, res) => {
   }
 });
 
-const ignoredWebsites = {
-  email: [
-    "mail.google.com", 
-    "outlook.live.com", 
-    "mail.yahoo.com", 
-    "icloud.com/mail", 
-    "protonmail.com", 
-    "mail.aol.com", 
-    "zoho.com/mail"
-  ],
-  banks: [
-    "chase.com", 
-    "bankofamerica.com", 
-    "wellsfargo.com", 
-    "citi.com", 
-    "usbank.com", 
-    "capitalone.com", 
-    "pnc.com", 
-    "tdbank.com", 
-    "suntrust.com", 
-    "bbt.com", 
-    "regions.com", 
-    "schwab.com", 
-    "fidelity.com", 
-    "paypal.com", 
-    "ally.com", 
-    "discover.com", 
-    "hsbc.com", 
-    "usaa.com"
-  ],
-  socialMedia: [
-    "facebook.com", 
-    "twitter.com", 
-    "instagram.com", 
-    "linkedin.com", 
-    "reddit.com", 
-    "reddit.com",
-    "tumblr.com",
-    "quora.com",
-    "pinterest.com", 
-    "snapchat.com", 
-    "tiktok.com", 
-    "youtube.com", 
-    "whatsapp.com", 
-    "telegram.org"
-  ],
-  shopping: [
-    "amazon.com", 
-    "ebay.com", 
-    "walmart.com", 
-    "target.com", 
-    "bestbuy.com", 
-    "costco.com", 
-    "homedepot.com", 
-    "lowes.com", 
-    "macys.com", 
-    "kohls.com", 
-    "sears.com"
-  ],
-  searchEngines: [
-    "google.com", 
-    "bing.com", 
-    "yahoo.com", 
-    "duckduckgo.com", 
-    "ask.com", 
-    "aol.com", 
-    "yandex.com", 
-    "baidu.com"
-  ],
-  custom:[
-    HOSTSERVER + ":" + HOSTPORT // Add the server itself to the ignored list
-  ]
-};
 
-function isUrlInIgnoredWebsites(url) {
-  const urlDomain = url.replace(/https?:\/\//, "").split("/")[0]; // Extract domain from URL
-  // Check if the domain is in any of the ignored categories
-  for (const category in ignoredWebsites) {
-    for (const domain of ignoredWebsites[category]) {
-      if (urlDomain.includes(domain)) {
-        console.log(`URL ${url} is in the ignored category: ${category}`);
-        return true; // URL is in the ignored list
-      }
-    }
-  }
-  return true;
-}
 
 app.post('/readability', (req, res) => {
 
@@ -754,6 +762,8 @@ app.post('/uploadFile', (req, res) => {
 app.post('/data', (req, res) => {
 
   let token = req.headers['token'];
+  console.log("[LOG] data called with token: ", token);
+
   if(processToken(token)){
 
     let data = req.body;
