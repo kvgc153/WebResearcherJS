@@ -141,7 +141,7 @@ function processDB(key=""){
 
 }
 
-
+let suggestedReadingLLM = "";
 function suggestReading(){
   console.log("Fetching suggested reading material based on notes...");
   sql = `SELECT key, tags FROM MyTable`;
@@ -169,12 +169,12 @@ function suggestReading(){
 
     var messages = [{
       "role":"user",
-      "content": "Your job is to suggest 10 other unique and exciting topics I should read based on the tags I provide you. Answer me ONLY in HTML unordered lists and do not repeat. Print only the HTML for the lists. Here are the tags:" + notesText
+      "content": "Your job is to suggest ONLY 15 other unique and exciting topics I should read based on the tags I provide you. Answer me ONLY in HTML unordered lists and do not repeat. Print only the HTML for the lists. Here are the tags:" + notesText
     }]; 
 
     console.log("Sending request to LLM server for suggested reading...")
 
-    let suggestedReadingLLM = "";
+    
 
 
     fetch(LLMWBJSserver, {
@@ -191,14 +191,6 @@ function suggestReading(){
       .then((response) => response.json())
       .then((data) => {
         suggestedReadingLLM = data.message.content;
-        // Save the suggested reading to a file
-        fs.writeFile('suggestedReading.txt', suggestedReadingLLM,(err) => {
-          if (err) {
-            console.error('Error writing file:', err);
-          } else {
-            console.log('Suggested reading saved to suggestedReading.txt');
-          }
-        });
       })
     });
   }
@@ -480,16 +472,10 @@ suggestReading();
 
 app.post('/getSuggestedReading', (req, res) => {
   // Read the suggested reading file
-  fs.readFile('suggestedReading.txt', 'utf8', (err, data) => {
     let dataPacket = {};
-    dataPacket['suggestedReading'] = data;
+    dataPacket['suggestedReading'] = suggestedReadingLLM;
     res.json(JSON.stringify(dataPacket));
 
-    if(err){
-      console.error('Error reading file:', err);
-      res.status(500).send('Server Error');
-    }
-  });
 });
 
 
@@ -792,7 +778,7 @@ app.post('/data', (req, res) => {
           }
     });
     // process the database 
-    processDB(key);
+    // processDB(key);
   }
 });
 
