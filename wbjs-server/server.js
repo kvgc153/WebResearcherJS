@@ -18,7 +18,7 @@ HOSTSERVER = "127.0.0.1"
 HOSTPORT   = 3000
 HOSTSTRING = 'http://' + HOSTSERVER + ":" + HOSTPORT
 
-LLMWBJSserver = "http://127.0.0.1:11434/api/chat";
+// LLMWBJSserver = "http://127.0.0.1:11434/api/chat";
 
 
 app.use(cors({credentials: true}))
@@ -142,58 +142,58 @@ function processDB(key=""){
 }
 
 let suggestedReadingLLM = "";
-function suggestReading(){
-  console.log("Fetching suggested reading material based on notes...");
-  sql = `SELECT key, tags FROM MyTable`;
-  dbClean.all(sql, [], (err, rows) => {
-    if (err) {
-      throw err;
-    }
-    let result = {};
-    rows.forEach((row, index) => {
-      //Remove whitespaces 
-      let tags = row['tags'].replace(/\s/g, '');
-      //Now split the tags
-      let tagsSplit = tags.split(",");
-      tagsSplit.forEach((tag, index) => {
-        if (!result[tag]) {
-          result[tag] = [];
-        }
-        result[tag].push(row['key']);
-      });
-    });
-    // Get all keys 
-    let keys = Object.keys(result);
-    let notesText = keys.join(", ");
-    console.log("Notes text: \n" + notesText);
+// function suggestReading(){
+//   console.log("Fetching suggested reading material based on notes...");
+//   sql = `SELECT key, tags FROM MyTable`;
+//   dbClean.all(sql, [], (err, rows) => {
+//     if (err) {
+//       throw err;
+//     }
+//     let result = {};
+//     rows.forEach((row, index) => {
+//       //Remove whitespaces 
+//       let tags = row['tags'].replace(/\s/g, '');
+//       //Now split the tags
+//       let tagsSplit = tags.split(",");
+//       tagsSplit.forEach((tag, index) => {
+//         if (!result[tag]) {
+//           result[tag] = [];
+//         }
+//         result[tag].push(row['key']);
+//       });
+//     });
+//     // Get all keys 
+//     let keys = Object.keys(result);
+//     let notesText = keys.join(", ");
+//     console.log("Notes text: \n" + notesText);
 
-    var messages = [{
-      "role":"user",
-      "content": "Your job is to suggest ONLY 15 other unique and exciting topics I should read based on the tags I provide you. Answer me ONLY in HTML unordered lists and do not repeat. Print only the HTML for the lists. Here are the tags:" + notesText
-    }]; 
+//     var messages = [{
+//       "role":"user",
+//       "content": "Your job is to suggest ONLY 15 other unique and exciting topics I should read based on the tags I provide you. Answer me ONLY in HTML unordered lists and do not repeat. Print only the HTML for the lists. Here are the tags:" + notesText
+//     }]; 
 
-    console.log("Sending request to LLM server for suggested reading...")
+//     console.log("Sending request to LLM server for suggested reading...")
 
     
 
 
-    fetch(LLMWBJSserver, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        "model": "llama3.2",
-        "stream": false,
-        "messages": messages,
-      }),
-    })
-      .then((response) => response.json())
-      .then((data) => {
-        suggestedReadingLLM = data.message.content;
-      })
-    });
-  }
+//     fetch(LLMWBJSserver, {
+//       method: "POST",
+//       headers: {
+//         "Content-Type": "application/json",
+//       },
+//       body: JSON.stringify({
+//         "model": "llama3.2",
+//         "stream": false,
+//         "messages": messages,
+//       }),
+//     })
+//       .then((response) => response.json())
+//       .then((data) => {
+//         suggestedReadingLLM = data.message.content;
+//       })
+//     });
+//   }
 
 const ignoredWebsites = {
   email: [
@@ -468,7 +468,7 @@ app.get('/canvas', (req, res) => {
 
 
 processDB(key="");
-suggestReading();
+// suggestReading();
 
 app.post('/getSuggestedReading', (req, res) => {
   // Read the suggested reading file
