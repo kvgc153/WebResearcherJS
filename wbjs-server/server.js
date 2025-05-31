@@ -6,18 +6,16 @@ const app = express();
 var cors = require('cors')
 const formidable = require('formidable');
 const crypto = require('crypto');
-
 const { Readability } = require('@mozilla/readability');
 const { JSDOM } = require('jsdom');
 const { stdin: input, stdout: output } = require('node:process');
 const readline = require('readline');
-const fetch = require("node-fetch");
+// const fetch = require("node-fetch");
 const logger = require('log-timestamp');
 
 HOSTSERVER = "127.0.0.1"
 HOSTPORT   = 3000
 HOSTSTRING = 'http://' + HOSTSERVER + ":" + HOSTPORT
-
 // LLMWBJSserver = "http://127.0.0.1:11434/api/chat";
 
 
@@ -33,26 +31,26 @@ app.use(express.json({ limit: '200mb' }));
 
 /////////////// Connect to SQLite databases ////////////////////////
 let db = new sqlite3.Database('./my_database.db', err => {
-  err ? console.error(err.message) : console.log('Connected to the SQLite database.')
+  err ? console.error(err.message) : console.log('[DB] Connected to the SQLite database.')
 });
 let dbClean = new sqlite3.Database('./my_database_clean.db', err => {
-  err ? console.error(err.message) : console.log('Connected to the SQLite database.')
+  err ? console.error(err.message) : console.log('[DB] Connected to the SQLite database.')
 });
 
-let dbReadability = new sqlite3.Database('./readability.db', err => { 
-  err ? console.error(err.message) : console.log('Connected to the readability database.');
+let dbReadability = new sqlite3.Database('./readability.db', err => {
+  err ? console.error(err.message) : console.log('[DB] Connected to the readability database.');
 });
 
 // Create table if not exists
 db.run(`CREATE TABLE IF NOT EXISTS MyTable (key TEXT UNIQUE, value TEXT)`, (err) => {
-  err ? console.error(err.message) : console.log('Table created if it did not exist.')
+  err ? console.error(err.message) : console.log('[DB] Table created if it did not exist.')
 });
 dbClean.run(`CREATE TABLE IF NOT EXISTS MyTable (key TEXT UNIQUE, uid TEXT, title TEXT, tags TEXT, notes TEXT, notesText TEXT, summary TEXT, user TEXT, css TEXT, meta TEXT, value TEXT)`, (err) => {
-  err ? console.error(err.message) : console.log('Table created if it did not exist.')
+  err ? console.error(err.message) : console.log('[DB] Table created if it did not exist.')
 });
 
 dbReadability.run(`CREATE TABLE IF NOT EXISTS MyTable (key TEXT UNIQUE, input TEXT, html TEXT, text TEXT, excerpt TEXT, title TEXT, length INT)`, (err) => {
-  err?  console.error(err.message) : console.log('Table created if it did not exist.')
+  err?  console.error(err.message) : console.log('[DB] Table created if it did not exist.')
 });
 
 ///////////////////// USEFUL FUNCTIONS /////////////////
@@ -133,8 +131,8 @@ function processDB(key=""){
   
         }catch(e){
           console.error(e);
-          console.log("Error parsing tags for key: "+row['key']);
-          console.log("Ignoring this key"); 
+          console.log("[PROCESSDB] Error parsing tags for key: "+row['key']);
+          console.log("[PROCESSDB] Ignoring this key"); 
         }
       });
     });
@@ -231,7 +229,7 @@ const ignoredWebsites = {
     "instagram.com", 
     "linkedin.com", 
     "reddit.com", 
-    "reddit.com",
+    "old.reddit.com",
     "tumblr.com",
     "quora.com",
     "pinterest.com", 
@@ -280,7 +278,7 @@ function isUrlInIgnoredWebsites(url) {
       }
     }
   }
-  return true;
+  return false;// URL is not in the ignored list and can be processed
 }
 
 let registeredExtensions = [] 
@@ -291,7 +289,7 @@ fs.readFile('registeredUsers.json', 'utf8', (err, data) => {
       return;
   }
   registeredExtensions = JSON.parse(data);
-  console.log("Users registered: ", registeredExtensions);
+  console.log("[REGISTER] Users registered: ", registeredExtensions);
 });
 
 
@@ -483,7 +481,7 @@ app.post('/getSuggestedReading', (req, res) => {
 app.post('/getAll', (req, res) => {
   //First authenticate user using header token
   let token = req.headers['token'];
-  console.log("[LOG] getAll called with token: ", token);
+  console.log("[GETALLNOTES] called with token: ", token);
 
   if(processToken(token)){
     let sql = `SELECT * FROM MyTable`;
@@ -545,7 +543,7 @@ app.post('/getAllTags', (req, res) => {
 app.post('/getData', (req, res) => {
   let token = req.headers['token'];
   // console.log(processToken(token)); 
-  console.log("[LOG] getData called with token: ", token);
+  console.log("[GETDATA] called with token: ", token);
   
   if(processToken(token)){
 
@@ -580,7 +578,7 @@ app.post('/readability', (req, res) => {
     dbReadability.run(sql, [req.body.url, bodyHTML, val['content'], val['textContent'], val['excerpt'], val['title'], val['length']], function(err) {
       if (err) {
         if(err.message.includes('UNIQUE constraint failed')){ 
-          console.log('Key already exists. Updating value.');
+          console.log('[READABILITY] Key already exists. Updating value.');
           let sqlUPDATE = `UPDATE MyTable SET VALUES (?, ?, ?, ?, ?, ?) WHERE key = ?`;
           dbReadability.run(sqlUPDATE, [ bodyHTML,val['content'], val['textContent'], val['excerpt'], val['title'], val['length'], req.body.url], function(err) {
             if (err) {
@@ -696,13 +694,13 @@ app.post('/uploadFile', (req, res) => {
 
   form.parse(req, (err, fields, files) => {
     if (err) {
-      console.log('Uploading error', err);
+      console.error('Uploading error', err);
       return res.status(500).json({ success: 0 });
     }
 
     const file = files['file'][0];
     if (!file || !file.filepath || !file.originalFilename) {
-      console.log('File upload error: file, file.filepath, or file.originalFilename is undefined');
+      console.error('[UPLOAD] File upload error: file, file.filepath, or file.originalFilename is undefined');
       return res.status(400).json({ success: 0, message: 'File upload error' });
     }
 
@@ -711,7 +709,7 @@ app.post('/uploadFile', (req, res) => {
 
     fs.rename(oldPath, newPath, (err) => {
       if (err) {
-        console.error('Error renaming file:', err);
+        console.error('[UPLOAD] Error renaming file:', err);
         return res.status(500).send('Server Error');
       }
 
@@ -748,7 +746,7 @@ app.post('/uploadFile', (req, res) => {
 app.post('/data', (req, res) => {
 
   let token = req.headers['token'];
-  console.log("[LOG] data called with token: ", token);
+  console.log("[SAVEDATA] called with token: ", token);
 
   if(processToken(token)){
 
@@ -762,7 +760,7 @@ app.post('/data', (req, res) => {
         console.error(err.message);
         // If key already exists, update the value
           if (err.message.includes('UNIQUE constraint failed')) {
-              console.log('Key already exists. Updating value.');
+              console.log('[SAVEDATA] Key already exists. Updating value.');
               let sqlUPDATE = `UPDATE MyTable SET value = ? WHERE key = ?`;
               db.run(sqlUPDATE, [value, key], function(err) {
                   if (err) {
