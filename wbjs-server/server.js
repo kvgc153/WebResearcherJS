@@ -78,6 +78,8 @@ function processDB(key=""){
           let uid = crypto.createHash('md5').update(row['key']).digest('hex');
              
           let title = val['TITLE'] || "";
+
+
           let tags = val['TAGS'] || "";
           let notesText = "";
 
@@ -115,6 +117,11 @@ function processDB(key=""){
 
             });
           });
+          // If key contains video, canvas or pdf , then we will use the notesText as the title 
+          if(key.includes("127.0.0.1:3000/video.html?") || key.includes("127.0.0.1:3000/notes/") || key.includes("127.0.0.1:3000/pdf.html?")){
+            title = notesText.slice(0, 50); // Take first 50 characters as title
+          }
+
           let notes = JSON.stringify(cleanedNotes) || "";
           let summary= "";
           let user = "root";
