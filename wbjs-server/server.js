@@ -78,9 +78,9 @@ function processDB(key=""){
           let uid = crypto.createHash('md5').update(row['key']).digest('hex');
              
           let title = val['TITLE'] || "";
-
-
           let tags = val['TAGS'] || "";
+          let value  = row['value'] || "";
+
           let notesText = "";
 
 
@@ -120,6 +120,12 @@ function processDB(key=""){
           // If key contains video, canvas or pdf , then we will use the notesText as the title 
           if(key.includes("127.0.0.1:3000/video.html?") || key.includes("127.0.0.1:3000/notes/") || key.includes("127.0.0.1:3000/pdf.html?")){
             title = notesText.slice(0, 50); // Take first 50 characters as title
+
+            let valFoo = JSON.parse(row['value']);
+            // Update the title in the value
+            valFoo['TITLE'] = title;
+
+            value = JSON.stringify(valFoo);
           }
 
           let notes = JSON.stringify(cleanedNotes) || "";
@@ -127,7 +133,6 @@ function processDB(key=""){
           let user = "root";
           let css =  JSON.stringify(val['CSS']) || ""; 
           let meta = "";
-          let value  = row['value'] || "";
           let sqlTags = `REPLACE INTO MyTable (key, uid, title, tags, notes, notesText, summary, user, css, meta, value) VALUES (?,?,?,?,?,?,?,?,?,?,?)`;
           dbClean.run(sqlTags, [key,uid, title, tags, notes, notesText, summary, user, css, meta, value], function(err) {
             if (err) {
@@ -143,6 +148,35 @@ function processDB(key=""){
         }
       });
     });
+    // Get the filenames of videos in the notes/videos folder and add to the database
+    // const videoFolderPath = path.join(__dirname, 'notes', 'videos');
+    // fs.readdir(videoFolderPath, (err, files) => {
+    //   if (err) {
+    //     console.error('Error reading folder:', err);
+    //   }
+    //   files.forEach((file, index) => {
+    //     if(file.endsWith('.mp4') || file.endsWith('.webm') || file.endsWith('.ogg')){
+    //       let videoKey = HOSTSERVER + ":" + HOSTPORT + "/video.html?videoUrl=/notes/videos/" + file;
+    //       let videoUid = crypto.createHash('md5').update(videoKey).digest('hex');
+    //       let fooDB = {
+    //         'URL': videoKey,
+    //         'TITLE': file,
+    //         'TAGS': "",
+    //         'JSON': {"blocks": []},
+    //         'CSS': {},
+    //       }
+
+    //       let sqlVideo = `REPLACE INTO MyTable (key, uid, title, tags, notes, notesText, summary, user, css, meta, value) VALUES (?,?,?,?,?,?,?,?,?,?,?)`;
+    //       dbClean.run(sqlVideo, [videoKey, videoUid, file, "", "", "", "", "root", "", "", JSON.stringify(fooDB)], function(err) {
+    //         if (err) {
+    //           console.error(err.message);
+    //         }
+    //       }); 
+    //     }
+    //   });
+    // });
+
+
 
 }
 
