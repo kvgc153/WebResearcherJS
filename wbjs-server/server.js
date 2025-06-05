@@ -22,7 +22,10 @@ HOSTSTRING = 'http://' + HOSTSERVER + ":" + HOSTPORT
 app.use(cors({credentials: true}))
 app.use(express.static("ext_libs/"));
 app.use('/notes', express.static('notes'))
+app.use('/notes/audios/', express.static('notes/audios'))
+app.use('/notes/docs/', express.static('notes/docs'))
 app.use('/notes/images/', express.static('notes/images'))
+app.use('/notes/pages/', express.static('notes/pages'))
 app.use('/notes/videos/', express.static('notes/videos'))
 
 app.use(express.json({ limit: '200mb' }));
@@ -119,7 +122,7 @@ function processDB(key=""){
           });
           // If key contains video, canvas or pdf , then we will use the notesText as the title 
           if(key.includes("127.0.0.1:3000/video.html?") || key.includes("127.0.0.1:3000/notes/") || key.includes("127.0.0.1:3000/pdf.html?")){
-            title = notesText.slice(0, 50); // Take first 50 characters as title
+            title = notesText.slice(0, 120); // Take first 50 characters as title
 
             let valFoo = JSON.parse(row['value']);
             // Update the title in the value
@@ -472,7 +475,7 @@ app.get('/canvas', (req, res) => {
 
   const uniqueId = Date.now();
   const fileName = `page_${uniqueId}.html`;
-  const filePath = path.join('notes', fileName);
+  const filePath = path.join('notes','pages', fileName);
 
   const htmlContent = `
   <!DOCTYPE html>
@@ -500,7 +503,7 @@ app.get('/canvas', (req, res) => {
           res.status(500).send('Server Error');
           return;
       }
-      res.redirect(HOSTSTRING + `/notes/${fileName}`);
+      res.redirect(HOSTSTRING + `/notes/pages/${fileName}`);
   });
 });
 ////////////////////////////
@@ -760,6 +763,17 @@ app.post('/uploadFile', (req, res) => {
           success: 1,
           file: {
             url: HOSTSTRING + "/pdf.html?pdfUrl=notes/" + file.originalFilename,
+            name: file.originalFilename,
+            size: file.size,
+            title: file.originalFilename
+          }
+        };  
+      }
+      if (file.originalFilename.endsWith('.mp4') || file.originalFilename.endsWith('.webm') || file.originalFilename.endsWith('.ogg')) {
+        var responseJson = {
+          success: 1,
+          file: {
+            url: HOSTSTRING + "/video.html?videoUrl=notes/" + file.originalFilename,
             name: file.originalFilename,
             size: file.size,
             title: file.originalFilename
