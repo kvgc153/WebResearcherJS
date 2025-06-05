@@ -231,4 +231,4 @@ document.getElementById('search').addEventListener('keypress', function (e) {
     }
 });
 
-document.getElementById('searchBtn').addEventListener('click', searchDB);
+// document.getElementById('searchBtn').addEventListener('click', searchDB);
