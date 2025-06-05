@@ -68,119 +68,180 @@ function processToken(token){
 
 //Post process the database
 function processDB(key=""){
-    let sql = `SELECT * FROM MyTable`;
+    if(key === ""){ 
+      let sql = `SELECT * FROM MyTable`;
 
-    // Update dbClean database
-    db.all(sql, [], (err, rows) => {
-      rows.forEach((row, rowIdx) => {
-        try{
-          let val  = JSON.parse(row['value']);          
+      // Update dbClean database
+      db.all(sql, [], (err, rows) => {
+        rows.forEach((row, rowIdx) => {
+          try{
+            let val  = JSON.parse(row['value']);          
 
-          let key = row['key'];
+            let key = row['key'];
 
-          let uid = crypto.createHash('md5').update(row['key']).digest('hex');
-             
-          let title = val['TITLE'] || "";
-          let tags = val['TAGS'] || "";
-          let value  = row['value'] || "";
+            let uid = crypto.createHash('md5').update(row['key']).digest('hex');
+              
+            let title = val['TITLE'] || "";
+            let tags = val['TAGS'] || "";
+            let value  = row['value'] || "";
 
-          let notesText = "";
-
-
-          let cleanedNotes = val["JSON"];
-          // Remove all the Images from the notes to make it easier to search
-          let cleanedNotesKeys = Object.keys(cleanedNotes);
-          cleanedNotesKeys.forEach((key, index) => {
-            let blocks = cleanedNotes[key]["blocks"];
-            blocks.forEach((block,blockindex) => {
-              if(block['type'] === 'image'){
-                  // Write the image to a file 
-                  let imageUrl = block['data']['url'];
-                  let base64Data = imageUrl.replace(/^data:image\/png;base64,/, "");
-                  let imageSave = path.join(__dirname, 'notes', 'images', uid + "_" + index + "_" + blockindex + ".png");
-                  
-
-                  fs.writeFile(imageSave, base64Data, 'base64', function(err) {
-                    console.error(err);
-                  });
-                  
-                  // Replace the url with the saved image path
-                  cleanedNotes[key]["blocks"][blockindex]["data"]["url"] = HOSTSERVER + ":" + HOSTPORT + "/notes/images/" + uid + "_" + index + "_" + blockindex + ".png";
-                }
-                if(block['type'] === 'paragraph' || block['type'] === 'header'){
-                  notesText += block['data']['text'] + "\n";
-                }
-                if(block['type'] === 'code'){
-                  notesText += block['data']['code'] + "\n";
-                }
-                if(block['type'] === 'list'){
-                  notesText += block['data']['items'].join("\n") + "\n";
-                }
+            let notesText = "";
 
 
+            let cleanedNotes = val["JSON"];
+            // Remove all the Images from the notes to make it easier to search
+            let cleanedNotesKeys = Object.keys(cleanedNotes);
+            cleanedNotesKeys.forEach((key, index) => {
+              let blocks = cleanedNotes[key]["blocks"];
+              blocks.forEach((block,blockindex) => {
+                if(block['type'] === 'image'){
+                    // Write the image to a file 
+                    let imageUrl = block['data']['url'];
+                    let base64Data = imageUrl.replace(/^data:image\/png;base64,/, "");
+                    let imageSave = path.join(__dirname, 'notes', 'images', uid + "_" + index + "_" + blockindex + ".png");
+                    
+
+                    fs.writeFile(imageSave, base64Data, 'base64', function(err) {
+                      console.error(err);
+                    });
+                    
+                    // Replace the url with the saved image path
+                    cleanedNotes[key]["blocks"][blockindex]["data"]["url"] = HOSTSERVER + ":" + HOSTPORT + "/notes/images/" + uid + "_" + index + "_" + blockindex + ".png";
+                  }
+                  if(block['type'] === 'paragraph' || block['type'] === 'header'){
+                    notesText += block['data']['text'] + "\n";
+                  }
+                  if(block['type'] === 'code'){
+                    notesText += block['data']['code'] + "\n";
+                  }
+                  if(block['type'] === 'list'){
+                    notesText += block['data']['items'].join("\n") + "\n";
+                  }
+
+
+              });
             });
-          });
-          // If key contains video, canvas or pdf , then we will use the notesText as the title 
-          if(key.includes("127.0.0.1:3000/video.html?") || key.includes("127.0.0.1:3000/notes/") || key.includes("127.0.0.1:3000/pdf.html?")){
-            title = notesText.slice(0, 120); // Take first 50 characters as title
+            // If key contains video, canvas or pdf , then we will use the notesText as the title 
+            if(key.includes("127.0.0.1:3000/video.html?") || key.includes("127.0.0.1:3000/notes/") || key.includes("127.0.0.1:3000/pdf.html?")){
+              title = notesText.slice(0, 120); // Take first 50 characters as title
 
-            let valFoo = JSON.parse(row['value']);
-            // Update the title in the value
-            valFoo['TITLE'] = title;
+              let valFoo = JSON.parse(row['value']);
+              // Update the title in the value
+              valFoo['TITLE'] = title;
 
-            value = JSON.stringify(valFoo);
-          }
-
-          let notes = JSON.stringify(cleanedNotes) || "";
-          let summary= "";
-          let user = "root";
-          let css =  JSON.stringify(val['CSS']) || ""; 
-          let meta = "";
-          let sqlTags = `REPLACE INTO MyTable (key, uid, title, tags, notes, notesText, summary, user, css, meta, value) VALUES (?,?,?,?,?,?,?,?,?,?,?)`;
-          dbClean.run(sqlTags, [key,uid, title, tags, notes, notesText, summary, user, css, meta, value], function(err) {
-            if (err) {
-              console.error(err.message);
+              value = JSON.stringify(valFoo);
             }
-          });
-  
-  
-        }catch(e){
-          console.error(e);
-          console.log("[PROCESSDB] Error parsing tags for key: "+row['key']);
-          console.log("[PROCESSDB] Ignoring this key"); 
-        }
+
+            let notes = JSON.stringify(cleanedNotes) || "";
+            let summary= "";
+            let user = "root";
+            let css =  JSON.stringify(val['CSS']) || ""; 
+            let meta = "";
+            let sqlTags = `REPLACE INTO MyTable (key, uid, title, tags, notes, notesText, summary, user, css, meta, value) VALUES (?,?,?,?,?,?,?,?,?,?,?)`;
+            dbClean.run(sqlTags, [key,uid, title, tags, notes, notesText, summary, user, css, meta, value], function(err) {
+              if (err) {
+                console.error(err.message);
+              }
+            });
+    
+    
+          }catch(e){
+            console.error(e);
+            console.log("[PROCESSDB] Error parsing tags for key: "+row['key']);
+            console.log("[PROCESSDB] Ignoring this key"); 
+          }
+        });
       });
-    });
-    // Get the filenames of videos in the notes/videos folder and add to the database
-    // const videoFolderPath = path.join(__dirname, 'notes', 'videos');
-    // fs.readdir(videoFolderPath, (err, files) => {
-    //   if (err) {
-    //     console.error('Error reading folder:', err);
-    //   }
-    //   files.forEach((file, index) => {
-    //     if(file.endsWith('.mp4') || file.endsWith('.webm') || file.endsWith('.ogg')){
-    //       let videoKey = HOSTSERVER + ":" + HOSTPORT + "/video.html?videoUrl=/notes/videos/" + file;
-    //       let videoUid = crypto.createHash('md5').update(videoKey).digest('hex');
-    //       let fooDB = {
-    //         'URL': videoKey,
-    //         'TITLE': file,
-    //         'TAGS': "",
-    //         'JSON': {"blocks": []},
-    //         'CSS': {},
-    //       }
 
-    //       let sqlVideo = `REPLACE INTO MyTable (key, uid, title, tags, notes, notesText, summary, user, css, meta, value) VALUES (?,?,?,?,?,?,?,?,?,?,?)`;
-    //       dbClean.run(sqlVideo, [videoKey, videoUid, file, "", "", "", "", "root", "", "", JSON.stringify(fooDB)], function(err) {
-    //         if (err) {
-    //           console.error(err.message);
-    //         }
-    //       }); 
-    //     }
-    //   });
-    // });
+    }
+    else{
+      // If key is provided, then we will only process that key
+      let sql = `SELECT * FROM MyTable WHERE key = ?`;
+
+      // Update dbClean database
+      db.all(sql, [key], (err, rows) => {
+        rows.forEach((row, rowIdx) => {
+          try{
+            let val  = JSON.parse(row['value']);          
+
+            let key = row['key'];
+
+            let uid = crypto.createHash('md5').update(row['key']).digest('hex');
+              
+            let title = val['TITLE'] || "";
+            let tags = val['TAGS'] || "";
+            let value  = row['value'] || "";
+
+            let notesText = "";
 
 
+            let cleanedNotes = val["JSON"];
+            // Remove all the Images from the notes to make it easier to search
+            let cleanedNotesKeys = Object.keys(cleanedNotes);
+            cleanedNotesKeys.forEach((key, index) => {
+              let blocks = cleanedNotes[key]["blocks"];
+              blocks.forEach((block,blockindex) => {
+                if(block['type'] === 'image'){
+                    // Write the image to a file 
+                    let imageUrl = block['data']['url'];
+                    let base64Data = imageUrl.replace(/^data:image\/png;base64,/, "");
+                    let imageSave = path.join(__dirname, 'notes', 'images', uid + "_" + index + "_" + blockindex + ".png");
+                    
 
+                    fs.writeFile(imageSave, base64Data, 'base64', function(err) {
+                      console.error(err);
+                    });
+                    
+                    // Replace the url with the saved image path
+                    cleanedNotes[key]["blocks"][blockindex]["data"]["url"] = HOSTSERVER + ":" + HOSTPORT + "/notes/images/" + uid + "_" + index + "_" + blockindex + ".png";
+                  }
+                  if(block['type'] === 'paragraph' || block['type'] === 'header'){
+                    notesText += block['data']['text'] + "\n";
+                  }
+                  if(block['type'] === 'code'){
+                    notesText += block['data']['code'] + "\n";
+                  }
+                  if(block['type'] === 'list'){
+                    notesText += block['data']['items'].join("\n") + "\n";
+                  }
+
+
+              });
+            });
+            // If key contains video, canvas or pdf , then we will use the notesText as the title 
+            if(key.includes("127.0.0.1:3000/video.html?") || key.includes("127.0.0.1:3000/notes/") || key.includes("127.0.0.1:3000/pdf.html?")){
+              title = notesText.slice(0, 120); // Take first 50 characters as title
+
+              let valFoo = JSON.parse(row['value']);
+              // Update the title in the value
+              valFoo['TITLE'] = title;
+
+              value = JSON.stringify(valFoo);
+            }
+
+            let notes = JSON.stringify(cleanedNotes) || "";
+            let summary= "";
+            let user = "root";
+            let css =  JSON.stringify(val['CSS']) || ""; 
+            let meta = "";
+            let sqlTags = `REPLACE INTO MyTable (key, uid, title, tags, notes, notesText, summary, user, css, meta, value) VALUES (?,?,?,?,?,?,?,?,?,?,?)`;
+            dbClean.run(sqlTags, [key,uid, title, tags, notes, notesText, summary, user, css, meta, value], function(err) {
+              if (err) {
+                console.error(err.message);
+              }
+            });
+    
+    
+          }catch(e){
+            console.error(e);
+            console.log("[PROCESSDB] Error parsing tags for key: "+row['key']);
+            console.log("[PROCESSDB] Ignoring this key"); 
+          }
+        });
+      });
+
+
+  }
 }
 
 let suggestedReadingLLM = "";
@@ -343,9 +404,9 @@ fs.readFile('registeredUsers.json', 'utf8', (err, data) => {
 app.get('/notesViewer', (req, res) => {
   res.sendFile(__dirname + '/notes.html');
 });
-app.get('/home', (req, res) => {
-  res.sendFile(__dirname + '/home.html');
-});
+// app.get('/home', (req, res) => {
+//   res.sendFile(__dirname + '/home.html');
+// });
 
 app.get('/pdf.html', (req, res) => {
   res.sendFile(__dirname + '/pdf.html');
@@ -831,7 +892,7 @@ app.post('/data', (req, res) => {
           }
     });
     // process the database 
-    // processDB(key);
+    processDB(key);
   }
 });
 
