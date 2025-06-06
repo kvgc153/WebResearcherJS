@@ -644,30 +644,6 @@ app.post('/getAllTags', (req, res) => {
   });
 });
 
-// Endpoint to get data from database
-app.post('/getData', (req, res) => {
-  let token = req.headers['token'];
-  // console.log(processToken(token)); 
-  console.log("[GETDATA] called with token: ", token);
-  
-  if(processToken(token)){
-
-    let key = req.body.key;
-    // search key in database
-    let sql = `SELECT * FROM MyTable WHERE key = ?`;
-    db.get(sql, [key], (err, row) => {
-        if (err) {
-            throw err;
-        }
-        // console.log("data found");
-        res.json(row);
-        
-        });
-  }
-});
-
-
-
 app.post('/readability', (req, res) => {
 
   let bodyHTML = req.body.bodyHTML;
@@ -857,6 +833,31 @@ app.post('/uploadFile', (req, res) => {
       res.status(200).json(responseJson);
     });
   });
+});
+
+
+
+// Endpoint to get data from database
+app.post('/getData', (req, res) => {
+  let token = req.headers['token'];
+  // console.log(processToken(token)); 
+  console.log("[GETDATA] called with token: ", token);
+  
+  if(processToken(token)){
+
+    let key = req.body.key;
+    // search key in database
+    let sql = `SELECT value FROM MyTable WHERE key = ?`;
+    dbClean.get(sql, [key], (err, row) => {
+        if (err) {
+            throw err;
+        }
+        // console.log("data found");
+        // console.log(row['value']);
+        res.json(row);
+        
+        });
+  }
 });
 
 // Endpoint to add data to database
