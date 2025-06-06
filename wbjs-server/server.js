@@ -771,6 +771,7 @@ app.get('/searchWBJS', (req, res) => {
           resultFoo["href"] = HOSTSTRING + "/notesViewer?q=" + row['key'];
           resultFoo["name"] = row['title'];
           resultFoo["description"] = row['tags']
+          resultFoo["notesText"] = row['notesText'];
 
           itemsPacked.push(resultFoo);
         }catch(e){
