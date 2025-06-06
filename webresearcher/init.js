@@ -105,3 +105,33 @@ document.getElementById('tagsList').addEventListener('input', function() {
     });
 
 });
+
+
+// If user hovers on a link-autocomplete editorjs note, show the note as a tooltip 
+document.addEventListener('mouseover', function(event) {
+    const target = event.target;
+    if(target.tagName === 'A'){
+        const noteText = target.getAttribute('data-notes-text');
+        if (!noteText) return; // If no note text, do nothing
+
+        // Remove any existing tooltip
+        document.getElementById('WBJSNoteTextTooltip')?.remove();
+        // Create a tooltip element
+        let tooltip = document.createElement('div');
+        tooltip.className = 'WBJSNote';
+        tooltip.innerHTML = noteText;
+        tooltip.id = "WBJSNoteTextTooltip";
+        document.body.appendChild(tooltip);
+
+        // Position the tooltip
+        const rect = target.getBoundingClientRect();
+        tooltip.style.left = `${rect.left + window.scrollX}px`;
+        tooltip.style.top = `${rect.bottom + window.scrollY}px`;
+
+        // Remove the tooltip when mouse leaves the link
+        target.addEventListener('click', function() {
+            document.getElementById('WBJSNoteTextTooltip')?.remove();
+        }, { once: true });
+        
+    }
+});

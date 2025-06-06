@@ -16,15 +16,15 @@ let colorsNotes = [
 let notesDB = {};
 
 // Get suggested reading 
-fetch("http://127.0.0.1:3000/getSuggestedReading", { method: "POST" })
-.then(response => response.json())
-.then(data => {
-    console.log(data);
-    var parsed_data = JSON.parse(data);
-    var suggestedReading = parsed_data['suggestedReading'];
-    let suggestedContainer = document.getElementById('suggested-reading');
-    suggestedContainer.innerHTML = "<h5>Suggested reading topics:</h5>" + suggestedReading;
-});
+// fetch("http://127.0.0.1:3000/getSuggestedReading", { method: "POST" })
+// .then(response => response.json())
+// .then(data => {
+//     console.log(data);
+//     var parsed_data = JSON.parse(data);
+//     var suggestedReading = parsed_data['suggestedReading'];
+//     let suggestedContainer = document.getElementById('suggested-reading');
+//     suggestedContainer.innerHTML = "<h5>Plugins:</h5>" + suggestedReading;
+// });
 
 // Get all tags 
 fetch("http://127.0.0.1:3000/getAllTags", { method: "POST" })
@@ -74,6 +74,7 @@ function displayNotes(data) {
             <div class="result-summary">${edjsData['TAGS']}</div>
             <button class="toggle-notes" onclick="toggleNotes(${i})">Expand &darr;</button>
         `;
+        // document.getElementById('note-container').appendChild(noteContent1);
     
         if (foo_loaded_keys.length > 0) {
             // Only insert div to page if there are notes
@@ -152,7 +153,11 @@ function displayNotes(data) {
     }
     if(allDataKeys.length < 10){
         for(let i = 0; i < 10; i++){
-            toggleNotes(i);
+            try {
+                toggleNotes(i);
+            } catch (error) {
+                console.error("Error toggling notes for index " + i + ": " + error);
+            }
         }
     }
 }
@@ -226,4 +231,4 @@ document.getElementById('search').addEventListener('keypress', function (e) {
     }
 });
 
-document.getElementById('searchBtn').addEventListener('click', searchDB);
+// document.getElementById('searchBtn').addEventListener('click', searchDB);

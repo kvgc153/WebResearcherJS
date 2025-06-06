@@ -76,6 +76,22 @@
             background-color: #0056b3;
 
         }
+        .buttonNav {
+            margin-top: 20px;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            background-color: #007072b2;
+            /* color: #fff; */
+            font-size: 16px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+        .buttonNav:hover {
+            background-color: #0070727c;
+            cursor: pointer;
+        }
+
         .beautiful-button {
             font-size: 1em;
             padding: 10px;
@@ -93,11 +109,11 @@
 
         }
         #search {
-            width: 400px;
+            width: 500px;
             height: 45px;
             border: 1px solid #dfe1e5;
             box-shadow: none;
-            border-radius: 6px;
+            border-radius: 20px;
             padding: 0 20px;
             margin: 20px 0;
             font-size: 16px;
@@ -186,14 +202,19 @@
         background-color: #0057b350;
         cursor: pointer;
         }
-    </style>
+    </style>button
 </head>
 <body>
   <br>
   <h2 style="text-align:center">WBJS notes 
+    <div style='text-align: center' id="options"> 
+        <!-- <button class="buttonNav" onclick="window.location.href='/notesViewer'">Notes Viewer</button> -->
+        <button class="buttonNav" onclick="window.location.href='/pdfViewer'"> Saved PDFs</button>
+        <button class="buttonNav" onclick="window.location.href='/videoViewer'">Saved Videos</button>   
+    </div>
     <div id ="searchDiv">
         <input type="text" id='search' placeholder="search"> </input>
-        <button id ="searchBtn"> Search </button>
+        <!-- <button id ="searchBtn"> Search </button> -->
     </div> 
   </h2>
   <div id="display" class="display-div"> </div>

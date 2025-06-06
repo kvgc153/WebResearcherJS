@@ -6,25 +6,26 @@ const app = express();
 var cors = require('cors')
 const formidable = require('formidable');
 const crypto = require('crypto');
-
 const { Readability } = require('@mozilla/readability');
 const { JSDOM } = require('jsdom');
 const { stdin: input, stdout: output } = require('node:process');
 const readline = require('readline');
-const fetch = require("node-fetch");
+// const fetch = require("node-fetch");
 const logger = require('log-timestamp');
 
 HOSTSERVER = "127.0.0.1"
 HOSTPORT   = 3000
 HOSTSTRING = 'http://' + HOSTSERVER + ":" + HOSTPORT
-
-LLMWBJSserver = "http://127.0.0.1:11434/api/chat";
+// LLMWBJSserver = "http://127.0.0.1:11434/api/chat";
 
 
 app.use(cors({credentials: true}))
 app.use(express.static("ext_libs/"));
 app.use('/notes', express.static('notes'))
+app.use('/notes/audios/', express.static('notes/audios'))
+app.use('/notes/docs/', express.static('notes/docs'))
 app.use('/notes/images/', express.static('notes/images'))
+app.use('/notes/pages/', express.static('notes/pages'))
 app.use('/notes/videos/', express.static('notes/videos'))
 
 app.use(express.json({ limit: '200mb' }));
@@ -33,26 +34,26 @@ app.use(express.json({ limit: '200mb' }));
 
 /////////////// Connect to SQLite databases ////////////////////////
 let db = new sqlite3.Database('./my_database.db', err => {
-  err ? console.error(err.message) : console.log('Connected to the SQLite database.')
+  err ? console.error(err.message) : console.log('[DB] Connected to the SQLite database.')
 });
 let dbClean = new sqlite3.Database('./my_database_clean.db', err => {
-  err ? console.error(err.message) : console.log('Connected to the SQLite database.')
+  err ? console.error(err.message) : console.log('[DB] Connected to the SQLite database.')
 });
 
-let dbReadability = new sqlite3.Database('./readability.db', err => { 
-  err ? console.error(err.message) : console.log('Connected to the readability database.');
+let dbReadability = new sqlite3.Database('./readability.db', err => {
+  err ? console.error(err.message) : console.log('[DB] Connected to the readability database.');
 });
 
 // Create table if not exists
 db.run(`CREATE TABLE IF NOT EXISTS MyTable (key TEXT UNIQUE, value TEXT)`, (err) => {
-  err ? console.error(err.message) : console.log('Table created if it did not exist.')
+  err ? console.error(err.message) : console.log('[DB] Table created if it did not exist.')
 });
 dbClean.run(`CREATE TABLE IF NOT EXISTS MyTable (key TEXT UNIQUE, uid TEXT, title TEXT, tags TEXT, notes TEXT, notesText TEXT, summary TEXT, user TEXT, css TEXT, meta TEXT, value TEXT)`, (err) => {
-  err ? console.error(err.message) : console.log('Table created if it did not exist.')
+  err ? console.error(err.message) : console.log('[DB] Table created if it did not exist.')
 });
 
 dbReadability.run(`CREATE TABLE IF NOT EXISTS MyTable (key TEXT UNIQUE, input TEXT, html TEXT, text TEXT, excerpt TEXT, title TEXT, length INT)`, (err) => {
-  err?  console.error(err.message) : console.log('Table created if it did not exist.')
+  err?  console.error(err.message) : console.log('[DB] Table created if it did not exist.')
 });
 
 ///////////////////// USEFUL FUNCTIONS /////////////////
@@ -67,141 +68,235 @@ function processToken(token){
 
 //Post process the database
 function processDB(key=""){
-    let sql = `SELECT * FROM MyTable`;
+    if(key === ""){ 
+      let sql = `SELECT * FROM MyTable`;
 
-    // Update dbClean database
-    db.all(sql, [], (err, rows) => {
-      rows.forEach((row, rowIdx) => {
-        try{
-          let val  = JSON.parse(row['value']);          
+      // Update dbClean database
+      db.all(sql, [], (err, rows) => {
+        rows.forEach((row, rowIdx) => {
+          try{
+            let val  = JSON.parse(row['value']);          
 
-          let key = row['key'];
+            let key = row['key'];
 
-          let uid = crypto.createHash('md5').update(row['key']).digest('hex');
-             
-          let title = val['TITLE'] || "";
-          let tags = val['TAGS'] || "";
-          let notesText = "";
+            let uid = crypto.createHash('md5').update(row['key']).digest('hex');
+              
+            let title = val['TITLE'] || "";
+            let tags = val['TAGS'] || "";
+            let value  = row['value'] || "";
 
-
-          let cleanedNotes = val["JSON"];
-          // Remove all the Images from the notes to make it easier to search
-          let cleanedNotesKeys = Object.keys(cleanedNotes);
-          cleanedNotesKeys.forEach((key, index) => {
-            let blocks = cleanedNotes[key]["blocks"];
-            blocks.forEach((block,blockindex) => {
-              if(block['type'] === 'image'){
-                  // Write the image to a file 
-                  let imageUrl = block['data']['url'];
-                  let base64Data = imageUrl.replace(/^data:image\/png;base64,/, "");
-                  let imageSave = path.join(__dirname, 'notes', 'images', uid + "_" + index + "_" + blockindex + ".png");
-                  
-
-                  fs.writeFile(imageSave, base64Data, 'base64', function(err) {
-                    console.error(err);
-                  });
-                  
-                  // Replace the url with the saved image path
-                  cleanedNotes[key]["blocks"][blockindex]["data"]["url"] = HOSTSERVER + ":" + HOSTPORT + "/notes/images/" + uid + "_" + index + "_" + blockindex + ".png";
-                }
-                if(block['type'] === 'paragraph' || block['type'] === 'header'){
-                  notesText += block['data']['text'] + "\n";
-                }
-                if(block['type'] === 'code'){
-                  notesText += block['data']['code'] + "\n";
-                }
-                if(block['type'] === 'list'){
-                  notesText += block['data']['items'].join("\n") + "\n";
-                }
+            let notesText = "";
 
 
+            let cleanedNotes = val["JSON"];
+            // Remove all the Images from the notes to make it easier to search
+            let cleanedNotesKeys = Object.keys(cleanedNotes);
+            cleanedNotesKeys.forEach((key, index) => {
+              let blocks = cleanedNotes[key]["blocks"];
+              blocks.forEach((block,blockindex) => {
+                if(block['type'] === 'image'){
+                    // Write the image to a file 
+                    let imageUrl = block['data']['url'];
+                    let base64Data = imageUrl.replace(/^data:image\/png;base64,/, "");
+                    let imageSave = path.join(__dirname, 'notes', 'images', uid + "_" + index + "_" + blockindex + ".png");
+                    
+
+                    fs.writeFile(imageSave, base64Data, 'base64', function(err) {
+                      console.error(err);
+                    });
+                    
+                    // Replace the url with the saved image path
+                    cleanedNotes[key]["blocks"][blockindex]["data"]["url"] = HOSTSERVER + ":" + HOSTPORT + "/notes/images/" + uid + "_" + index + "_" + blockindex + ".png";
+                  }
+                  if(block['type'] === 'paragraph' || block['type'] === 'header'){
+                    notesText += block['data']['text'] + "\n";
+                  }
+                  if(block['type'] === 'code'){
+                    notesText += block['data']['code'] + "\n";
+                  }
+                  if(block['type'] === 'list'){
+                    notesText += block['data']['items'].join("\n") + "\n";
+                  }
+
+
+              });
             });
-          });
-          let notes = JSON.stringify(cleanedNotes) || "";
-          let summary= "";
-          let user = "root";
-          let css =  JSON.stringify(val['CSS']) || ""; 
-          let meta = "";
-          let value  = row['value'] || "";
-          let sqlTags = `REPLACE INTO MyTable (key, uid, title, tags, notes, notesText, summary, user, css, meta, value) VALUES (?,?,?,?,?,?,?,?,?,?,?)`;
-          dbClean.run(sqlTags, [key,uid, title, tags, notes, notesText, summary, user, css, meta, value], function(err) {
-            if (err) {
-              console.error(err.message);
+            // If key contains video, canvas or pdf , then we will use the notesText as the title 
+            if(key.includes("127.0.0.1:3000/video.html?") || key.includes("127.0.0.1:3000/notes/") || key.includes("127.0.0.1:3000/pdf.html?")){
+              title = notesText.slice(0, 120); // Take first 50 characters as title
+
+              let valFoo = JSON.parse(row['value']);
+              // Update the title in the value
+              valFoo['TITLE'] = title;
+
+              value = JSON.stringify(valFoo);
             }
-          });
-  
-  
-        }catch(e){
-          console.error(e);
-          console.log("Error parsing tags for key: "+row['key']);
-          console.log("Ignoring this key"); 
-        }
-      });
-    });
 
-}
-
-
-function suggestReading(){
-  console.log("Fetching suggested reading material based on notes...");
-  sql = `SELECT key, tags FROM MyTable`;
-  dbClean.all(sql, [], (err, rows) => {
-    if (err) {
-      throw err;
-    }
-    let result = {};
-    rows.forEach((row, index) => {
-      //Remove whitespaces 
-      let tags = row['tags'].replace(/\s/g, '');
-      //Now split the tags
-      let tagsSplit = tags.split(",");
-      tagsSplit.forEach((tag, index) => {
-        if (!result[tag]) {
-          result[tag] = [];
-        }
-        result[tag].push(row['key']);
-      });
-    });
-    // Get all keys 
-    let keys = Object.keys(result);
-    let notesText = keys.join(", ");
-    console.log("Notes text: \n" + notesText);
-
-    var messages = [{
-      "role":"user",
-      "content": "Your job is to suggest 10 other unique and exciting topics I should read based on the tags I provide you. Answer me ONLY in HTML unordered lists and do not repeat. Print only the HTML for the lists. Here are the tags:" + notesText
-    }]; 
-
-    console.log("Sending request to LLM server for suggested reading...")
-
-    let suggestedReadingLLM = "";
-
-
-    fetch(LLMWBJSserver, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        "model": "llama3.2",
-        "stream": false,
-        "messages": messages,
-      }),
-    })
-      .then((response) => response.json())
-      .then((data) => {
-        suggestedReadingLLM = data.message.content;
-        // Save the suggested reading to a file
-        fs.writeFile('suggestedReading.txt', suggestedReadingLLM,(err) => {
-          if (err) {
-            console.error('Error writing file:', err);
-          } else {
-            console.log('Suggested reading saved to suggestedReading.txt');
+            let notes = JSON.stringify(cleanedNotes) || "";
+            let summary= "";
+            let user = "root";
+            let css =  JSON.stringify(val['CSS']) || ""; 
+            let meta = "";
+            let sqlTags = `REPLACE INTO MyTable (key, uid, title, tags, notes, notesText, summary, user, css, meta, value) VALUES (?,?,?,?,?,?,?,?,?,?,?)`;
+            dbClean.run(sqlTags, [key,uid, title, tags, notes, notesText, summary, user, css, meta, value], function(err) {
+              if (err) {
+                console.error(err.message);
+              }
+            });
+    
+    
+          }catch(e){
+            console.error(e);
+            console.log("[PROCESSDB] Error parsing tags for key: "+row['key']);
+            console.log("[PROCESSDB] Ignoring this key"); 
           }
         });
-      })
-    });
+      });
+
+    }
+    else{
+      // If key is provided, then we will only process that key
+      let sql = `SELECT * FROM MyTable WHERE key = ?`;
+
+      // Update dbClean database
+      db.all(sql, [key], (err, rows) => {
+        rows.forEach((row, rowIdx) => {
+          try{
+            let val  = JSON.parse(row['value']);          
+
+            let key = row['key'];
+
+            let uid = crypto.createHash('md5').update(row['key']).digest('hex');
+              
+            let title = val['TITLE'] || "";
+            let tags = val['TAGS'] || "";
+            let value  = row['value'] || "";
+
+            let notesText = "";
+
+
+            let cleanedNotes = val["JSON"];
+            // Remove all the Images from the notes to make it easier to search
+            let cleanedNotesKeys = Object.keys(cleanedNotes);
+            cleanedNotesKeys.forEach((key, index) => {
+              let blocks = cleanedNotes[key]["blocks"];
+              blocks.forEach((block,blockindex) => {
+                if(block['type'] === 'image'){
+                    // Write the image to a file 
+                    let imageUrl = block['data']['url'];
+                    let base64Data = imageUrl.replace(/^data:image\/png;base64,/, "");
+                    let imageSave = path.join(__dirname, 'notes', 'images', uid + "_" + index + "_" + blockindex + ".png");
+                    
+
+                    fs.writeFile(imageSave, base64Data, 'base64', function(err) {
+                      console.error(err);
+                    });
+                    
+                    // Replace the url with the saved image path
+                    cleanedNotes[key]["blocks"][blockindex]["data"]["url"] = HOSTSERVER + ":" + HOSTPORT + "/notes/images/" + uid + "_" + index + "_" + blockindex + ".png";
+                  }
+                  if(block['type'] === 'paragraph' || block['type'] === 'header'){
+                    notesText += block['data']['text'] + "\n";
+                  }
+                  if(block['type'] === 'code'){
+                    notesText += block['data']['code'] + "\n";
+                  }
+                  if(block['type'] === 'list'){
+                    notesText += block['data']['items'].join("\n") + "\n";
+                  }
+
+
+              });
+            });
+            // If key contains video, canvas or pdf , then we will use the notesText as the title 
+            if(key.includes("127.0.0.1:3000/video.html?") || key.includes("127.0.0.1:3000/notes/") || key.includes("127.0.0.1:3000/pdf.html?")){
+              title = notesText.slice(0, 120); // Take first 50 characters as title
+
+              let valFoo = JSON.parse(row['value']);
+              // Update the title in the value
+              valFoo['TITLE'] = title;
+
+              value = JSON.stringify(valFoo);
+            }
+
+            let notes = JSON.stringify(cleanedNotes) || "";
+            let summary= "";
+            let user = "root";
+            let css =  JSON.stringify(val['CSS']) || ""; 
+            let meta = "";
+            let sqlTags = `REPLACE INTO MyTable (key, uid, title, tags, notes, notesText, summary, user, css, meta, value) VALUES (?,?,?,?,?,?,?,?,?,?,?)`;
+            dbClean.run(sqlTags, [key,uid, title, tags, notes, notesText, summary, user, css, meta, value], function(err) {
+              if (err) {
+                console.error(err.message);
+              }
+            });
+    
+    
+          }catch(e){
+            console.error(e);
+            console.log("[PROCESSDB] Error parsing tags for key: "+row['key']);
+            console.log("[PROCESSDB] Ignoring this key"); 
+          }
+        });
+      });
+
+
   }
+}
+
+let suggestedReadingLLM = "";
+// function suggestReading(){
+//   console.log("Fetching suggested reading material based on notes...");
+//   sql = `SELECT key, tags FROM MyTable`;
+//   dbClean.all(sql, [], (err, rows) => {
+//     if (err) {
+//       throw err;
+//     }
+//     let result = {};
+//     rows.forEach((row, index) => {
+//       //Remove whitespaces 
+//       let tags = row['tags'].replace(/\s/g, '');
+//       //Now split the tags
+//       let tagsSplit = tags.split(",");
+//       tagsSplit.forEach((tag, index) => {
+//         if (!result[tag]) {
+//           result[tag] = [];
+//         }
+//         result[tag].push(row['key']);
+//       });
+//     });
+//     // Get all keys 
+//     let keys = Object.keys(result);
+//     let notesText = keys.join(", ");
+//     console.log("Notes text: \n" + notesText);
+
+//     var messages = [{
+//       "role":"user",
+//       "content": "Your job is to suggest ONLY 15 other unique and exciting topics I should read based on the tags I provide you. Answer me ONLY in HTML unordered lists and do not repeat. Print only the HTML for the lists. Here are the tags:" + notesText
+//     }]; 
+
+//     console.log("Sending request to LLM server for suggested reading...")
+
+    
+
+
+//     fetch(LLMWBJSserver, {
+//       method: "POST",
+//       headers: {
+//         "Content-Type": "application/json",
+//       },
+//       body: JSON.stringify({
+//         "model": "llama3.2",
+//         "stream": false,
+//         "messages": messages,
+//       }),
+//     })
+//       .then((response) => response.json())
+//       .then((data) => {
+//         suggestedReadingLLM = data.message.content;
+//       })
+//     });
+//   }
 
 const ignoredWebsites = {
   email: [
@@ -239,7 +334,7 @@ const ignoredWebsites = {
     "instagram.com", 
     "linkedin.com", 
     "reddit.com", 
-    "reddit.com",
+    "old.reddit.com",
     "tumblr.com",
     "quora.com",
     "pinterest.com", 
@@ -288,7 +383,7 @@ function isUrlInIgnoredWebsites(url) {
       }
     }
   }
-  return true;
+  return false;// URL is not in the ignored list and can be processed
 }
 
 let registeredExtensions = [] 
@@ -299,7 +394,7 @@ fs.readFile('registeredUsers.json', 'utf8', (err, data) => {
       return;
   }
   registeredExtensions = JSON.parse(data);
-  console.log("Users registered: ", registeredExtensions);
+  console.log("[REGISTER] Users registered: ", registeredExtensions);
 });
 
 
@@ -309,9 +404,9 @@ fs.readFile('registeredUsers.json', 'utf8', (err, data) => {
 app.get('/notesViewer', (req, res) => {
   res.sendFile(__dirname + '/notes.html');
 });
-app.get('/home', (req, res) => {
-  res.sendFile(__dirname + '/home.html');
-});
+// app.get('/home', (req, res) => {
+//   res.sendFile(__dirname + '/home.html');
+// });
 
 app.get('/pdf.html', (req, res) => {
   res.sendFile(__dirname + '/pdf.html');
@@ -441,7 +536,7 @@ app.get('/canvas', (req, res) => {
 
   const uniqueId = Date.now();
   const fileName = `page_${uniqueId}.html`;
-  const filePath = path.join('notes', fileName);
+  const filePath = path.join('notes','pages', fileName);
 
   const htmlContent = `
   <!DOCTYPE html>
@@ -469,27 +564,21 @@ app.get('/canvas', (req, res) => {
           res.status(500).send('Server Error');
           return;
       }
-      res.redirect(HOSTSTRING + `/notes/${fileName}`);
+      res.redirect(HOSTSTRING + `/notes/pages/${fileName}`);
   });
 });
 ////////////////////////////
 
 
 processDB(key="");
-suggestReading();
+// suggestReading();
 
 app.post('/getSuggestedReading', (req, res) => {
   // Read the suggested reading file
-  fs.readFile('suggestedReading.txt', 'utf8', (err, data) => {
     let dataPacket = {};
-    dataPacket['suggestedReading'] = data;
+    dataPacket['suggestedReading'] = suggestedReadingLLM;
     res.json(JSON.stringify(dataPacket));
 
-    if(err){
-      console.error('Error reading file:', err);
-      res.status(500).send('Server Error');
-    }
-  });
 });
 
 
@@ -497,7 +586,7 @@ app.post('/getSuggestedReading', (req, res) => {
 app.post('/getAll', (req, res) => {
   //First authenticate user using header token
   let token = req.headers['token'];
-  console.log("[LOG] getAll called with token: ", token);
+  console.log("[GETALLNOTES] called with token: ", token);
 
   if(processToken(token)){
     let sql = `SELECT * FROM MyTable`;
@@ -555,30 +644,6 @@ app.post('/getAllTags', (req, res) => {
   });
 });
 
-// Endpoint to get data from database
-app.post('/getData', (req, res) => {
-  let token = req.headers['token'];
-  // console.log(processToken(token)); 
-  console.log("[LOG] getData called with token: ", token);
-  
-  if(processToken(token)){
-
-    let key = req.body.key;
-    // search key in database
-    let sql = `SELECT * FROM MyTable WHERE key = ?`;
-    db.get(sql, [key], (err, row) => {
-        if (err) {
-            throw err;
-        }
-        // console.log("data found");
-        res.json(row);
-        
-        });
-  }
-});
-
-
-
 app.post('/readability', (req, res) => {
 
   let bodyHTML = req.body.bodyHTML;
@@ -594,7 +659,7 @@ app.post('/readability', (req, res) => {
     dbReadability.run(sql, [req.body.url, bodyHTML, val['content'], val['textContent'], val['excerpt'], val['title'], val['length']], function(err) {
       if (err) {
         if(err.message.includes('UNIQUE constraint failed')){ 
-          console.log('Key already exists. Updating value.');
+          console.log('[READABILITY] Key already exists. Updating value.');
           let sqlUPDATE = `UPDATE MyTable SET VALUES (?, ?, ?, ?, ?, ?) WHERE key = ?`;
           dbReadability.run(sqlUPDATE, [ bodyHTML,val['content'], val['textContent'], val['excerpt'], val['title'], val['length'], req.body.url], function(err) {
             if (err) {
@@ -682,6 +747,7 @@ app.get('/searchWBJS', (req, res) => {
           resultFoo["href"] = HOSTSTRING + "/notesViewer?q=" + row['key'];
           resultFoo["name"] = row['title'];
           resultFoo["description"] = row['tags']
+          resultFoo["notesText"] = row['notesText'];
 
           itemsPacked.push(resultFoo);
         }catch(e){
@@ -710,13 +776,13 @@ app.post('/uploadFile', (req, res) => {
 
   form.parse(req, (err, fields, files) => {
     if (err) {
-      console.log('Uploading error', err);
+      console.error('Uploading error', err);
       return res.status(500).json({ success: 0 });
     }
 
     const file = files['file'][0];
     if (!file || !file.filepath || !file.originalFilename) {
-      console.log('File upload error: file, file.filepath, or file.originalFilename is undefined');
+      console.error('[UPLOAD] File upload error: file, file.filepath, or file.originalFilename is undefined');
       return res.status(400).json({ success: 0, message: 'File upload error' });
     }
 
@@ -725,7 +791,7 @@ app.post('/uploadFile', (req, res) => {
 
     fs.rename(oldPath, newPath, (err) => {
       if (err) {
-        console.error('Error renaming file:', err);
+        console.error('[UPLOAD] Error renaming file:', err);
         return res.status(500).send('Server Error');
       }
 
@@ -735,6 +801,17 @@ app.post('/uploadFile', (req, res) => {
           success: 1,
           file: {
             url: HOSTSTRING + "/pdf.html?pdfUrl=notes/" + file.originalFilename,
+            name: file.originalFilename,
+            size: file.size,
+            title: file.originalFilename
+          }
+        };  
+      }
+      if (file.originalFilename.endsWith('.mp4') || file.originalFilename.endsWith('.webm') || file.originalFilename.endsWith('.ogg')) {
+        var responseJson = {
+          success: 1,
+          file: {
+            url: HOSTSTRING + "/video.html?videoUrl=notes/" + file.originalFilename,
             name: file.originalFilename,
             size: file.size,
             title: file.originalFilename
@@ -758,11 +835,36 @@ app.post('/uploadFile', (req, res) => {
   });
 });
 
+
+
+// Endpoint to get data from database
+app.post('/getData', (req, res) => {
+  let token = req.headers['token'];
+  // console.log(processToken(token)); 
+  console.log("[GETDATA] called with token: ", token);
+  
+  if(processToken(token)){
+
+    let key = req.body.key;
+    // search key in database
+    let sql = `SELECT value FROM MyTable WHERE key = ?`;
+    dbClean.get(sql, [key], (err, row) => {
+        if (err) {
+            throw err;
+        }
+        // console.log("data found");
+        // console.log(row['value']);
+        res.json(row);
+        
+        });
+  }
+});
+
 // Endpoint to add data to database
 app.post('/data', (req, res) => {
 
   let token = req.headers['token'];
-  console.log("[LOG] data called with token: ", token);
+  console.log("[SAVEDATA] called with token: ", token);
 
   if(processToken(token)){
 
@@ -776,7 +878,7 @@ app.post('/data', (req, res) => {
         console.error(err.message);
         // If key already exists, update the value
           if (err.message.includes('UNIQUE constraint failed')) {
-              console.log('Key already exists. Updating value.');
+              console.log('[SAVEDATA] Key already exists. Updating value.');
               let sqlUPDATE = `UPDATE MyTable SET value = ? WHERE key = ?`;
               db.run(sqlUPDATE, [value, key], function(err) {
                   if (err) {
