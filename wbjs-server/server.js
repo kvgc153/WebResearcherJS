@@ -12,6 +12,8 @@ const { stdin: input, stdout: output } = require('node:process');
 const readline = require('readline');
 // const fetch = require("node-fetch");
 const logger = require('log-timestamp');
+const { add } = require('@neutralinojs/neu/src/plugins/pluginloader');
+const { KeyObject } = require('node:crypto');
 
 HOSTSERVER = "127.0.0.1"
 HOSTPORT   = 3000
@@ -244,7 +246,7 @@ function processDB(key=""){
   }
 }
 
-let suggestedReadingLLM = "";
+// let suggestedReadingLLM = "";
 // function suggestReading(){
 //   console.log("Fetching suggested reading material based on notes...");
 //   sql = `SELECT key, tags FROM MyTable`;
@@ -274,12 +276,7 @@ let suggestedReadingLLM = "";
 //       "role":"user",
 //       "content": "Your job is to suggest ONLY 15 other unique and exciting topics I should read based on the tags I provide you. Answer me ONLY in HTML unordered lists and do not repeat. Print only the HTML for the lists. Here are the tags:" + notesText
 //     }]; 
-
 //     console.log("Sending request to LLM server for suggested reading...")
-
-    
-
-
 //     fetch(LLMWBJSserver, {
 //       method: "POST",
 //       headers: {
@@ -297,6 +294,58 @@ let suggestedReadingLLM = "";
 //       })
 //     });
 //   }
+
+function addPDFannotations(){
+  console.log("[ADDANNOTATIONS] Adding PDF annotations...");
+  var files = fs.readdirSync(path.join(__dirname, 'notes', 'docs'));
+  console.log("[ADDANNOTATIONS] Found " + files.length + " PDF files.");
+
+  files.forEach((file) => {
+    if(file.endsWith('.html')){
+      console.log("[ADDANNOTATIONS] Processing file: " + file);
+      // Read the PDF file
+      var annotFile = path.join(__dirname, 'notes', 'docs', file);
+      fs.readFile(annotFile, "utf8",(err, annotData) => {
+        if (err) {
+          console.error("[ADDANNOTATIONS] Error reading PDF file: " + err);
+          return;
+        }
+
+        let key = HOSTSERVER + ":" + HOSTPORT + "/notes/docs/" + file;
+        let notesText = annotData;
+        let value = JSON.stringify({
+          "TITLE": file,
+          "TAGS": "",
+          "JSON": {
+            "1": {
+              "blocks": [
+                {
+                  "type": "paragraph",
+                  "data": {
+                    "text": notesText
+                  }
+                }
+              ]
+            }
+          },
+          "CSS": {},
+          "META": {},
+          "URL": key
+        });
+        let uid = crypto.createHash('md5').update(key).digest('hex');
+
+
+        let sqlTags = `REPLACE INTO MyTable (key, uid, title, tags, notes, notesText, summary, user, css, meta, value) VALUES (?,?,?,?,?,?,?,?,?,?,?)`;
+        dbClean.run(sqlTags, [key,uid, file, "", notesText, notesText, "", "root", "", "", value], function(err) {
+          if (err) {
+            console.error(err.message);
+          }
+        });
+
+      });
+    }
+  });
+}
 
 const ignoredWebsites = {
   email: [
@@ -420,7 +469,7 @@ app.get('/video.html', (req, res) => {
 
 app.get('/pdfViewer', (req, res) => {
   // glob pdf files from folder
-  const folderPath = path.join(__dirname, 'notes');
+  const folderPath = path.join(__dirname, 'notes', 'docs');
   fs.readdir(folderPath, (err, files) => {
       if (err) {
           console.error('Error reading folder:', err);
@@ -449,7 +498,7 @@ app.get('/pdfViewer', (req, res) => {
       </head>
       <body>
           <h1 style="text-align:center">Saved PDFs
-            ${pdfFiles.map(pdfFile => `<h4><a class="pdf-link" href="/pdf.html?pdfUrl=/notes/${pdfFile}" target="_blank">${pdfFile}</a></h4>`).join('')}
+            ${pdfFiles.map(pdfFile => `<h4><a class="pdf-link" href="/pdf.html?pdfUrl=/notes/docs/${pdfFile}" target="_blank">${pdfFile}</a></h4>`).join('')}
           </h1>
       </body>
       </html>
@@ -554,7 +603,7 @@ app.get('/canvas', (req, res) => {
       </style>
   </head>
   <body>
-      <div height="10000px" width="100%" id="wbjs-canvas" style="overflow-y:auto;background-color: #f4f4f4;">${"&nbsp;<br>".repeat(100) }</div>
+      <div height="100000px" width="100%" id="wbjs-canvas" style="overflow-y:auto;background-color: #f4f4f4;">${"&nbsp;<br>".repeat(10000) }</div>
   </body>
   </html>
   `;
@@ -571,15 +620,16 @@ app.get('/canvas', (req, res) => {
 
 
 processDB(key="");
+addPDFannotations();
 // suggestReading();
 
-app.post('/getSuggestedReading', (req, res) => {
-  // Read the suggested reading file
-    let dataPacket = {};
-    dataPacket['suggestedReading'] = suggestedReadingLLM;
-    res.json(JSON.stringify(dataPacket));
+// app.post('/getSuggestedReading', (req, res) => {
+//   // Read the suggested reading file
+//     let dataPacket = {};
+//     dataPacket['suggestedReading'] = suggestedReadingLLM;
+//     res.json(JSON.stringify(dataPacket));
 
-});
+// });
 
 
 

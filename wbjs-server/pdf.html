@@ -7,10 +7,18 @@
             width: 70%;
             height: 100000px;
         }
+        #annotFrame {
+            width: 30%;
+            height: 100000px;
+            position: absolute;
+            right: 0;
+            top: 0;
+        }
     </style>
 </head>
 <body>
     <object type='application/pdf' id="pdfFrame"></object>
+    <object type='application/pdf' id="annotFrame"></object>
 
     <script>
 
@@ -28,6 +36,7 @@
         if (pdfUrl) {
             
             document.getElementById('pdfFrame').data = pdfUrl;
+            document.getElementById('annotFrame').data = pdfUrl.replace('.pdf', '.html');
         }
     </script>
 </body>
