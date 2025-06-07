@@ -68,7 +68,7 @@ function processToken(token){
 
 //Post process the database
 function processDB(key=""){
-    if(key === ""){ 
+    if(key.length === 0){ 
       let sql = `SELECT * FROM MyTable`;
 
       // Update dbClean database
