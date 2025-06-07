@@ -60,7 +60,13 @@ function displayNotes(data) {
     for (let i = 0; i < allDataKeys.length; i++) {
         var edjsData = JSON.parse(allData[allDataKeys[i]]);
         var foo_loaded_keys = Object.keys(edjsData['JSON']);
-    
+        var description = "";
+        if(edjsData['META'] == undefined){
+            description = "";
+        }
+        else{
+            description = edjsData['META']['description'] || edjsData['META']['twitter:description'] || edjsData['META']['og:description'] || "" ;
+        }
         var noteContentWrapper = document.createElement('div');
         noteContentWrapper.className = 'note-content';
     
@@ -71,7 +77,7 @@ function displayNotes(data) {
                 <a href="http://${allDataKeys[i]}">${edjsData['TITLE']}</a>
             </div>
             <div class="result-url">http://${allDataKeys[i]}</div>
-            <div class="result-summary">${edjsData['TAGS']}</div>
+            <div class="result-summary">${description}</div>
             <button class="toggle-notes" onclick="toggleNotes(${i})">Expand &darr;</button>
         `;
         // document.getElementById('note-container').appendChild(noteContent1);
