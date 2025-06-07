@@ -136,7 +136,7 @@ function processDB(key=""){
             let summary= "";
             let user = "root";
             let css =  JSON.stringify(val['CSS']) || ""; 
-            let meta = "";
+            let meta = JSON.stringify(val['META']) || "";
             let sqlTags = `REPLACE INTO MyTable (key, uid, title, tags, notes, notesText, summary, user, css, meta, value) VALUES (?,?,?,?,?,?,?,?,?,?,?)`;
             dbClean.run(sqlTags, [key,uid, title, tags, notes, notesText, summary, user, css, meta, value], function(err) {
               if (err) {
@@ -223,7 +223,7 @@ function processDB(key=""){
             let summary= "";
             let user = "root";
             let css =  JSON.stringify(val['CSS']) || ""; 
-            let meta = "";
+            let meta = JSON.stringify(val['META']) || "";
             let sqlTags = `REPLACE INTO MyTable (key, uid, title, tags, notes, notesText, summary, user, css, meta, value) VALUES (?,?,?,?,?,?,?,?,?,?,?)`;
             dbClean.run(sqlTags, [key,uid, title, tags, notes, notesText, summary, user, css, meta, value], function(err) {
               if (err) {
