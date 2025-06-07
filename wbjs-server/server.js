@@ -786,52 +786,104 @@ app.post('/uploadFile', (req, res) => {
       return res.status(400).json({ success: 0, message: 'File upload error' });
     }
 
-    const oldPath = file.filepath;
-    const newPath = path.join(__dirname, 'notes', file.originalFilename);
 
-    fs.rename(oldPath, newPath, (err) => {
+    var responseJson = {};
+    //If file is a pdf, then we will show it in the pdf viewer
+    if (file.originalFilename.endsWith('.pdf') || file.originalFilename.endsWith('.epub') || file.originalFilename.endsWith('.mobi') || file.originalFilename.endsWith('.txt') || file.originalFilename.endsWith('.docx') || file.originalFilename.endsWith('.odt')) {
+      var oldPath = file.filepath;
+      var newPath = path.join(__dirname, 'notes','docs', file.originalFilename);
+      fs.rename(oldPath, newPath, (err) => {
       if (err) {
         console.error('[UPLOAD] Error renaming file:', err);
         return res.status(500).send('Server Error');
       }
+      });
+      responseJson = {
+        success: 1,
+        file: {
+          url: HOSTSTRING + "/pdf.html?pdfUrl=notes/docs/" + file.originalFilename,
+          name: file.originalFilename,
+          size: file.size,
+          title: file.originalFilename
+        }
+      };  
+    }
+    if (file.originalFilename.endsWith('.mp4') || file.originalFilename.endsWith('.webm') || file.originalFilename.endsWith('.ogg')) {
+      var oldPath = file.filepath;
+      var newPath = path.join(__dirname, 'notes', 'videos', file.originalFilename);
 
-      //If file is a pdf, then we will show it in the pdf viewer
-      if (file.originalFilename.endsWith('.pdf')) {
-        var responseJson = {
-          success: 1,
-          file: {
-            url: HOSTSTRING + "/pdf.html?pdfUrl=notes/" + file.originalFilename,
+      fs.rename(oldPath, newPath, (err) => {
+      if (err) {
+        console.error('[UPLOAD] Error renaming file:', err);
+        return res.status(500).send('Server Error');
+      }
+      });
+      responseJson = {
+        success: 1,
+        file: {
+            url: HOSTSTRING + "/video.html?videoUrl=notes/videos/" + file.originalFilename,
             name: file.originalFilename,
             size: file.size,
             title: file.originalFilename
-          }
-        };  
-      }
-      if (file.originalFilename.endsWith('.mp4') || file.originalFilename.endsWith('.webm') || file.originalFilename.endsWith('.ogg')) {
-        var responseJson = {
-          success: 1,
-          file: {
-            url: HOSTSTRING + "/video.html?videoUrl=notes/" + file.originalFilename,
-            name: file.originalFilename,
-            size: file.size,
-            title: file.originalFilename
-          }
-        };  
-      }
+        }
+      };  
 
-      else{
-        var responseJson = {
-          success: 1,
-          file: {
-            url: HOSTSTRING + "/notes/" + file.originalFilename,
+    }
+
+    if (file.originalFilename.endsWith('.jpg') || file.originalFilename.endsWith('.jpeg') || file.originalFilename.endsWith('.png') || file.originalFilename.endsWith('.gif')) {
+      var oldPath = file.filepath;
+      var newPath = path.join(__dirname, 'notes', 'images', file.originalFilename);
+
+      fs.rename(oldPath, newPath, (err) => {
+      if (err) {
+        console.error('[UPLOAD] Error renaming file:', err);
+        return res.status(500).send('Server Error');
+      }
+      });
+      responseJson = {
+        success: 1,
+        file: {
+            url: HOSTSTRING + "/notes/images/" + file.originalFilename,
             name: file.originalFilename,
             size: file.size,
             title: file.originalFilename
-          }
-        };
+        }
+      };  
+
+    }
+    if (file.originalFilename.endsWith('.mp3') || file.originalFilename.endsWith('.wav')) {
+      var oldPath = file.filepath;
+      var newPath = path.join(__dirname, 'notes', 'audios', file.originalFilename);
+
+      fs.rename(oldPath, newPath, (err) => {
+      if (err) {
+        console.error('[UPLOAD] Error renaming file:', err);
+        return res.status(500).send('Server Error');
       }
+      });
+      responseJson = {
+        success: 1,
+        file: {
+            url: HOSTSTRING + "/notes/audios/" + file.originalFilename,
+            name: file.originalFilename,
+            size: file.size,
+            title: file.originalFilename
+        }
+      };  
+
+    }
+    else{
+      var responseJson = {
+        success: 1,
+        file: {
+          url: HOSTSTRING + "/notes/" + file.originalFilename,
+          name: file.originalFilename,
+          size: file.size,
+          title: file.originalFilename
+        }
+      };
+    }
       res.status(200).json(responseJson);
-    });
   });
 });
 
