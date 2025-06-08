@@ -297,14 +297,14 @@ function processDB(key=""){
 
 function addPDFannotations(){
   console.log("[ADDANNOTATIONS] Adding PDF annotations...");
-  var files = fs.readdirSync(path.join(__dirname, 'notes', 'docs'));
+  var files = fs.readdirSync(path.join(__dirname, 'notes', 'docs', 'annots'));
   console.log("[ADDANNOTATIONS] Found " + files.length + " PDF files.");
 
   files.forEach((file) => {
     if(file.endsWith('.html')){
       console.log("[ADDANNOTATIONS] Processing file: " + file);
       // Read the PDF file
-      var annotFile = path.join(__dirname, 'notes', 'docs', file);
+      var annotFile = path.join(__dirname, 'notes', 'docs', 'annots', file);
       fs.readFile(annotFile, "utf8",(err, annotData) => {
         if (err) {
           console.error("[ADDANNOTATIONS] Error reading PDF file: " + err);
