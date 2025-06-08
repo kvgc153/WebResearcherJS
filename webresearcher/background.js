@@ -58,32 +58,32 @@ function reloadTabs(tabs) {
 }
 
 // first wait for jquery, jquery-ui and others to load and then load all the small ones.. very poorly written code...
-function loadJQuery(tabID){
+function loadJQuery(tabID,tabURL){
   const executing = browser.tabs.executeScript(tabID,{
     file: jsFiles[0]
   });
-  executing.then(loadJQueryUI(tabID), onError);
+  executing.then(loadJQueryUI(tabID,tabURL), onError);
 }
 
-function loadJQueryUI(tabID){
+function loadJQueryUI(tabID,tabURL){
   const executing =  browser.tabs.executeScript(tabID,{
     file: jsFiles[1]
   });
-  executing.then(loadEditor(tabID), onError);
+  executing.then(loadEditor(tabID,tabURL), onError);
 }
 
-function loadEditor(tabID){
+function loadEditor(tabID,tabURL){
   const executing =  browser.tabs.executeScript(tabID,{
     file: jsFiles[2]
 
   });
-  executing.then(loadOtherModules(tabID), onError);
+  executing.then(loadOtherModules(tabID,tabURL), onError);
 }
 
 
 
 // load all other modules
-function loadOtherModules(tabID){
+function loadOtherModules(tabID,tabURL){
   for(var i=0;i<cssFiles.length;i++){
           const executing = browser.tabs.insertCSS(tabID,{
             file: cssFiles[i],
@@ -99,6 +99,16 @@ function loadOtherModules(tabID){
         executing.then(onExecuted, onError);
     }
 
+  // Load the notesViewer javascript file if the URL matches
+  console.log("Tab url is " + tabURL);
+  if(tabURL.includes(serverHost + "/notesViewer")){
+    console.log("Loading notes viewer");
+    browser.tabs.executeScript(tabID, {
+      file: "webresearcher/notesViewer.js"
+    }).then(onExecuted, onError);
+  }
+  
+
 }
 
 // Server variables
@@ -106,6 +116,8 @@ var serverHost  = "http://127.0.0.1:3000";
 // var serverHost  = "http://webresearcher.xyz:3000";
 
 var fetchServer = serverHost + "/getData";
+var searchServer = serverHost + "/search";
+
 var postServer  = serverHost + `/data`;
 var readabilityServer  = serverHost + `/readability`;
 // var registerServer = serverHost + `/register`;  
@@ -117,7 +129,7 @@ function handleMessage(request, sender, sendResponse) {
     console.log("Message from the content script: " + request.greeting);
     console.log(sender.tab.id);
     // make a log of the id and url of the tab
-    loadJQuery(sender.tab.id);
+    loadJQuery(sender.tab.id, sender.tab.url);
     sendResponse({response: "Response from background script"});
   }
 
@@ -135,6 +147,26 @@ function handleMessage(request, sender, sendResponse) {
       .then((data) => {
         return({ 
           response: data.value 
+        }); 
+      })
+
+  }
+
+
+  else if (request.greeting == "search"){
+    console.log("Fetching data from server");
+    return fetch(searchServer, {
+      body: request.data, 
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "token": myAddonId
+      },
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        return({ 
+          response: JSON.stringify(data) 
         }); 
       })
 

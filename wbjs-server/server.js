@@ -21,6 +21,7 @@ HOSTSTRING = 'http://' + HOSTSERVER + ":" + HOSTPORT
 // LLMWBJSserver = "http://127.0.0.1:11434/api/chat";
 
 
+
 app.use(cors({credentials: true}))
 app.use(express.static("ext_libs/"));
 app.use('/notes', express.static('notes'))
@@ -770,44 +771,51 @@ app.post('/readability', (req, res) => {
 // Endpoint to search data from database
 
 app.post('/search', (req, res) => {
-  let tagFlag = req.body.tag;
-  let key     = "";
-  if(tagFlag){
-    key = "%" + req.body.key + "%";
+  
+  let token = req.headers['token'];
+  // console.log(processToken(token)); 
+  console.log("[SEARCH] called with token: ", token);
+  
+  if(processToken(token)){
+    let tagFlag = req.body.tag;
+    let key     = "";
+    if(tagFlag){
+      key = "%" + req.body.key + "%";
 
-    let sql = `SELECT key,value,tags FROM MyTable WHERE tags LIKE ?`;
+      let sql = `SELECT key,value,tags FROM MyTable WHERE tags LIKE ?`;
 
-    dbClean.all(sql, [key], (err, rows) => {
-      if (err) {
-        throw err;
-      }
+      dbClean.all(sql, [key], (err, rows) => {
+        if (err) {
+          throw err;
+        }
 
-      let result = {};
-      rows.forEach((row, index) => {
-        result[row['key']] = row['value'];
+        let result = {};
+        rows.forEach((row, index) => {
+          result[row['key']] = row['value'];
+        });
+
+        res.json(result);
       });
 
-      res.json(result);
-    });
+    }
+    else{
+      key = "%" + req.body.key + "%";
 
-  }
-  else{
-    key = "%" + req.body.key + "%";
+      let sql = `SELECT key,value,notesText FROM MyTable WHERE notesText LIKE ? OR key LIKE ? OR title LIKE ?`;
 
-    let sql = `SELECT key,value,notesText FROM MyTable WHERE notesText LIKE ? OR key LIKE ? OR title LIKE ?`;
+      dbClean.all(sql, [key,key,key], (err, rows) => {
+        if (err) {
+          throw err;
+        }
 
-    dbClean.all(sql, [key,key,key], (err, rows) => {
-      if (err) {
-        throw err;
-      }
+        let result = {};
+        rows.forEach((row, index) => {
+          result[row['key']] = row['value'];
+        });
 
-      let result = {};
-      rows.forEach((row, index) => {
-        result[row['key']] = row['value'];
+        res.json(result);
       });
-
-      res.json(result);
-    });
+    }
   }
 });
 
