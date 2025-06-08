@@ -489,17 +489,43 @@ app.get('/pdfViewer', (req, res) => {
                   background-color: #f4f4f4;
                   padding: 20px;
               }
-              .pdf-link {
-                  display: block;
-                  margin-bottom: 10px;
+              .pdf-container {
+                  display: flex;
+                  flex-wrap: wrap;
+                  justify-content: center;
+                  gap: 40px;
+              }
+              .pdf-item {
+                  width: 300px;
                   text-align: center;
+                    overflow-wrap: break-word;
+              }
+              .thumbnail {
+                  width: 100%;
+                  height: auto;
+                  border: 1px solid #ccc;
+                  border-radius: 5px;
+                  cursor: pointer;
+              }
+              a {
+                  text-decoration: none;
+                  color: black;
+              }
+              a:hover {
+                  color: blue;
               }
           </style>
       </head>
       <body>
-          <h1 style="text-align:center">Saved PDFs
-            ${pdfFiles.map(pdfFile => `<h4><a class="pdf-link" href="/pdf.html?pdfUrl=/notes/docs/${pdfFile}" target="_blank">${pdfFile}</a></h4>`).join('')}
-          </h1>
+          <h1 style="text-align:center">Saved PDFs</h1>
+          <div class="pdf-container">
+            ${pdfFiles.map(pdfFile => `
+              <div class="pdf-item">
+                  <h4> <a href="/pdf.html?pdfUrl=${encodeURI(`notes/docs/${pdfFile}`)}" target="_blank">${pdfFile}
+                  </a> </h4>
+              </div><br>
+            `).join('')}
+          </div>
       </body>
       </html>
       `;
