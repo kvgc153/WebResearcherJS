@@ -798,6 +798,7 @@ app.get('/searchWBJS', (req, res) => {
           resultFoo["name"] = row['title'];
           resultFoo["description"] = row['tags']
           resultFoo["notesText"] = row['notesText'];
+          resultFoo["key"] = row['key'];
 
           itemsPacked.push(resultFoo);
         }catch(e){
