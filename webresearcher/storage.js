@@ -10,6 +10,15 @@ function saveAllNotesWBJS(notify=true){
   foo_final['JSON'] = WBJS_JSON;
   foo_final['CSS']  = WBJS_CSS;
   foo_final['TAGS'] = document.getElementById('tagsWBJS').value;
+
+  //Get all the meta tags from webpage 
+  let meta = document.getElementsByTagName('meta');
+  let metaDict = {};
+  for(let i=0; i<meta.length;i++ ){
+    let key = meta[i].getAttribute('name') || meta[i].getAttribute('property');
+    metaDict[key] = meta[i].getAttribute('content')
+  }
+  foo_final['META']  = metaDict;
   foo_final['TITLE'] = document.title || "";
   foo_final['URL'] = window.location.href;
   

@@ -12,6 +12,8 @@ const { stdin: input, stdout: output } = require('node:process');
 const readline = require('readline');
 // const fetch = require("node-fetch");
 const logger = require('log-timestamp');
+const { add } = require('@neutralinojs/neu/src/plugins/pluginloader');
+const { KeyObject } = require('node:crypto');
 
 HOSTSERVER = "127.0.0.1"
 HOSTPORT   = 3000
@@ -68,7 +70,7 @@ function processToken(token){
 
 //Post process the database
 function processDB(key=""){
-    if(key === ""){ 
+    if(key.length === 0){ 
       let sql = `SELECT * FROM MyTable`;
 
       // Update dbClean database
@@ -136,7 +138,7 @@ function processDB(key=""){
             let summary= "";
             let user = "root";
             let css =  JSON.stringify(val['CSS']) || ""; 
-            let meta = "";
+            let meta = JSON.stringify(val['META']) || "";
             let sqlTags = `REPLACE INTO MyTable (key, uid, title, tags, notes, notesText, summary, user, css, meta, value) VALUES (?,?,?,?,?,?,?,?,?,?,?)`;
             dbClean.run(sqlTags, [key,uid, title, tags, notes, notesText, summary, user, css, meta, value], function(err) {
               if (err) {
@@ -223,7 +225,7 @@ function processDB(key=""){
             let summary= "";
             let user = "root";
             let css =  JSON.stringify(val['CSS']) || ""; 
-            let meta = "";
+            let meta = JSON.stringify(val['META']) || "";
             let sqlTags = `REPLACE INTO MyTable (key, uid, title, tags, notes, notesText, summary, user, css, meta, value) VALUES (?,?,?,?,?,?,?,?,?,?,?)`;
             dbClean.run(sqlTags, [key,uid, title, tags, notes, notesText, summary, user, css, meta, value], function(err) {
               if (err) {
@@ -244,7 +246,7 @@ function processDB(key=""){
   }
 }
 
-let suggestedReadingLLM = "";
+// let suggestedReadingLLM = "";
 // function suggestReading(){
 //   console.log("Fetching suggested reading material based on notes...");
 //   sql = `SELECT key, tags FROM MyTable`;
@@ -274,12 +276,7 @@ let suggestedReadingLLM = "";
 //       "role":"user",
 //       "content": "Your job is to suggest ONLY 15 other unique and exciting topics I should read based on the tags I provide you. Answer me ONLY in HTML unordered lists and do not repeat. Print only the HTML for the lists. Here are the tags:" + notesText
 //     }]; 
-
 //     console.log("Sending request to LLM server for suggested reading...")
-
-    
-
-
 //     fetch(LLMWBJSserver, {
 //       method: "POST",
 //       headers: {
@@ -297,6 +294,58 @@ let suggestedReadingLLM = "";
 //       })
 //     });
 //   }
+
+function addPDFannotations(){
+  console.log("[ADDANNOTATIONS] Adding PDF annotations...");
+  var files = fs.readdirSync(path.join(__dirname, 'notes', 'docs'));
+  console.log("[ADDANNOTATIONS] Found " + files.length + " PDF files.");
+
+  files.forEach((file) => {
+    if(file.endsWith('.html')){
+      console.log("[ADDANNOTATIONS] Processing file: " + file);
+      // Read the PDF file
+      var annotFile = path.join(__dirname, 'notes', 'docs', file);
+      fs.readFile(annotFile, "utf8",(err, annotData) => {
+        if (err) {
+          console.error("[ADDANNOTATIONS] Error reading PDF file: " + err);
+          return;
+        }
+
+        let key = HOSTSERVER + ":" + HOSTPORT + "/notes/docs/" + file;
+        let notesText = annotData;
+        let value = JSON.stringify({
+          "TITLE": file,
+          "TAGS": "",
+          "JSON": {
+            "1": {
+              "blocks": [
+                {
+                  "type": "paragraph",
+                  "data": {
+                    "text": notesText
+                  }
+                }
+              ]
+            }
+          },
+          "CSS": {},
+          "META": {},
+          "URL": key
+        });
+        let uid = crypto.createHash('md5').update(key).digest('hex');
+
+
+        let sqlTags = `REPLACE INTO MyTable (key, uid, title, tags, notes, notesText, summary, user, css, meta, value) VALUES (?,?,?,?,?,?,?,?,?,?,?)`;
+        dbClean.run(sqlTags, [key,uid, file, "", notesText, notesText, "", "root", "", "", value], function(err) {
+          if (err) {
+            console.error(err.message);
+          }
+        });
+
+      });
+    }
+  });
+}
 
 const ignoredWebsites = {
   email: [
@@ -420,7 +469,7 @@ app.get('/video.html', (req, res) => {
 
 app.get('/pdfViewer', (req, res) => {
   // glob pdf files from folder
-  const folderPath = path.join(__dirname, 'notes');
+  const folderPath = path.join(__dirname, 'notes', 'docs');
   fs.readdir(folderPath, (err, files) => {
       if (err) {
           console.error('Error reading folder:', err);
@@ -449,7 +498,7 @@ app.get('/pdfViewer', (req, res) => {
       </head>
       <body>
           <h1 style="text-align:center">Saved PDFs
-            ${pdfFiles.map(pdfFile => `<h4><a class="pdf-link" href="/pdf.html?pdfUrl=/notes/${pdfFile}" target="_blank">${pdfFile}</a></h4>`).join('')}
+            ${pdfFiles.map(pdfFile => `<h4><a class="pdf-link" href="/pdf.html?pdfUrl=/notes/docs/${pdfFile}" target="_blank">${pdfFile}</a></h4>`).join('')}
           </h1>
       </body>
       </html>
@@ -554,7 +603,7 @@ app.get('/canvas', (req, res) => {
       </style>
   </head>
   <body>
-      <div height="10000px" width="100%" id="wbjs-canvas" style="overflow-y:auto;background-color: #f4f4f4;">${"&nbsp;<br>".repeat(100) }</div>
+      <div height="100000px" width="100%" id="wbjs-canvas" style="overflow-y:auto;background-color: #f4f4f4;">${"&nbsp;<br>".repeat(10000) }</div>
   </body>
   </html>
   `;
@@ -571,15 +620,16 @@ app.get('/canvas', (req, res) => {
 
 
 processDB(key="");
+addPDFannotations();
 // suggestReading();
 
-app.post('/getSuggestedReading', (req, res) => {
-  // Read the suggested reading file
-    let dataPacket = {};
-    dataPacket['suggestedReading'] = suggestedReadingLLM;
-    res.json(JSON.stringify(dataPacket));
+// app.post('/getSuggestedReading', (req, res) => {
+//   // Read the suggested reading file
+//     let dataPacket = {};
+//     dataPacket['suggestedReading'] = suggestedReadingLLM;
+//     res.json(JSON.stringify(dataPacket));
 
-});
+// });
 
 
 
@@ -786,52 +836,104 @@ app.post('/uploadFile', (req, res) => {
       return res.status(400).json({ success: 0, message: 'File upload error' });
     }
 
-    const oldPath = file.filepath;
-    const newPath = path.join(__dirname, 'notes', file.originalFilename);
 
-    fs.rename(oldPath, newPath, (err) => {
+    var responseJson = {};
+    //If file is a pdf, then we will show it in the pdf viewer
+    if (file.originalFilename.endsWith('.pdf') || file.originalFilename.endsWith('.epub') || file.originalFilename.endsWith('.mobi') || file.originalFilename.endsWith('.txt') || file.originalFilename.endsWith('.docx') || file.originalFilename.endsWith('.odt')) {
+      var oldPath = file.filepath;
+      var newPath = path.join(__dirname, 'notes','docs', file.originalFilename);
+      fs.rename(oldPath, newPath, (err) => {
       if (err) {
         console.error('[UPLOAD] Error renaming file:', err);
         return res.status(500).send('Server Error');
       }
+      });
+      responseJson = {
+        success: 1,
+        file: {
+          url: HOSTSTRING + "/pdf.html?pdfUrl=notes/docs/" + file.originalFilename,
+          name: file.originalFilename,
+          size: file.size,
+          title: file.originalFilename
+        }
+      };  
+    }
+    if (file.originalFilename.endsWith('.mp4') || file.originalFilename.endsWith('.webm') || file.originalFilename.endsWith('.ogg')) {
+      var oldPath = file.filepath;
+      var newPath = path.join(__dirname, 'notes', 'videos', file.originalFilename);
 
-      //If file is a pdf, then we will show it in the pdf viewer
-      if (file.originalFilename.endsWith('.pdf')) {
-        var responseJson = {
-          success: 1,
-          file: {
-            url: HOSTSTRING + "/pdf.html?pdfUrl=notes/" + file.originalFilename,
+      fs.rename(oldPath, newPath, (err) => {
+      if (err) {
+        console.error('[UPLOAD] Error renaming file:', err);
+        return res.status(500).send('Server Error');
+      }
+      });
+      responseJson = {
+        success: 1,
+        file: {
+            url: HOSTSTRING + "/video.html?videoUrl=notes/videos/" + file.originalFilename,
             name: file.originalFilename,
             size: file.size,
             title: file.originalFilename
-          }
-        };  
-      }
-      if (file.originalFilename.endsWith('.mp4') || file.originalFilename.endsWith('.webm') || file.originalFilename.endsWith('.ogg')) {
-        var responseJson = {
-          success: 1,
-          file: {
-            url: HOSTSTRING + "/video.html?videoUrl=notes/" + file.originalFilename,
-            name: file.originalFilename,
-            size: file.size,
-            title: file.originalFilename
-          }
-        };  
-      }
+        }
+      };  
 
-      else{
-        var responseJson = {
-          success: 1,
-          file: {
-            url: HOSTSTRING + "/notes/" + file.originalFilename,
+    }
+
+    if (file.originalFilename.endsWith('.jpg') || file.originalFilename.endsWith('.jpeg') || file.originalFilename.endsWith('.png') || file.originalFilename.endsWith('.gif')) {
+      var oldPath = file.filepath;
+      var newPath = path.join(__dirname, 'notes', 'images', file.originalFilename);
+
+      fs.rename(oldPath, newPath, (err) => {
+      if (err) {
+        console.error('[UPLOAD] Error renaming file:', err);
+        return res.status(500).send('Server Error');
+      }
+      });
+      responseJson = {
+        success: 1,
+        file: {
+            url: HOSTSTRING + "/notes/images/" + file.originalFilename,
             name: file.originalFilename,
             size: file.size,
             title: file.originalFilename
-          }
-        };
+        }
+      };  
+
+    }
+    if (file.originalFilename.endsWith('.mp3') || file.originalFilename.endsWith('.wav')) {
+      var oldPath = file.filepath;
+      var newPath = path.join(__dirname, 'notes', 'audios', file.originalFilename);
+
+      fs.rename(oldPath, newPath, (err) => {
+      if (err) {
+        console.error('[UPLOAD] Error renaming file:', err);
+        return res.status(500).send('Server Error');
       }
+      });
+      responseJson = {
+        success: 1,
+        file: {
+            url: HOSTSTRING + "/notes/audios/" + file.originalFilename,
+            name: file.originalFilename,
+            size: file.size,
+            title: file.originalFilename
+        }
+      };  
+
+    }
+    else{
+      var responseJson = {
+        success: 1,
+        file: {
+          url: HOSTSTRING + "/notes/" + file.originalFilename,
+          name: file.originalFilename,
+          size: file.size,
+          title: file.originalFilename
+        }
+      };
+    }
       res.status(200).json(responseJson);
-    });
   });
 });
 
