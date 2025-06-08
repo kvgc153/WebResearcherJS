@@ -1,247 +1,78 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>My notes</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #f4f4f4;
-            padding: 20px;
-        }
-        .note-content {
-            position:relative;
-            left:3%;
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
-            grid-gap: 0.3em;
-            width: 54%;
-            margin: 0 auto;
-            row-gap: 0.3em;
-        }
-
-        .note {
-            border: 1px solid #ccc;
-            border-radius: 5px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-            padding: 20px;
-            height:500px;
-            overflow-y:scroll;
-            background-color: #E6E6FA;
-            opacity: 0.9;
-            transition: box-shadow 0.3s ease;
-            display: none; 
-        }
-
-        .note-title {
-            font-size: 16px;
-            font-weight: bold;
-            margin-bottom: 10px;
-        }
-
-        .note-title a {
-            font-size: 14px;
-            color: #1a0dab;
-            text-decoration: none;
-            margin-left: 10px;
-        }
-
-        .toggle-notes {
-            margin-top: 6px;
-            padding: 3px 6px;
-            font-size: 11px;
-            color: #000000;
-            background-color: #78bcff12;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-            width:100%;
-            height:35px;
-        }
-
-        .toggle-notes:hover {
-            background-color: #78bcff30;
-        }
-        button {
-            margin-top: 20px;
-            padding: 10px 20px;
-            border: none;
-            border-radius: 5px;
-            background-color: #007BFF;
-            color: #fff;
-            font-size: 16px;
-            cursor: pointer;
-            transition: background-color 0.3s ease;
-        }
-        button:hover {
-            background-color: #0056b3;
-
-        }
-        .buttonNav {
-            margin-top: 20px;
-            padding: 10px 20px;
-            border: none;
-            border-radius: 5px;
-            background-color: #007072b2;
-            /* color: #fff; */
-            font-size: 16px;
-            cursor: pointer;
-            transition: background-color 0.3s ease;
-        }
-        .buttonNav:hover {
-            background-color: #0070727c;
-            cursor: pointer;
-        }
-
-        .beautiful-button {
-            font-size: 1em;
-            padding: 10px;
-            color: #fff;
-            border: 2px solid #3498db;
-            border-radius: 5px;
-            background-color: #3498db;
-            cursor: pointer;
-            transition: all 0.15s;
-        }
-
-        .beautiful-button:hover {
-            color: #3498db;
-            background-color: #fff;
-
-        }
-        #search {
-            width: 500px;
-            height: 45px;
-            border: 1px solid #dfe1e5;
-            box-shadow: none;
-            border-radius: 20px;
-            padding: 0 20px;
-            margin: 20px 0;
-            font-size: 16px;
-            outline: none;
-        }
-
-        #search:focus {
-            box-shadow: 0 1px 6px 0 rgba(32,33,36,0.28);
-        }
-
-        .display-div {
-            position: fixed;
-            font-size: larger;
-            top: 0%;
-            left: 0;
-            height: 10000px;
-            width: 100%;
-            z-index: 99;
-            background-color: #f4f4f4;
-            display: none;
-            border: 2px solid #ccc;
-            padding: 20px;
-            margin: 10px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-            transition: backdrop-filter 0.3s ease;
-        }
-
-        .search-container {
-            padding: 20px;
-            background-color: #fff;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-            margin-bottom: 20px;
-        }
-
-        #search-bar {
-            width: 100%;
-            padding: 10px;
-            font-size: 16px;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-        }
-
-        .results-container {
-            padding: 20px;
-        }
-
-        .result {
-            position: relative;
-            left:3%;
-            background-color: #fff;
-            padding: 20px;
-            margin-bottom: 20px;
-            margin: 5px auto;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-            width: 55%;
-        }
-
-        .result-title a {
-            font-size: 18px;
-            color: #1a0dab;
-            text-decoration: none;
-        }
-
-        .result-url {
-            font-size: 14px;
-            color: #006621;
-        }
-
-        .result-summary {
-            font-size: 14px;
-            color: #545454;
-        }
-        .tagSidebar {
-            display: inline-block;
-            background-color: #007bff4a;
-            color: #000000;
-            border: 1px solid #0057b35b;
-            border-radius: 5px;
-            padding: 5px 10px;
-            margin: 2px;
-            font-size: 12px;
-            transition: background-color 0.3s ease;
-            font-family: 'Courier New', Courier, monospace;
-        }
-        .tagSidebar:hover {
-        background-color: #0057b350;
-        cursor: pointer;
-        }
-    </style>
-</head>
-<body>
-  <br>
-  <h2 style="text-align:center">WBJS notes 
-    <div style='text-align: center' id="options"> 
-        <!-- <button class="buttonNav" onclick="window.location.href='/notesViewer'">Notes Viewer</button> -->
-        <button class="buttonNav" onclick="window.location.href='/pdfViewer'"> Saved PDFs</button>
-        <button class="buttonNav" onclick="window.location.href='/videoViewer'">Saved Videos</button>   
-    </div>
-    <div id ="searchDiv">
-        <input type="text" id='search' placeholder="search"> </input>
-        <!-- <button id ="searchBtn"> Search </button> -->
-    </div> 
-  </h2>
-  <div id="display" class="display-div"> </div>
-  <div id="note-container"></div>
-  <div id="tags-container" style="position:absolute; overflow-y: true; height:100%; left:7%; top:15%; background-color:#ffffff1d; width:15%; font-family: 'Courier New', Courier, monospace;"> </div>
-  <div id="suggested-reading" style="position:absolute; height:100%; left:83%; top:15%; background-color:#ffffff1d; width:12%;" > </div>
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <title>WBJS-search</title>
  
-  <script type="text/javascript" src= "jquery.min.js"></script>
-  <script type="text/javascript" src= "jquery.sidebar.min.js"></script>
-  <script type="text/javascript" src= "editorjs@latest.js"></script>
-  <script type="text/javascript" src= "code@latest.js"></script>
-  <script type="text/javascript" src= "edjsHTML.js"></script>
-  <script type="text/javascript" src= "header@latest.js"></script>
-  <script type="text/javascript" src= "list@latest.js"></script>
-  <script type="text/javascript" src= "marker@latest.js"></script>
-  <script type="text/javascript" src= "embed@latest.js"></script>
-  <script type="text/javascript" src= "attaches@latest.js"></script>
-  <script type="text/javascript" src= "editorjs-ask.js"></script>
+
+    <!-- Bootstrap core CSS -->
+    <link href="bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=Playfair+Display:700,900" rel="stylesheet">
+    <link href="blog.css" rel="stylesheet">
+  </head>
+
+  <body>
+<!-- 
+    <div class="container"  data-toggle="collapse" data-target="#tags-container">
+      <nav class="col-md-2 d-none d-md-block bg-light sidebar">
+        <div class="sidebar-sticky">
+          <h5 class='text-center'><a class='btn btn-light text-muted'>Tags</a></h5>
+          <div id="tags-container"> </div>
+        </div>
+      </nav>
+      </div> -->
 
 
-  <script type="text/javascript" src= "quote@latest.js"></script>
-  <script type="text/javascript" src= "simple-image@latest.js"></script>
-  <script type="text/javascript" src= "table@latest.js"></script>
-  <script type="text/javascript" src= "clipboard.min.js"></script>
+    <div class="container">
+      <header class="blog-header py-3">
+        <div class="row justify-content-between align-items-center">
+          <!-- <button class="btn btn-light" onclick="window.location.href='/pdfViewer'"> Saved PDFs</button>
+          <button class="btn btn-light" onclick="window.location.href='/videoViewer'">Saved Videos</button> -->
+          <div class="col-4 pt-1">
+            <a class="btn btn-light text-muted" onclick="window.location.href='/pdfViewer'">PDFs</a>
+            <a class="btn btn-light text-muted" onclick="window.location.href='/videoViewer'">Videos</a>
+          </div>
+          <div class="col-4 text-center">
+            <a class="blog-header-logo text-dark" href="#">WBJS Notes</a>
+          </div>
+          <div class="col-4 d-flex justify-content-end align-items-center">
+          </div>
+        </div>
+        <div id ="searchDiv" class="mx-auto">
+          <input type="text" id='search' placeholder="search"> </input>
+        </div> 
+      </header>
+    </div>
 
-  <script type="text/javascript" src= "wbjs.js"></script>
+    <!-- <main role="main" class="container"> -->
+      <div id="display" class="display-div"> </div>
+      <div id="note-container"></div>
+    <!-- </main>/.container -->
 
-  
-</body>
+    <script src="jquery.min.js"></script>
+    <script src="popper.js"></script>
+    <script src="bootstrap.min.js"></script>
+
+    <script type="text/javascript" src= "jquery.sidebar.min.js"></script>
+    <script type="text/javascript" src= "editorjs@latest.js"></script>
+    <script type="text/javascript" src= "code@latest.js"></script>
+    <script type="text/javascript" src= "edjsHTML.js"></script>
+    <script type="text/javascript" src= "header@latest.js"></script>
+    <script type="text/javascript" src= "list@latest.js"></script>
+    <script type="text/javascript" src= "marker@latest.js"></script>
+    <script type="text/javascript" src= "embed@latest.js"></script>
+    <script type="text/javascript" src= "attaches@latest.js"></script>
+    <script type="text/javascript" src= "editorjs-ask.js"></script>
+
+
+    <script type="text/javascript" src= "quote@latest.js"></script>
+    <script type="text/javascript" src= "simple-image@latest.js"></script>
+    <script type="text/javascript" src= "table@latest.js"></script>
+    <script type="text/javascript" src= "clipboard.min.js"></script>
+
+    <script type="text/javascript" src= "wbjs.js"></script>
+  </body>
 </html>

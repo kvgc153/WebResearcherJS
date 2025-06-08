@@ -43,7 +43,7 @@ A sqlite DB will be created in the same folder which will contain all the notes 
 The query string `q` can also be used to search the notes. 
 Example usage: 
 ```
-http://0.0.0.0:3000/notesViewer?q=test
+http://127.0.0.1:3000/notesViewer?q=test
 ```
 
 Click [here](featuresAll.md) to learn about all the features of WBJS and [here](developerNotes.md) for developer notes.

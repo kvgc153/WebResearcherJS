@@ -27,31 +27,31 @@ let notesDB = {};
 // });
 
 // Get all tags 
-fetch("http://127.0.0.1:3000/getAllTags", { method: "POST" })
-.then(response => response.json())
-.then(data => {
+// fetch("http://127.0.0.1:3000/getAllTags", { method: "POST" })
+// .then(response => response.json())
+// .then(data => {
 
-    var tagsDB = data['tags'];
-    var tagsOccurences = data['occurences'];
-    let tagsContainer = document.getElementById('tags-container');
-    tagsContainer.innerHTML =  "<h5>Tags</h5>";
+//     var tagsDB = data['tags'];
+//     var tagsOccurences = data['occurences'];
+//     let tagsContainer = document.getElementById('tags-container');
+//     tagsContainer.innerHTML =  "";
 
-    var count = 0;
-    tagsDB.forEach(function(tag) {
-        if(tag.length>0){
-            let tagDiv = document.createElement('button');
-            tagDiv.className = 'tagSidebar';
-            tagDiv.textContent = tag + " (" + tagsOccurences[count] + ")";
-            tagDiv.addEventListener('click', function() {   
-                window.location.href = "http://127.0.0.1:3000/notesViewer?q=" + tag + "&tag=true";
-            });
+//     var count = 0;
+//     tagsDB.forEach(function(tag) {
+//         if(tag.length>0){
+//             let tagDiv = document.createElement('button');
+//             tagDiv.className = 'btn btn-outline-secondary btn-sm';
+//             tagDiv.textContent = tag + " (" + tagsOccurences[count] + ")";
+//             tagDiv.addEventListener('click', function() {   
+//                 window.location.href = "http://127.0.0.1:3000/notesViewer?q=" + tag + "&tag=true";
+//             });
 
-            tagsContainer.appendChild(tagDiv);
-        }
-        count +=1;
+//             tagsContainer.appendChild(tagDiv);
+//         }
+//         count +=1;
        
-    }); 
-});
+//     }); 
+// });
 
 function displayNotes(data) {
     var allData = data;
@@ -71,12 +71,12 @@ function displayNotes(data) {
         noteContentWrapper.className = 'note-content';
     
         var noteContent1 = document.createElement('div');
-        noteContent1.className = 'result';
+        noteContent1.className = 'container result';
         noteContent1.innerHTML = `
             <div class="result-title">
                 <a href="http://${allDataKeys[i]}">${edjsData['TITLE']}</a>
             </div>
-            <div class="result-url">http://${allDataKeys[i]}</div>
+            <div class="text-muted">http://${allDataKeys[i]}</div>
             <div class="result-summary">${description}</div>
             <button class="toggle-notes" onclick="toggleNotes(${i})">Expand &darr;</button>
         `;
