@@ -41,10 +41,10 @@ function displaySearchNotes(data) {
             </div>
             <div class="text-muted">http://${allDataKeys[i]}</div>
             <div class="result-summary">${description}</div>
-            <button class="toggle-notes" onclick="toggleNotes(${i})">Expand &darr;</button>
         `;
         // document.getElementById('note-container').appendChild(noteContent1);
-    
+                // <button class="toggle-notes" onclick="toggleNotes(${i})">Expand &darr;</button>
+
         if (foo_loaded_keys.length > 0) {
             // Only insert div to page if there are notes
             document.getElementById('note-container').appendChild(noteContent1);
@@ -54,6 +54,7 @@ function displaySearchNotes(data) {
             var noteDiv = document.createElement('div');
             noteDiv.className = 'note';
             noteDiv.id = 'note' + note_count;
+            noteDiv.style.display = 'block';
     
             var titleInput = document.createElement('div');
             titleInput.className = 'note-title';
@@ -120,28 +121,35 @@ function displaySearchNotes(data) {
     
         document.getElementById('note-container').appendChild(noteContentWrapper);
     }
-    if(allDataKeys.length < 10){
-        for(let i = 0; i < 10; i++){
-            try {
-                toggleNotes(i);
-            } catch (error) {
-                console.error("Error toggling notes for index " + i + ": " + error);
-            }
-        }
-    }
+    // if(allDataKeys.length < 10){
+    //     for(let i = 0; i < 10; i++){
+    //         try {
+    //             toggleNotes(i);
+    //         } catch (error) {
+    //             console.error("Error toggling notes for index " + i + ": " + error);
+    //         }
+    //     }
+    // }
 }
 
-function toggleNotes(index) {
-    var notes = document.querySelectorAll('.note-content')[index].querySelectorAll('.note');
-    notes.forEach(note => {
-        if (note.style.display === 'none' || note.style.display === '') {
-            note.style.display = 'block';
-        } 
-        else {
-            note.style.display = 'none';
-        }
-    });
+// function toggleNotes(index) {
+//     var notes = document.querySelectorAll('.note-content')[index].querySelectorAll('.note');
+//     notes.forEach(note => {
+//         if (note.style.display === 'none' || note.style.display === '') {
+//             note.style.display = 'block';
+//         } 
+//         else {
+//             note.style.display = 'none';
+//         }
+//     });
+// }
+
+
+function displaySearchNotesInit(message) {
+//   console.log(message.response)
+  displaySearchNotes(JSON.parse(message.response));
 }
+
 
 // Search functionality/////
 function searchDB(){
@@ -169,11 +177,6 @@ const tagFlag   = urlParams.get('tag') || false;
 document.getElementById('search').value = urlSearch;
 
 
-
-function displaySearchNotesInit(message) {
-//   console.log(message.response)
-  displaySearchNotes(JSON.parse(message.response));
-}
 
 
 var dataPacket = {};
