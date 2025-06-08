@@ -46,6 +46,10 @@ let dbReadability = new sqlite3.Database('./readability.db', err => {
   err ? console.error(err.message) : console.log('[DB] Connected to the readability database.');
 });
 
+let dbUsers = new sqlite3.Database('./registeredUsers.db', err => {
+  err ? console.error(err.message) : console.log('[DB] Connected to the registered users database.')
+});
+
 // Create table if not exists
 db.run(`CREATE TABLE IF NOT EXISTS MyTable (key TEXT UNIQUE, value TEXT)`, (err) => {
   err ? console.error(err.message) : console.log('[DB] Table created if it did not exist.')
@@ -56,6 +60,10 @@ dbClean.run(`CREATE TABLE IF NOT EXISTS MyTable (key TEXT UNIQUE, uid TEXT, titl
 
 dbReadability.run(`CREATE TABLE IF NOT EXISTS MyTable (key TEXT UNIQUE, input TEXT, html TEXT, text TEXT, excerpt TEXT, title TEXT, length INT)`, (err) => {
   err?  console.error(err.message) : console.log('[DB] Table created if it did not exist.')
+});
+
+dbUsers.run(`CREATE TABLE IF NOT EXISTS MyTable (username TEXT UNIQUE, password TEXT, token TEXT)`, (err) => {
+  err ? console.error(err.message) : console.log('[DB] Table created if it did not exist.')
 });
 
 ///////////////////// USEFUL FUNCTIONS /////////////////
@@ -465,7 +473,9 @@ app.get('/video.html', (req, res) => {
   res.sendFile(__dirname + '/video.html');
 });
 
-
+app.get('/login', (req, res) => {
+  res.sendFile(__dirname + '/login.html');
+});
 
 app.get('/pdfViewer', (req, res) => {
   // glob pdf files from folder
