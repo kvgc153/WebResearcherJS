@@ -43,6 +43,28 @@
   /* transition: all 0.01s ease; Increased transition duration for smoother effect */
 }
 
+.WBJSNotePDFs {
+  position: absolute;
+  border: 2px solid #ddd;
+  height: 700px;
+  width: 700px;
+  border: none;
+  color: black;
+  padding: 25px 75px 25px 25px;
+  text-decoration: none;
+  display: inline-block;
+  overflow: auto;
+  resize: both;
+  box-sizing: border-box; /* To include padding and border in element's total width and height */
+
+  /* Added properties for a fancy look */
+  background-color: #f9f9f9;
+  box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+  font-family: 'Arial', sans-serif;
+  line-height: 1.6;
+  /* transition: all 0.01s ease; Increased transition duration for smoother effect */
+}
+
 /* .WBJSNote:hover {
   box-shadow: 0px 12px 20px 0px rgba(0,0,0,0.3);
   transform: scale(1.5);

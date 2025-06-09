@@ -21,6 +21,7 @@ function displaySearchNotes(data) {
     var allDataKeys = Object.keys(allData);
 
     for (let i = 0; i < allDataKeys.length; i++) {
+        console.log("Adding note for: " + allDataKeys[i]);
         var edjsData = JSON.parse(allData[allDataKeys[i]]);
         var foo_loaded_keys = Object.keys(edjsData['JSON']);
         var description = "";
@@ -121,28 +122,8 @@ function displaySearchNotes(data) {
     
         document.getElementById('note-container').appendChild(noteContentWrapper);
     }
-    // if(allDataKeys.length < 10){
-    //     for(let i = 0; i < 10; i++){
-    //         try {
-    //             toggleNotes(i);
-    //         } catch (error) {
-    //             console.error("Error toggling notes for index " + i + ": " + error);
-    //         }
-    //     }
-    // }
 }
 
-// function toggleNotes(index) {
-//     var notes = document.querySelectorAll('.note-content')[index].querySelectorAll('.note');
-//     notes.forEach(note => {
-//         if (note.style.display === 'none' || note.style.display === '') {
-//             note.style.display = 'block';
-//         } 
-//         else {
-//             note.style.display = 'none';
-//         }
-//     });
-// }
 
 
 function displaySearchNotesInit(message) {
@@ -199,3 +180,44 @@ document.getElementById('search').addEventListener('keypress', function (e) {
 });
 
 // document.getElementById('searchBtn').addEventListener('click', searchDB);
+
+// // If user hovers on a link-autocomplete editorjs note, show the note as a tooltip 
+// document.addEventListener('mouseover', function(event) {
+//     const target = event.target;
+//     if(target.tagName === 'A'){
+//         const noteText = target.getAttribute('href');
+//         if (!noteText) return; // If no note text, do nothing
+//         if(noteText.includes('/notes/docs/')){
+//             // Remove any existing tooltip
+//             document.getElementById('WBJSNoteTextTooltip')?.remove();
+//             // Create a tooltip element
+//             let tooltip = document.createElement('div');
+//             tooltip.className = 'WBJSNotePDFs';
+//             tooltip.id = "WBJSPDFTextTooltip";
+
+//             // Add a close button to the tooltip
+//             let closeButton = document.createElement('button');
+//             closeButton.textContent = 'Close';
+//             closeButton.className = 'btn btn-layered-3d--purple';
+//             closeButton.addEventListener('click', function() {
+//                 document.getElementById('WBJSPDFTextTooltip')?.remove();
+//             });
+//             tooltip.appendChild(closeButton);
+//             tooltip.innerHTML = tooltip.innerHTML + `<iframe src="${noteText}" style="width: 100%; height: 100%; border: none;"></iframe>`;
+
+//             document.body.appendChild(tooltip);
+
+//             // Position the tooltip
+//             const rect = target.getBoundingClientRect();
+//             tooltip.style.left = `${rect.left + window.scrollX}px`;
+//             tooltip.style.top = `${rect.bottom + window.scrollY}px`;
+
+//     }
+//         // tooltip.addEventListener('mouse')
+//         // Remove the tooltip when mouse leaves the link
+//         // target.addEventListener('click', function() {
+//         //     document.getElementById('WBJSPDFTextTooltip')?.remove();
+//         // }, { once: true });
+        
+//     }
+// });

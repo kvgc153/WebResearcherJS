@@ -322,6 +322,19 @@ function addPDFannotations(){
 
         let key = HOSTSERVER + ":" + HOSTPORT + "/notes/docs/" + file;
         let notesText = annotData;
+
+
+        // Replace the notesText with urls 
+        for(pages=1; pages<=1000;pages++){
+          let pageUrl = "/notes/docs/" + file + "#page=" + pages;
+          let pageLink = `<a href="${pageUrl.replace(".html",".pdf")}" target="_blank">Page ${pages} </a>`;
+          notesText = notesText.replace(`Page ${pages} `, pageLink);
+          notesText = notesText.replace(`Page #${pages} `, pageLink);
+          notesText = notesText.replace(`Page #${pages}:`, pageLink);
+
+    
+        }
+
         let value = JSON.stringify({
           "TITLE": file,
           "TAGS": "",
@@ -342,6 +355,7 @@ function addPDFannotations(){
           "URL": key
         });
         let uid = crypto.createHash('md5').update(key).digest('hex');
+
 
 
         let sqlTags = `REPLACE INTO MyTable (key, uid, title, tags, notes, notesText, summary, user, css, meta, value) VALUES (?,?,?,?,?,?,?,?,?,?,?)`;
