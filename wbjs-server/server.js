@@ -21,6 +21,7 @@ HOSTSTRING = 'http://' + HOSTSERVER + ":" + HOSTPORT
 // LLMWBJSserver = "http://127.0.0.1:11434/api/chat";
 
 
+
 app.use(cors({credentials: true}))
 app.use(express.static("ext_libs/"));
 app.use('/notes', express.static('notes'))
@@ -46,6 +47,10 @@ let dbReadability = new sqlite3.Database('./readability.db', err => {
   err ? console.error(err.message) : console.log('[DB] Connected to the readability database.');
 });
 
+let dbUsers = new sqlite3.Database('./registeredUsers.db', err => {
+  err ? console.error(err.message) : console.log('[DB] Connected to the registered users database.')
+});
+
 // Create table if not exists
 db.run(`CREATE TABLE IF NOT EXISTS MyTable (key TEXT UNIQUE, value TEXT)`, (err) => {
   err ? console.error(err.message) : console.log('[DB] Table created if it did not exist.')
@@ -56,6 +61,10 @@ dbClean.run(`CREATE TABLE IF NOT EXISTS MyTable (key TEXT UNIQUE, uid TEXT, titl
 
 dbReadability.run(`CREATE TABLE IF NOT EXISTS MyTable (key TEXT UNIQUE, input TEXT, html TEXT, text TEXT, excerpt TEXT, title TEXT, length INT)`, (err) => {
   err?  console.error(err.message) : console.log('[DB] Table created if it did not exist.')
+});
+
+dbUsers.run(`CREATE TABLE IF NOT EXISTS MyTable (username TEXT UNIQUE, password TEXT, token TEXT)`, (err) => {
+  err ? console.error(err.message) : console.log('[DB] Table created if it did not exist.')
 });
 
 ///////////////////// USEFUL FUNCTIONS /////////////////
@@ -297,14 +306,14 @@ function processDB(key=""){
 
 function addPDFannotations(){
   console.log("[ADDANNOTATIONS] Adding PDF annotations...");
-  var files = fs.readdirSync(path.join(__dirname, 'notes', 'docs'));
+  var files = fs.readdirSync(path.join(__dirname, 'notes', 'docs', 'annots'));
   console.log("[ADDANNOTATIONS] Found " + files.length + " PDF files.");
 
   files.forEach((file) => {
     if(file.endsWith('.html')){
       console.log("[ADDANNOTATIONS] Processing file: " + file);
       // Read the PDF file
-      var annotFile = path.join(__dirname, 'notes', 'docs', file);
+      var annotFile = path.join(__dirname, 'notes', 'docs', 'annots', file);
       fs.readFile(annotFile, "utf8",(err, annotData) => {
         if (err) {
           console.error("[ADDANNOTATIONS] Error reading PDF file: " + err);
@@ -313,6 +322,19 @@ function addPDFannotations(){
 
         let key = HOSTSERVER + ":" + HOSTPORT + "/notes/docs/" + file;
         let notesText = annotData;
+
+
+        // Replace the notesText with urls 
+        for(pages=1; pages<=1000;pages++){
+          let pageUrl = "/notes/docs/" + file + "#page=" + pages;
+          let pageLink = `<a href="${pageUrl.replace(".html",".pdf")}" target="_blank">Page ${pages} </a>`;
+          notesText = notesText.replace(`Page ${pages} `, pageLink);
+          notesText = notesText.replace(`Page #${pages} `, pageLink);
+          notesText = notesText.replace(`Page #${pages}:`, pageLink);
+
+    
+        }
+
         let value = JSON.stringify({
           "TITLE": file,
           "TAGS": "",
@@ -333,6 +355,7 @@ function addPDFannotations(){
           "URL": key
         });
         let uid = crypto.createHash('md5').update(key).digest('hex');
+
 
 
         let sqlTags = `REPLACE INTO MyTable (key, uid, title, tags, notes, notesText, summary, user, css, meta, value) VALUES (?,?,?,?,?,?,?,?,?,?,?)`;
@@ -465,7 +488,9 @@ app.get('/video.html', (req, res) => {
   res.sendFile(__dirname + '/video.html');
 });
 
-
+app.get('/login', (req, res) => {
+  res.sendFile(__dirname + '/login.html');
+});
 
 app.get('/pdfViewer', (req, res) => {
   // glob pdf files from folder
@@ -489,17 +514,43 @@ app.get('/pdfViewer', (req, res) => {
                   background-color: #f4f4f4;
                   padding: 20px;
               }
-              .pdf-link {
-                  display: block;
-                  margin-bottom: 10px;
+              .pdf-container {
+                  display: flex;
+                  flex-wrap: wrap;
+                  justify-content: center;
+                  gap: 40px;
+              }
+              .pdf-item {
+                  width: 300px;
                   text-align: center;
+                    overflow-wrap: break-word;
+              }
+              .thumbnail {
+                  width: 100%;
+                  height: auto;
+                  border: 1px solid #ccc;
+                  border-radius: 5px;
+                  cursor: pointer;
+              }
+              a {
+                  text-decoration: none;
+                  color: black;
+              }
+              a:hover {
+                  color: blue;
               }
           </style>
       </head>
       <body>
-          <h1 style="text-align:center">Saved PDFs
-            ${pdfFiles.map(pdfFile => `<h4><a class="pdf-link" href="/pdf.html?pdfUrl=/notes/docs/${pdfFile}" target="_blank">${pdfFile}</a></h4>`).join('')}
-          </h1>
+          <h1 style="text-align:center">Saved PDFs</h1>
+          <div class="pdf-container">
+            ${pdfFiles.map(pdfFile => `
+              <div class="pdf-item">
+                  <h4> <a href="/pdf.html?pdfUrl=${encodeURI(`notes/docs/${pdfFile}`)}" target="_blank">${pdfFile}
+                  </a> </h4>
+              </div><br>
+            `).join('')}
+          </div>
       </body>
       </html>
       `;
@@ -734,44 +785,51 @@ app.post('/readability', (req, res) => {
 // Endpoint to search data from database
 
 app.post('/search', (req, res) => {
-  let tagFlag = req.body.tag;
-  let key     = "";
-  if(tagFlag){
-    key = "%" + req.body.key + "%";
+  
+  let token = req.headers['token'];
+  // console.log(processToken(token)); 
+  console.log("[SEARCH] called with token: ", token);
+  
+  if(processToken(token)){
+    let tagFlag = req.body.tag;
+    let key     = "";
+    if(tagFlag){
+      key = "%" + req.body.key + "%";
 
-    let sql = `SELECT key,value,tags FROM MyTable WHERE tags LIKE ?`;
+      let sql = `SELECT key,value,tags FROM MyTable WHERE tags LIKE ?`;
 
-    dbClean.all(sql, [key], (err, rows) => {
-      if (err) {
-        throw err;
-      }
+      dbClean.all(sql, [key], (err, rows) => {
+        if (err) {
+          throw err;
+        }
 
-      let result = {};
-      rows.forEach((row, index) => {
-        result[row['key']] = row['value'];
+        let result = {};
+        rows.forEach((row, index) => {
+          result[row['key']] = row['value'];
+        });
+
+        res.json(result);
       });
 
-      res.json(result);
-    });
+    }
+    else{
+      key = "%" + req.body.key + "%";
 
-  }
-  else{
-    key = "%" + req.body.key + "%";
+      let sql = `SELECT key,value,notesText FROM MyTable WHERE notesText LIKE ? OR key LIKE ? OR title LIKE ?`;
 
-    let sql = `SELECT key,value,notesText FROM MyTable WHERE notesText LIKE ? OR key LIKE ? OR title LIKE ?`;
+      dbClean.all(sql, [key,key,key], (err, rows) => {
+        if (err) {
+          throw err;
+        }
 
-    dbClean.all(sql, [key,key,key], (err, rows) => {
-      if (err) {
-        throw err;
-      }
+        let result = {};
+        rows.forEach((row, index) => {
+          result[row['key']] = row['value'];
+        });
 
-      let result = {};
-      rows.forEach((row, index) => {
-        result[row['key']] = row['value'];
+        res.json(result);
       });
-
-      res.json(result);
-    });
+    }
   }
 });
 
@@ -798,6 +856,7 @@ app.get('/searchWBJS', (req, res) => {
           resultFoo["name"] = row['title'];
           resultFoo["description"] = row['tags']
           resultFoo["notesText"] = row['notesText'];
+          resultFoo["key"] = row['key'];
 
           itemsPacked.push(resultFoo);
         }catch(e){
