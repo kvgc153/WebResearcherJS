@@ -58,6 +58,14 @@ db.run(`CREATE TABLE IF NOT EXISTS MyTable (key TEXT UNIQUE, value TEXT)`, (err)
 dbClean.run(`CREATE TABLE IF NOT EXISTS MyTable (key TEXT UNIQUE, uid TEXT, title TEXT, tags TEXT, notes TEXT, notesText TEXT, summary TEXT, user TEXT, css TEXT, meta TEXT, value TEXT)`, (err) => {
   err ? console.error(err.message) : console.log('[DB] Table created if it did not exist.')
 });
+//Delete all entries in the table 
+dbClean.run(`DELETE FROM MyTable`, (err) => {
+  if (err) {
+    console.error(err.message);
+  } else {
+    console.log('[DB] Table MyTable cleaned.');
+  }
+});
 
 dbReadability.run(`CREATE TABLE IF NOT EXISTS MyTable (key TEXT UNIQUE, input TEXT, html TEXT, text TEXT, excerpt TEXT, title TEXT, length INT)`, (err) => {
   err?  console.error(err.message) : console.log('[DB] Table created if it did not exist.')
@@ -344,8 +352,9 @@ function addPDFannotations(){
           }
 
           let key = HOSTSERVER + ":" + HOSTPORT + "/notes/docs/" + file;
+          key  = key.replace(".json", ".pdf");
           let value = JSON.stringify({
-            "TITLE": file,
+            "TITLE": file.replace(".json", ""),
             "TAGS": "",
             "JSON": {
               "1": {
