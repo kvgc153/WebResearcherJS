@@ -15,6 +15,9 @@ let colorsNotes = [
 ];
 let notesDB = {};
 
+// Remove the togglers 
+document.getElementById('userButtonPanelWBJS').remove();
+document.getElementById('userButtonPanelToggler').remove();
 
 function displaySearchNotes(data) {
     var allData = data;
