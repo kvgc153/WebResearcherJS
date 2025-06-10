@@ -310,63 +310,76 @@ function addPDFannotations(){
   console.log("[ADDANNOTATIONS] Found " + files.length + " PDF files.");
 
   files.forEach((file) => {
-    if(file.endsWith('.html')){
-      console.log("[ADDANNOTATIONS] Processing file: " + file);
-      // Read the PDF file
-      var annotFile = path.join(__dirname, 'notes', 'docs', 'annots', file);
-      fs.readFile(annotFile, "utf8",(err, annotData) => {
-        if (err) {
-          console.error("[ADDANNOTATIONS] Error reading PDF file: " + err);
-          return;
-        }
+      if(file.endsWith('.json')){
 
-        let key = HOSTSERVER + ":" + HOSTPORT + "/notes/docs/" + file;
-        let notesText = annotData;
-
-
-        // Replace the notesText with urls 
-        for(pages=1; pages<=1000;pages++){
-          let pageUrl = "/notes/docs/" + file + "#page=" + pages;
-          let pageLink = `<a href="${pageUrl.replace(".html",".pdf")}" target="_blank">Page ${pages} </a>`;
-          notesText = notesText.replace(`Page ${pages} `, pageLink);
-          notesText = notesText.replace(`Page #${pages} `, pageLink);
-          notesText = notesText.replace(`Page #${pages}:`, pageLink);
-
-    
-        }
-
-        let value = JSON.stringify({
-          "TITLE": file,
-          "TAGS": "",
-          "JSON": {
-            "1": {
-              "blocks": [
-                {
-                  "type": "paragraph",
-                  "data": {
-                    "text": notesText
-                  }
-                }
-              ]
-            }
-          },
-          "CSS": {},
-          "META": {},
-          "URL": key
-        });
-        let uid = crypto.createHash('md5').update(key).digest('hex');
-
-
-
-        let sqlTags = `REPLACE INTO MyTable (key, uid, title, tags, notes, notesText, summary, user, css, meta, value) VALUES (?,?,?,?,?,?,?,?,?,?,?)`;
-        dbClean.run(sqlTags, [key,uid, file, "", notesText, notesText, "", "root", "", "", value], function(err) {
+        console.log("[ADDANNOTATIONS] Processing file: " + file);
+        // Read the PDF file
+        var annotFile = path.join(__dirname, 'notes', 'docs', 'annots', file);
+        fs.readFile(annotFile, "utf8",(err, annotData) => {
           if (err) {
-            console.error(err.message);
+            console.error("[ADDANNOTATIONS] Error reading JSON file: " + err);
+            return;
           }
-        });
+          // parse and construct the notesText
+          try{
+            let annotDataParsed = JSON.parse(annotData);
+          let notesText = "";
 
-      });
-    }
+          for(let i=0; i<annotDataParsed.length; i++){
+            if(annotDataParsed[i]['type'] ==='Highlight'){
+              notesText += "<a href='" + "/notes/docs/" + file.replace(".json", ".pdf") + "#page=" + annotDataParsed[i]['page'] + "'>" + "Page-" + annotDataParsed[i]['page']  + " (highlight) </a> <br>";
+              notesText += "<blockquote>" + annotDataParsed[i]['text'] + "</blockquote><br>";
+              if(annotDataParsed[i]['contents']!== undefined && annotDataParsed[i]['contents'].length > 0){
+                notesText += "<ul><li>" + annotDataParsed[i]['contents'] + "</li></ul><br>";
+              }
+
+            }
+            if(annotDataParsed[i]['type'] === 'Text'  ||  annotDataParsed[i]['type'] === 'freeText' ){
+             if(annotDataParsed[i]['contents']!== undefined && annotDataParsed[i]['contents'].length > 0){
+                notesText += "<a href='" +  "/notes/docs/" + file.replace(".json", ".pdf") + "#page=" + annotDataParsed[i]['page'] + "'>" + "Page-" + annotDataParsed[i]['page'] + " (note)</a> <br>";
+                notesText += "<ul><li>" + annotDataParsed[i]['contents'] + "</li></ul><br>";
+              }
+            }
+
+          }
+
+          let key = HOSTSERVER + ":" + HOSTPORT + "/notes/docs/" + file;
+          let value = JSON.stringify({
+            "TITLE": file,
+            "TAGS": "",
+            "JSON": {
+              "1": {
+                "blocks": [
+                  {
+                    "type": "paragraph",
+                    "data": {
+                      "text": notesText
+                    }
+                  }
+                ]
+              }
+            },
+            "CSS": {},
+            "META": {},
+            "URL": key
+          });
+          let uid = crypto.createHash('md5').update(key).digest('hex');
+
+
+
+          let sqlTags = `REPLACE INTO MyTable (key, uid, title, tags, notes, notesText, summary, user, css, meta, value) VALUES (?,?,?,?,?,?,?,?,?,?,?)`;
+          dbClean.run(sqlTags, [key,uid, file, "", notesText, notesText, "", "root", "", "", value], function(err) {
+            if (err) {
+              console.error(err.message);
+            }
+          });
+        } catch(e){
+            console.error("[ADDANNOTATIONS] Error parsing JSON file: " + e);
+            return
+          }
+
+        });
+      }
   });
 }
 
