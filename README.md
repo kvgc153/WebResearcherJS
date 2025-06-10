@@ -32,7 +32,12 @@ A sqlite DB will be created in the same folder which will contain all the notes 
 3. **Add tags:** Add relevant tags to your note for easy organization.   
 <img height="200px" src="demo/demo2.gif">
 
-4. **Saving notes**: Save notes to server by pressing the save button. The notes will be automatically displayed the next time you visit the page.
+4. **Saving notes**: Save notes to server by pressing the save button (or Alt+S/Cmd+S). The notes will be automatically displayed the next time you visit the page.
+
+5. **Link notes**: Link to existing notes.
+
+<img width="70%" src="demo/link.gif">
+
 
 5. **View all notes** : Visit http://127.0.0.1:3000/notesViewer to view and search all the notes taken.
 
