@@ -231,48 +231,7 @@
   background-color: #0056b3;
   cursor: pointer;
 }
-/* TOC Container */
-.toc {
-  background-color: #f9f9f9;
-  border: 1px solid #ddd;
-  padding: 20px;
-  margin: 20px 0;
-  border-radius: 8px;
-  font-family: 'Arial', sans-serif;
-  text-align: center;
-}
 
-/* TOC Header */
-.toc h2 {
-  font-size: 1.5em;
-  margin-bottom: 10px;
-  color: #333;
-}
-
-/* TOC List */
-.toc ul {
-  list-style: none;
-  padding: 0;
-}
-
-/* TOC List Items */
-.toc ul li {
-  margin: 10px 0;
-}
-
-/* TOC Links */
-.toc ul li a {
-  text-decoration: none;
-  color: #007bff;
-  font-size: 1em;
-  transition: color 0.3s ease;
-}
-
-/* TOC Links Hover Effect */
-.toc ul li a:hover {
-  color: #0056b3;
-  text-decoration: underline;
-}
 .tooltip {
   position: fixed;
   /* background-color: black;

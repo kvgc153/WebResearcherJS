@@ -4,11 +4,10 @@ async function serverExport(notify=false){
     // save all the notes created so far
     for(i=1;i<note_count;i++){
         // Add the note to the userButtonPanelWBJS
-        var aFoo = document.createElement('a');
-        aFoo.href = "#tooltip"+i;
-        aFoo.innerHTML = 'Note '+i+'<br>';
-
-        document.getElementById('notesOnPage').innerHTML += aFoo.outerHTML;
+        // var aFoo = document.createElement('a');
+        // aFoo.href = "#tooltip"+i;
+        // aFoo.innerHTML = 'Note '+i+'<br>';
+        // document.getElementById('notesOnPage').innerHTML += aFoo.outerHTML;
 
         // console.log("tooltip"+i);
         let notestyleEl = document.getElementById("tooltip"+i).style;

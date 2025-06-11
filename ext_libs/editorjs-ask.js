@@ -1,6 +1,7 @@
 function readabilityProcess(message) {
   console.log("Readability process completed");
-  webpageReadability = message.response;
+  // document.body.outerHTML = message.response.html;
+  webpageReadability = message.response.textContent;
 }
 
 var dataPacket = {};
