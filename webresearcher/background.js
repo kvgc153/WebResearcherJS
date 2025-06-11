@@ -1,18 +1,5 @@
-// function handleClick() {
-//   browser.runtime.openOptionsPage();
-// }
-
-// browser.browserAction.onClicked.addListener(handleClick);
-
-console.log("inside background.js");
 let myAddonId = browser.runtime.getURL("");
-
-
-
-/////////////////////////////////////
-//// Load all modules to webpage ////
-/////////////////////////////////////
-var jsFiles = [
+let jsFiles = [
   "ext_libs/jquery.min.js",
   "ext_libs/jquery-ui.min.js",
   "ext_libs/editorjs@latest.js",
@@ -34,8 +21,7 @@ var jsFiles = [
   "webresearcher/webresearcher.js", 
   "webresearcher/tooltip.js",
 ];
-
-var cssFiles = [
+let cssFiles = [
   "ext_libs/jquery-ui.min.css",
   "webresearcher/custom.css"
 ];
@@ -52,7 +38,7 @@ function onError(error) {
 
 function reloadTabs(tabs) {
   for (const tab of tabs) {
-    console.log(tab.id);
+    console.log("Reloading " + tab.id);
     browser.tabs.reload(tab.id);
   }
 }
@@ -98,28 +84,22 @@ function loadOtherModules(tabID,tabURL){
         });
         executing.then(onExecuted, onError);
     }
-
   // Load the notesViewer javascript file if the URL matches
-  console.log("Tab url is " + tabURL);
   if(tabURL.includes(serverHost + "/notesViewer")){
     console.log("Loading notes viewer");
     browser.tabs.executeScript(tabID, {
       file: "webresearcher/notesViewer.js"
     }).then(onExecuted, onError);
   }
-  
-
 }
 
 // Server variables
-var serverHost  = "http://127.0.0.1:3000";
 // var serverHost  = "http://webresearcher.xyz:3000";
-
-var fetchServer = serverHost + "/getData";
-var searchServer = serverHost + "/search";
-
-var postServer  = serverHost + `/data`;
-var readabilityServer  = serverHost + `/readability`;
+let serverHost  = "http://127.0.0.1:3000";
+let fetchServer = serverHost + "/getData";
+let searchServer = serverHost + "/search";
+let postServer  = serverHost + `/data`;
+let readabilityServer  = serverHost + `/readability`;
 // var registerServer = serverHost + `/register`;  
 
 
@@ -128,7 +108,6 @@ function handleMessage(request, sender, sendResponse) {
   if(request.greeting == "trigger"){
     console.log("Message from the content script: " + request.greeting);
     console.log(sender.tab.id);
-    // make a log of the id and url of the tab
     loadJQuery(sender.tab.id, sender.tab.url);
     sendResponse({response: "Response from background script"});
   }
@@ -197,8 +176,6 @@ function handleMessage(request, sender, sendResponse) {
         response: "error"
       })
     });
-     
-
   }
 
   else if (request.greeting == "readability"){
@@ -213,7 +190,7 @@ function handleMessage(request, sender, sendResponse) {
       .then((response) => response.json())
       .then((data) => {
         return({ 
-          response: data.textContent 
+          response: data
         }); 
       })
 
@@ -245,3 +222,11 @@ browser.runtime.onMessage.addListener(handleMessage);
 
 
 // });
+
+
+// function handleClick() {
+//   browser.runtime.openOptionsPage();
+// }
+
+// browser.browserAction.onClicked.addListener(handleClick);
+// console.log("inside background.js");

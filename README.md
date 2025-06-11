@@ -1,6 +1,9 @@
 ## WebResearcher-notes <img width="40px" src="logo.png">
 
-Actively engage with webpages by annotating with WebResearcher-notes.
+
+<img width="100%" src="demo/demo_v801.gif">
+
+Actively engage with webpages by annotating them with WebResearcher-notes.
 
 
 ## Getting Started
@@ -23,7 +26,6 @@ A sqlite DB will be created in the same folder which will contain all the notes 
 
 ## How to take notes using WebResearcher-notes?
 
-<img width="100%" src="demo/demo_v801.gif">
 
 1. **Create a Note:** Click on the 'Make Note' button to start a note.
 

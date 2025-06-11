@@ -1,18 +1,5 @@
 //////////////////////////
 var note_count = 0;
-let colorsNotes = [
-    "rgba(255, 255, 255, 0.95)", // Default (White)
-    "rgba(255, 204, 204, 0.95)", // Light Red
-    "rgba(255, 224, 153, 0.95)", // Light Orange
-    "rgba(255, 255, 204, 0.95)", // Light Yellow
-    "rgba(229, 255, 204, 0.95)", // Light Green
-    "rgba(204, 255, 242, 0.95)", // Light Teal
-    "rgba(224, 247, 255, 0.95)", // Light Blue
-    "rgba(224, 235, 255, 0.95)", // Light Dark Blue
-    "rgba(235, 224, 255, 0.95)", // Light Purple
-    "rgba(255, 235, 245, 0.95)"  // Light Pink
-
-];
 let notesDB = {};
 
 // Remove the togglers 
@@ -67,7 +54,7 @@ function displaySearchNotes(data) {
             titleInput.innerHTML = `
                 Note-${titleCount} 
                 <a href="http://${allDataKeys[i]}#tooltip${titleCount}">[Edit]</a> 
-                <a href="http://127.0.0.1:3000/notesViewer?q=${allDataKeys[i]}#tooltip${titleCount}">[Cite]</a>
+                <a href="/notesViewer?q=${allDataKeys[i]}#tooltip${titleCount}">[Cite]</a>
             `;
     
             noteDiv.appendChild(titleInput);

@@ -1,5 +1,5 @@
 // corresponds to 1 on keyboard -- Ctrl + 1 triggers creation of note
-var createNoteKeyCode = 49 ;  
+// var createNoteKeyCode = 49 ;  
 
 // variables used //
 var note_count = 1;
@@ -10,10 +10,22 @@ var url_window = window.location.href;
 var pageTitle = document.title;
 pageTitle = pageTitle.replace(/\|/g, "");
 
+
+var WBJSConfig = {
+    'note':{
+        'color': "#E6E6FA",
+        'fontsize': "13px",
+        'opacity' : "95%"
+    },
+    'LLM':{
+        'endpoint': "http://127.0.0.1:11434/api/chat"
+    }
+}
+
 // controls the specs of the notes
-var defaultNoteColor = "#E6E6FA";
-var defaultFont= "13px";
-var defaultOpacity = "95%";
+var defaultNoteColor = WBJSConfig['note']['color'];
+var defaultFont= WBJSConfig['note']['fontsize'];
+var defaultOpacity = WBJSConfig['note']['opacity'];
 
 
 // variables used to store the notes and noteobjects 
@@ -22,7 +34,7 @@ var WBJS_HTML = {};
 var WBJS_CSS = {};
 var WBJS_JSON = {};
 
-let LLMWBJSserver = "http://127.0.0.1:11434/api/chat";
+let LLMWBJSserver = WBJSConfig['LLM']['endpoint'];
 
 // Add Buttons to the page for control
 var htmlAppend = $("html").append(`
@@ -62,6 +74,7 @@ var htmlAppend = $("html").append(`
 $("#userButtonPanelWBJS").draggable();
 
 
+// This must be handled by the background script!! -- TODO
 document.getElementById('tagsList').addEventListener('input', function() {
     fetch("http://127.0.0.1:3000/getAllTags", { method: "POST" })
     .then(response => response.json())
