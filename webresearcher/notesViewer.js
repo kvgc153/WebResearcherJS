@@ -22,7 +22,13 @@ function displaySearchNotes(data) {
             description = edjsData['META']['description'] || edjsData['META']['twitter:description'] || edjsData['META']['og:description'] || "" ;
         }
         var noteContentWrapper = document.createElement('div');
-        noteContentWrapper.className = 'note-content';
+
+       if(foo_loaded_keys.length>1){
+             noteContentWrapper.className = 'note-content';
+        }
+        else{
+            noteContentWrapper.className = 'note-content-singleNote';
+        }
     
         var noteContent1 = document.createElement('div');
         noteContent1.className = 'container result';
