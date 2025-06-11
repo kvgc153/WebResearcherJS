@@ -3,7 +3,7 @@
 
 <img width="100%" src="demo/demo_v801.gif">
 
-Actively engage with webpages by annotating them with WebResearcher-notes.
+Sticky notes for the web.
 
 
 ## Getting Started
@@ -21,13 +21,13 @@ npm install
 ```shell
 node server.js
 ```
-A sqlite DB will be created in the same folder which will contain all the notes taken by the extension. Check that this exists in the folder before procedding further.
+Multiple sqlite DBs will be created in the same folder which will contain all the notes taken by the extension. Check that this exists in the folder before proceeding further.
 
 
 ## How to take notes using WebResearcher-notes?
 
 
-1. **Create a Note:** Click on the 'Make Note' button to start a note.
+1. **Create a Note:** Navigate to your favorite webpage (here's an [example](https://en.wikipedia.org/wiki/Foobar)).Click on the 'Make Note' button to start a note.
 
 2. **Move Note:** Drag the note around the page by holding down the left mouse button and moving your mouse.
 
