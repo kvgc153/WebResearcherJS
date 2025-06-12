@@ -29,16 +29,16 @@ var jsFiles = [
   "ext_libs/popper.js",
   "ext_libs/notify.min.js",
   "ext_libs/jquery.sidebar.min.js",
-  "webresearcher/init.js",
-  "webresearcher/handleMouseEvents.js",
-  "webresearcher/export.js",
-  "webresearcher/storage.js",
-  "webresearcher/webresearcher.js",
+  "webresearcher/chrome/init.js",
+  "webresearcher/chrome/handleMouseEvents.js",
+  "webresearcher/chrome/export.js",
+  "webresearcher/chrome/storage.js",
+  "webresearcher/chrome/webresearcher.js",
 ];
 
 var cssFiles = [
   "ext_libs/jquery-ui.min.css",
-  "webresearcher/custom.css"
+  "webresearcher/chrome/custom.css"
 ];
 
 function onExecuted(result) {
