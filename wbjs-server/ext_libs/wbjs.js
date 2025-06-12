@@ -1,18 +1,18 @@
 //////////////////////////
 var note_count = 0;
-let colorsNotes = [
-    "rgba(255, 255, 255, 0.95)", // Default (White)
-    "rgba(255, 204, 204, 0.95)", // Light Red
-    "rgba(255, 224, 153, 0.95)", // Light Orange
-    "rgba(255, 255, 204, 0.95)", // Light Yellow
-    "rgba(229, 255, 204, 0.95)", // Light Green
-    "rgba(204, 255, 242, 0.95)", // Light Teal
-    "rgba(224, 247, 255, 0.95)", // Light Blue
-    "rgba(224, 235, 255, 0.95)", // Light Dark Blue
-    "rgba(235, 224, 255, 0.95)", // Light Purple
-    "rgba(255, 235, 245, 0.95)"  // Light Pink
+// let colorsNotes = [
+//     "rgba(255, 255, 255, 0.95)", // Default (White)
+//     "rgba(255, 204, 204, 0.95)", // Light Red
+//     "rgba(255, 224, 153, 0.95)", // Light Orange
+//     "rgba(255, 255, 204, 0.95)", // Light Yellow
+//     "rgba(229, 255, 204, 0.95)", // Light Green
+//     "rgba(204, 255, 242, 0.95)", // Light Teal
+//     "rgba(224, 247, 255, 0.95)", // Light Blue
+//     "rgba(224, 235, 255, 0.95)", // Light Dark Blue
+//     "rgba(235, 224, 255, 0.95)", // Light Purple
+//     "rgba(255, 235, 245, 0.95)"  // Light Pink
 
-];
+// ];
 let notesDB = {};
 
 // Get suggested reading 
@@ -68,7 +68,13 @@ function displayNotes(data) {
             description = edjsData['META']['description'] || edjsData['META']['twitter:description'] || edjsData['META']['og:description'] || "" ;
         }
         var noteContentWrapper = document.createElement('div');
-        noteContentWrapper.className = 'note-content';
+
+        if(allDataKeys.length>1){
+             noteContentWrapper.className = 'note-content';
+        }
+        else{
+            noteContentWrapper.className = 'note-content-singleNote';
+        }
     
         var noteContent1 = document.createElement('div');
         noteContent1.className = 'container result';

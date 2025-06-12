@@ -794,7 +794,7 @@ app.post('/readability', (req, res) => {
     });
   }
   try {
-    res.json({textContent: article.textContent});
+    res.json({textContent: article.textContent, html: article.content});
     
   } catch (error) {
     console.error("Error parsing article: ", error);

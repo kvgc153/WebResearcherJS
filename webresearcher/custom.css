@@ -143,20 +143,20 @@
 }
 
 /* css from https://enjeck.com/btns/ */
-.btn {
+.btnWBJS {
   font-family: Arial, Helvetica, sans-serif;
   text-transform: uppercase;
 } 
  
-.btn:hover .btn-slide-show-text1 {
+.btnWBJS:hover .btnWBJS-slide-show-text1 {
   margin-left: 65px;
 } 
  
-.btn-layered-3d > ::before {
+.btnWBJS-layered-3d > ::before {
   box-sizing: border-box;
 } 
  
-.btn-layered-3d {
+.btnWBJS-layered-3d {
   width: 180px;
   position: relative;
   display: inline-block;
@@ -175,7 +175,7 @@
   transition: transform 0.15s ease-out 0s, background 0.15s ease-out 0s;
 } 
  
-.btn-layered-3d::before {
+.btnWBJS-layered-3d::before {
   position: absolute;
   content: "";
   width: 100%;
@@ -186,21 +186,21 @@
   transition: transform 0.15s ease-out 0s, box-shadow 0.15s ease-out 0s;
 } 
  
-.btn-layered-3d:hover {
+.btnWBJS-layered-3d:hover {
   transform: translateY(0.25em);
 } 
  
-.btn-layered-3d:hover::before {
+.btnWBJS-layered-3d:hover::before {
   transform: translate3d(0px, 0.5em, -1em);
 } 
  
-.btn-layered-3d--purple {
+.btnWBJS-layered-3d--purple {
   color: rgb(62, 53, 141);
   background: rgb(213, 211, 238);
   border: 2px solid rgb(62, 53, 141);
 } 
  
-.btn-layered-3d--purple::before {
+.btnWBJS-layered-3d--purple::before {
   background: rgb(144, 137, 210);
   box-shadow: rgb(62, 53, 141) 0px 0px 0px 2px, rgb(213, 211, 238) 0px 0.625em 0px 0px;
 } 
@@ -211,12 +211,12 @@
   border: 2px solid rgb(61, 135, 255);
 } 
  
-.btn-layered-3d--blue::before {
+.btnWBJS-layered-3d--blue::before {
   background: rgb(148, 189, 255);
   box-shadow: rgb(61, 135, 255) 0px 0px 0px 2px, rgb(214, 230, 255) 0px 0.625em 0px 0px;
 } 
 
-.tag {
+.tagWBJS {
   display: inline-block;
   background-color: #007BFF;
   color: #ffffff;
@@ -227,7 +227,7 @@
   font-size: 14px;
   transition: background-color 0.3s ease;
 }
-.tag:hover {
+.tagWBJS:hover {
   background-color: #0056b3;
   cursor: pointer;
 }
