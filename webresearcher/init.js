@@ -1,6 +1,3 @@
-// corresponds to 1 on keyboard -- Ctrl + 1 triggers creation of note
-// var createNoteKeyCode = 49 ;  
-
 // variables used //
 var note_count = 1;
 var webPageUrl = window.location.href.replace(/(^\w+:|^)\/\//, '');
@@ -11,14 +8,20 @@ var pageTitle = document.title;
 pageTitle = pageTitle.replace(/\|/g, "");
 
 
-var WBJSConfig = {
+let WBJSConfig = {
     'note':{
         'color': "#E6E6FA",
         'fontsize': "13px",
         'opacity' : "95%"
     },
     'LLM':{
-        'endpoint': "http://127.0.0.1:11434/api/chat"
+        'endpoint': "http://127.0.0.1:11434/api/chat",
+        'model'   : "llama3.2",
+        // This summarizePrompt is used when the user clicks summarize on the page tooltip
+        'summarizePrompt' : "Summarize the following in two sentences and give me tags in hashtag format to remember them later. The tags must be returned in the following template only where TAG is the tag:<a href='http://127.0.0.1:3000/notesViewer?q=TAG'>#TAG</a>. Print only the summary and tags in HTML format. Text:",
+        // The system and answer prompts are used INSIDE the notes.
+        'systemPrompt' :  "ALWAYS answer the following questions using the following text ONLY. Text : ", 
+        'answerPrompt' : ". Answer me only in HTML format and ONLY provide verbatim text from provided document as response unless absolutely essential. "
     }
 }
 
@@ -34,7 +37,7 @@ var WBJS_HTML = {};
 var WBJS_CSS = {};
 var WBJS_JSON = {};
 
-let LLMWBJSserver = WBJSConfig['LLM']['endpoint'];
+// let LLMWBJSserver = WBJSConfig['LLM']['endpoint'];
 
 // Add Buttons to the page for control
 var htmlAppend = $("html").append(`
@@ -74,7 +77,7 @@ var htmlAppend = $("html").append(`
 $("#userButtonPanelWBJS").draggable();
 
 
-// This must be handled by the background script!! -- TODO
+// [TODO] This must be handled by the background script!! 
 document.getElementById('tagsList').addEventListener('input', function() {
     fetch("http://127.0.0.1:3000/getAllTags", { method: "POST" })
     .then(response => response.json())

@@ -12,9 +12,9 @@ let jsFiles = [
   "ext_libs/popper.js",
   "ext_libs/notify.min.js",
   "ext_libs/link-autocomplete.js",
-  "ext_libs/editorjs-ask.js",
   "ext_libs/attaches@latest.js",
   "webresearcher/init.js",
+  "ext_libs/editorjs-ask.js",
   "webresearcher/handleMouseEvents.js",
   "webresearcher/export.js",
   "webresearcher/storage.js",
@@ -30,9 +30,7 @@ let cssFiles = [
 function onExecuted(result) {
   console.log(`Loaded`);
 }
-
 function onError(error) {
-  // alert(error);
   console.log(`Error: ${error}`);
 }
 
@@ -66,8 +64,6 @@ function loadEditor(tabID,tabURL){
   executing.then(loadOtherModules(tabID,tabURL), onError);
 }
 
-
-
 // load all other modules
 function loadOtherModules(tabID,tabURL){
   for(var i=0;i<cssFiles.length;i++){
@@ -94,17 +90,17 @@ function loadOtherModules(tabID,tabURL){
 }
 
 // Server variables
-// var serverHost  = "http://webresearcher.xyz:3000";
 let serverHost  = "http://127.0.0.1:3000";
 let fetchServer = serverHost + "/getData";
 let searchServer = serverHost + "/search";
 let postServer  = serverHost + `/data`;
 let readabilityServer  = serverHost + `/readability`;
-// var registerServer = serverHost + `/register`;  
 
 
 
 function handleMessage(request, sender, sendResponse) {
+
+  // [TODO] -- change to a switch statement.. too many else ifs !!!!
   if(request.greeting == "trigger"){
     console.log("Message from the content script: " + request.greeting);
     console.log(sender.tab.id);
@@ -133,7 +129,7 @@ function handleMessage(request, sender, sendResponse) {
 
 
   else if (request.greeting == "search"){
-    console.log("Fetching data from server");
+    console.log("Searching for data from server");
     return fetch(searchServer, {
       body: request.data, 
       method: "POST",
@@ -193,7 +189,6 @@ function handleMessage(request, sender, sendResponse) {
           response: data
         }); 
       })
-
   }  
 }
 // Trigger loading of modules //
