@@ -81,7 +81,7 @@ function displayNotes(parsedJSON){
       // if there are notes, show the userButtonPanelWBJS and add a note list header
       document.getElementById('userButtonPanelToggler').style.display = 'none';
       $("#userButtonPanelWBJS").toggle();	
-      document.getElementById('notesOnPage').innerHTML  = "<h5>Note List</h5>"; 
+      // document.getElementById('notesOnPage').innerHTML  = "<h5>Note List</h5>"; 
     }
     /// Add the note to the userButtonPanelWBJS ///
     var aFoo = document.createElement('a');

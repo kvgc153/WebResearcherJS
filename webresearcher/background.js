@@ -12,9 +12,9 @@ let jsFiles = [
   "ext_libs/popper.js",
   "ext_libs/notify.min.js",
   "ext_libs/link-autocomplete.js",
-  "ext_libs/editorjs-ask.js",
   "ext_libs/attaches@latest.js",
   "webresearcher/init.js",
+  "ext_libs/editorjs-ask.js",
   "webresearcher/handleMouseEvents.js",
   "webresearcher/export.js",
   "webresearcher/storage.js",
@@ -30,9 +30,7 @@ let cssFiles = [
 function onExecuted(result) {
   console.log(`Loaded`);
 }
-
 function onError(error) {
-  // alert(error);
   console.log(`Error: ${error}`);
 }
 
@@ -66,8 +64,6 @@ function loadEditor(tabID,tabURL){
   executing.then(loadOtherModules(tabID,tabURL), onError);
 }
 
-
-
 // load all other modules
 function loadOtherModules(tabID,tabURL){
   for(var i=0;i<cssFiles.length;i++){
@@ -84,6 +80,7 @@ function loadOtherModules(tabID,tabURL){
         });
         executing.then(onExecuted, onError);
     }
+  
   // Load the notesViewer javascript file if the URL matches
   if(tabURL.includes(serverHost + "/notesViewer")){
     console.log("Loading notes viewer");
@@ -94,107 +91,119 @@ function loadOtherModules(tabID,tabURL){
 }
 
 // Server variables
-// var serverHost  = "http://webresearcher.xyz:3000";
 let serverHost  = "http://127.0.0.1:3000";
 let fetchServer = serverHost + "/getData";
 let searchServer = serverHost + "/search";
 let postServer  = serverHost + `/data`;
+let tagsServer  = serverHost + `/getAllTags`;
 let readabilityServer  = serverHost + `/readability`;
-// var registerServer = serverHost + `/register`;  
-
 
 
 function handleMessage(request, sender, sendResponse) {
-  if(request.greeting == "trigger"){
-    console.log("Message from the content script: " + request.greeting);
-    console.log(sender.tab.id);
-    loadJQuery(sender.tab.id, sender.tab.url);
-    sendResponse({response: "Response from background script"});
-  }
 
-  else if (request.greeting == "fetch"){
-    console.log("Fetching data from server");
-    return fetch(fetchServer, {
-      body: request.data, 
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "token": myAddonId
-      },
-    })
-      .then((response) => response.json())
-      .then((data) => {
-        return({ 
-          response: data.value 
-        }); 
-      })
+  switch(request.greeting) {
+    case "trigger":
+      console.log("Message from the content script: " + request.greeting);
+      console.log(sender.tab.id);
+      loadJQuery(sender.tab.id, sender.tab.url);
+      sendResponse({response: "Response from background script"});
 
-  }
-
-
-  else if (request.greeting == "search"){
-    console.log("Fetching data from server");
-    return fetch(searchServer, {
-      body: request.data, 
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "token": myAddonId
-      },
-    })
-      .then((response) => response.json())
-      .then((data) => {
-        return({ 
-          response: JSON.stringify(data) 
-        }); 
-      })
-
-  }
-  else if (request.greeting == "save"){
-    console.log("Saving data to server");
-    return  fetch(postServer,
-    {
-        body: JSON.stringify(request.data),
+    case "fetch":
+      console.log("Fetching data from server");
+      return fetch(fetchServer, {
+        body: request.data, 
         method: "POST",
         headers: {
           "Content-Type": "application/json",
           "token": myAddonId
-        },          
-    }
-    )
-    .then(()=>{
-      // Reload the tabs with the current URL
-      browser.tabs.query({ url: sender.tab.url })
-      .then(reloadTabs, onError);
-    })
-    .then(()=>{
-      return({
-        response: "saved"
+        },
       })
-    }).catch((error)=>{
-      return({
-        response: "error"
+        .then((response) => response.json())
+        .then((data) => {
+          return({ 
+            response: data.value 
+          }); 
+        })
+
+
+    case "search":
+      console.log("Searching for data from server");
+      return fetch(searchServer, {
+        body: request.data, 
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "token": myAddonId
+        },
       })
-    });
+        .then((response) => response.json())
+        .then((data) => {
+          return({ 
+            response: JSON.stringify(data) 
+          }); 
+        })
+
+    case "getAllTags":
+      // [TODO] Clean this up and update init.js to use this
+      console.log("Fetching tags from server");
+      return fetch(tagsServer, {
+        body: request.data, 
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "token": myAddonId
+        },
+      })
+        .then((response) => response.json())
+        .then((data) => {
+          return({ 
+            response: JSON.stringify(data) 
+          }); 
+        })
+
+    case "save":
+      console.log("Saving data to server");
+      return  fetch(postServer,
+      {
+          body: JSON.stringify(request.data),
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "token": myAddonId
+          },          
+      }
+      )
+      .then(()=>{
+        // Reload the tabs with the current URL
+        browser.tabs.query({ url: sender.tab.url })
+        .then(reloadTabs, onError);
+      })
+      .then(()=>{
+        return({
+          response: "saved"
+        })
+      }).catch((error)=>{
+        return({
+          response: "error"
+        })
+      });
+
+    case "readability":
+      return fetch(readabilityServer, {
+        body: request.data, 
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "token": myAddonId
+        },
+      })
+        .then((response) => response.json())
+        .then((data) => {
+          return({ 
+            response: data
+          }); 
+        })
   }
-
-  else if (request.greeting == "readability"){
-    return fetch(readabilityServer, {
-      body: request.data, 
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "token": myAddonId
-      },
-    })
-      .then((response) => response.json())
-      .then((data) => {
-        return({ 
-          response: data
-        }); 
-      })
-
-  }  
 }
 // Trigger loading of modules //
 browser.runtime.onMessage.addListener(handleMessage);

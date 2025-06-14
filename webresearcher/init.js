@@ -1,6 +1,3 @@
-// corresponds to 1 on keyboard -- Ctrl + 1 triggers creation of note
-// var createNoteKeyCode = 49 ;  
-
 // variables used //
 var note_count = 1;
 var webPageUrl = window.location.href.replace(/(^\w+:|^)\/\//, '');
@@ -11,14 +8,20 @@ var pageTitle = document.title;
 pageTitle = pageTitle.replace(/\|/g, "");
 
 
-var WBJSConfig = {
+let WBJSConfig = {
     'note':{
         'color': "#E6E6FA",
         'fontsize': "13px",
         'opacity' : "95%"
     },
     'LLM':{
-        'endpoint': "http://127.0.0.1:11434/api/chat"
+        'endpoint': "http://127.0.0.1:11434/api/chat",
+        'model'   : "llama3.2",
+        // This summarizePrompt is used when the user clicks summarize on the page tooltip
+        'summarizePrompt' : "Summarize the following in two sentences and give me tags in hashtag format to remember them later. The tags must be returned in the following template only where TAG is the tag:<a href='http://127.0.0.1:3000/notesViewer?q=TAG'>#TAG</a>. Print only the summary and tags in HTML format. Text:",
+        // The system and answer prompts are used INSIDE the notes.
+        'systemPrompt' :  "ALWAYS answer the following questions using the following text ONLY. Text : ", 
+        'answerPrompt' : ". Answer me only in HTML format and ONLY provide verbatim text from provided document as response unless absolutely essential. "
     }
 }
 
@@ -34,7 +37,7 @@ var WBJS_HTML = {};
 var WBJS_CSS = {};
 var WBJS_JSON = {};
 
-let LLMWBJSserver = WBJSConfig['LLM']['endpoint'];
+// let LLMWBJSserver = WBJSConfig['LLM']['endpoint'];
 
 // Add Buttons to the page for control
 var htmlAppend = $("html").append(`
@@ -74,51 +77,55 @@ var htmlAppend = $("html").append(`
 $("#userButtonPanelWBJS").draggable();
 
 
-// This must be handled by the background script!! -- TODO
+// [TODO] This must be handled by the background script!! 
+
+let WBJSTagsDB = {};
+function initTagsDB(message) {
+    WBJSTagsDB = JSON.parse(message.response);// Initialize the tags database with the response from the background script
+    console.log("WBJS: Tags DB initialized");
+}
+notifyBackgroundPage(
+    greeting="getAllTags",
+    data = JSON.stringify({}),
+    respond = initTagsDB,
+);
+
+
+
 document.getElementById('tagsList').addEventListener('input', function() {
-    fetch("http://127.0.0.1:3000/getAllTags", { method: "POST" })
-    .then(response => response.json())
-    .then(data => {
+    var userTags = document.getElementById('tagsWBJS').value;
+    var userTagsArray = userTags.split(",");
+    var enteredTag = userTagsArray[userTagsArray.length - 1]; // This is the tag that the user has entered
 
-        var userTags = document.getElementById('tagsWBJS').value;
-        var userTagsArray = userTags.split(",");
-        var enteredTag = userTagsArray[userTagsArray.length - 1]; // This is the tag that the user has entered
+    // Do not show anything if the user has not entered anything
+    if(enteredTag == "") {
+        document.getElementById('showTags').innerHTML = "";
+        return;
+    }
 
-        // Do not show anything if the user has not entered anything
-        if(enteredTag == "") {
-            document.getElementById('showTags').innerHTML = "";
-            return;
+    // Search through the tags in the database to see if anything matches
+    var tagsDB = WBJSTagsDB['tags'];
+    tagsHTML = "";
+    let tagsContainer = document.getElementById('showTags');
+    tagsContainer.innerHTML =  "";
+
+    tagsDB.forEach(function(tag) {
+        if (tag.includes(enteredTag)) {
+            let tagDiv = document.createElement('button');
+            tagDiv.className = 'tagWBJS';
+            tagDiv.textContent = tag;
+            tagDiv.addEventListener('click', function() {
+                let tags = document.getElementById('tagsWBJS').value;
+                let tagsArray = tags.split(",");
+                tagsArray[tagsArray.length - 1] = tag;
+                document.getElementById('tagsWBJS').value = tagsArray.join(",") + ",";
+                tagsContainer.innerHTML = "";
+            }); // onclick add tag and refresh the list
+            tagsContainer.appendChild(tagDiv);
         }
-
-        // Search through the tags in the database to see if anything matches
-        var tagsDB = data['tags'];
-        tagsHTML = "";
-        let tagsContainer = document.getElementById('showTags');
-        tagsContainer.innerHTML =  "";
-
-        tagsDB.forEach(function(tag) {
-            if (tag.includes(enteredTag)) {
-                let tagDiv = document.createElement('button');
-                tagDiv.className = 'tagWBJS';
-                tagDiv.textContent = tag;
-                tagDiv.addEventListener('click', function() {
-                    let tags = document.getElementById('tagsWBJS').value;
-                    let tagsArray = tags.split(",");
-                    tagsArray[tagsArray.length - 1] = tag;
-                    document.getElementById('tagsWBJS').value = tagsArray.join(",") + ",";
-                    tagsContainer.innerHTML = "";
-                }); // onclick add tag and refresh the list
-                tagsContainer.appendChild(tagDiv);
-            }
-        }); 
-
-    })
-    .catch(error => {
-        console.error('Error:', error);
-    });
+    }); 
 
 });
-
 
 // If user hovers on a link-autocomplete editorjs note, show the note as a tooltip 
 document.addEventListener('mouseover', function(event) {

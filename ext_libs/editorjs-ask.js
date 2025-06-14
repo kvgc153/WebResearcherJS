@@ -1,20 +1,18 @@
+// Get the readability output of the current webpage 
 function readabilityProcess(message) {
   console.log("Readability process completed");
-  // document.body.outerHTML = message.response.html;
   webpageReadability = message.response.textContent;
 }
-
-var dataPacket = {};
-dataPacket['bodyHTML'] = document.body.outerHTML;
-dataPacket['url'] = window.location.href;
-dataPacket['title'] = document.title;
+var dataPacketReadability = {};
+dataPacketReadability['bodyHTML'] = document.body.outerHTML;
+dataPacketReadability['url']      = window.location.href;
+dataPacketReadability['title']    = document.title;
 
 var webpageReadability = "";
-// Get the readability of the current webpage 
 let readableOutput = notifyBackgroundPage(
-  greeting="readability",
-  data = JSON.stringify(dataPacket),
-  respond = readabilityProcess,
+  greeting ="readability",
+  data     = JSON.stringify(dataPacketReadability),
+  respond  = readabilityProcess,
 );
 
 
@@ -31,10 +29,8 @@ class Ask {
     // Grab the entire innertext of the current webpage
     this.messages.push({
       "role": "system",
-      "content":  "ALWAYS answer the following questions using the following text ONLY. Text : " + webpageReadability
+      "content":  WBJSConfig['LLM']['systemPrompt'] + webpageReadability
     });
-
-
     this.test = "";
     this.getPreviousMessages();
   }
@@ -44,7 +40,7 @@ class Ask {
       this.test = await this.api.saver.save();
       for (var i = 0; i < this.test.blocks.length; i++) {
         if(this.test.blocks[i].type == "image"){
-          console.log("ignoring image");
+          console.log("ignoring images");
         }
         else{
           try{
@@ -66,19 +62,19 @@ class Ask {
   sendMessage(userInput, input){
     var message = {
       "role":"user",
-      "content": userInput + ". Answer me only in HTML format and ONLY provide verbatim text from provided document as response unless absolutely essential. "
+      "content": userInput + WBJSConfig['LLM']['answerPrompt']
     }
     this.messages.push(message)
     $.notify("Sending message. Please wait.", "info");
     
-    // Ask llama running in the background to answer question 
-    fetch(LLMWBJSserver, {
+    // Ask LLM running in the background to answer question 
+    fetch(WBJSConfig['LLM']['endpoint'], {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        "model": "llama3.2",
+        "model": WBJSConfig['LLM']['model'],
         "stream": false,
         "messages": this.messages,
       }),
@@ -89,7 +85,6 @@ class Ask {
 
         // Display response from llama running
         const response = document.createElement('div');
-        
         const userBlock = document.createElement('div');
         userBlock.innerText = "User: " + userInput + "\n";
         response.append(userBlock);
@@ -115,10 +110,6 @@ class Ask {
           inputBlockID,
           inputBlockID-1
         )
-
-  
-
-
       })
       .catch((error) => {
         console.error("Error:", error);
@@ -130,11 +121,11 @@ class Ask {
     // Create input element
     const input = document.createElement('span');
     input.contentEditable  = true;
-  //   input.innerText = 'Ask a question';
     input.style.display = 'inline-block';
     input.style.padding = '10px';
     input.style.border = '1px solid #ccc';
     input.style.borderRadius = '4px';
+
     // input.style.minWidth = '200px';
     input.style.width = '80%';
     input.style.boxSizing = 'border-box';
@@ -147,9 +138,7 @@ class Ask {
     const button = document.createElement('button');
     button.innerText = 'Ask';
     button.style.padding = '10px 20px';
-    button.className = "btn btn-layered-3d--purple";
-    // button.style.backgroundColor = '#4CAF50';
-    // button.style.color = 'white';
+    button.className = "btnWBJS btnWBJS-layered-3d--purple";
     button.style.border = 'none';
     button.style.borderRadius = '4px';
     button.style.cursor = 'pointer';

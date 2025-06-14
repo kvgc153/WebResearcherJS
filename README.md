@@ -17,6 +17,14 @@ cd WebResearcherJS-extension/wbjs-server/
 npm install
 ```
 - **Registering extension with server**: Visit `about:debugging#/runtime/this-firefox` and grab the Manifest URL of the WBJS Sticky Notes extension (starts with moz-extension://) and paste it in wbjs-server/registeredUsers.json. If you install the extension in multiple browsers, add the manifest URL of all the installed extensions.
+  
+Here's an example how one such registeredUses.json file would look like for two firefox instances:
+
+```javascript
+["moz-extension://03cc1dfa-xxxx-aaaa-qqqq-8d4435yy948d/","moz-extension://f8c42426-yyyy-zzzz-rrrr-17a1231ee6fa/"]
+```
+
+Start the server
 
 ```shell
 node server.js
