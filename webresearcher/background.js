@@ -80,6 +80,7 @@ function loadOtherModules(tabID,tabURL){
         });
         executing.then(onExecuted, onError);
     }
+  
   // Load the notesViewer javascript file if the URL matches
   if(tabURL.includes(serverHost + "/notesViewer")){
     console.log("Loading notes viewer");
@@ -94,102 +95,115 @@ let serverHost  = "http://127.0.0.1:3000";
 let fetchServer = serverHost + "/getData";
 let searchServer = serverHost + "/search";
 let postServer  = serverHost + `/data`;
+let tagsServer  = serverHost + `/getAllTags`;
 let readabilityServer  = serverHost + `/readability`;
-
 
 
 function handleMessage(request, sender, sendResponse) {
 
-  // [TODO] -- change to a switch statement.. too many else ifs !!!!
-  if(request.greeting == "trigger"){
-    console.log("Message from the content script: " + request.greeting);
-    console.log(sender.tab.id);
-    loadJQuery(sender.tab.id, sender.tab.url);
-    sendResponse({response: "Response from background script"});
-  }
+  switch(request.greeting) {
+    case "trigger":
+      console.log("Message from the content script: " + request.greeting);
+      console.log(sender.tab.id);
+      loadJQuery(sender.tab.id, sender.tab.url);
+      sendResponse({response: "Response from background script"});
 
-  else if (request.greeting == "fetch"){
-    console.log("Fetching data from server");
-    return fetch(fetchServer, {
-      body: request.data, 
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "token": myAddonId
-      },
-    })
-      .then((response) => response.json())
-      .then((data) => {
-        return({ 
-          response: data.value 
-        }); 
-      })
-
-  }
-
-
-  else if (request.greeting == "search"){
-    console.log("Searching for data from server");
-    return fetch(searchServer, {
-      body: request.data, 
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "token": myAddonId
-      },
-    })
-      .then((response) => response.json())
-      .then((data) => {
-        return({ 
-          response: JSON.stringify(data) 
-        }); 
-      })
-
-  }
-  else if (request.greeting == "save"){
-    console.log("Saving data to server");
-    return  fetch(postServer,
-    {
-        body: JSON.stringify(request.data),
+    case "fetch":
+      console.log("Fetching data from server");
+      return fetch(fetchServer, {
+        body: request.data, 
         method: "POST",
         headers: {
           "Content-Type": "application/json",
           "token": myAddonId
-        },          
-    }
-    )
-    .then(()=>{
-      // Reload the tabs with the current URL
-      browser.tabs.query({ url: sender.tab.url })
-      .then(reloadTabs, onError);
-    })
-    .then(()=>{
-      return({
-        response: "saved"
+        },
       })
-    }).catch((error)=>{
-      return({
-        response: "error"
-      })
-    });
-  }
+        .then((response) => response.json())
+        .then((data) => {
+          return({ 
+            response: data.value 
+          }); 
+        })
 
-  else if (request.greeting == "readability"){
-    return fetch(readabilityServer, {
-      body: request.data, 
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "token": myAddonId
-      },
-    })
-      .then((response) => response.json())
-      .then((data) => {
-        return({ 
-          response: data
-        }); 
+
+    case "search":
+      console.log("Searching for data from server");
+      return fetch(searchServer, {
+        body: request.data, 
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "token": myAddonId
+        },
       })
-  }  
+        .then((response) => response.json())
+        .then((data) => {
+          return({ 
+            response: JSON.stringify(data) 
+          }); 
+        })
+
+    case "getAllTags":
+      // [TODO] Clean this up and update init.js to use this
+      console.log("Fetching tags from server");
+      return fetch(tagsServer, {
+        body: request.data, 
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "token": myAddonId
+        },
+      })
+        .then((response) => response.json())
+        .then((data) => {
+          return({ 
+            response: JSON.stringify(data) 
+          }); 
+        })
+
+    case "save":
+      console.log("Saving data to server");
+      return  fetch(postServer,
+      {
+          body: JSON.stringify(request.data),
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "token": myAddonId
+          },          
+      }
+      )
+      .then(()=>{
+        // Reload the tabs with the current URL
+        browser.tabs.query({ url: sender.tab.url })
+        .then(reloadTabs, onError);
+      })
+      .then(()=>{
+        return({
+          response: "saved"
+        })
+      }).catch((error)=>{
+        return({
+          response: "error"
+        })
+      });
+
+    case "readability":
+      return fetch(readabilityServer, {
+        body: request.data, 
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "token": myAddonId
+        },
+      })
+        .then((response) => response.json())
+        .then((data) => {
+          return({ 
+            response: data
+          }); 
+        })
+  }
 }
 // Trigger loading of modules //
 browser.runtime.onMessage.addListener(handleMessage);

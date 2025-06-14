@@ -78,50 +78,54 @@ $("#userButtonPanelWBJS").draggable();
 
 
 // [TODO] This must be handled by the background script!! 
+
+let WBJSTagsDB = {};
+function initTagsDB(message) {
+    WBJSTagsDB = JSON.parse(message.response);// Initialize the tags database with the response from the background script
+    console.log("WBJS: Tags DB initialized");
+}
+notifyBackgroundPage(
+    greeting="getAllTags",
+    data = JSON.stringify({}),
+    respond = initTagsDB,
+);
+
+
+
 document.getElementById('tagsList').addEventListener('input', function() {
-    fetch("http://127.0.0.1:3000/getAllTags", { method: "POST" })
-    .then(response => response.json())
-    .then(data => {
+    var userTags = document.getElementById('tagsWBJS').value;
+    var userTagsArray = userTags.split(",");
+    var enteredTag = userTagsArray[userTagsArray.length - 1]; // This is the tag that the user has entered
 
-        var userTags = document.getElementById('tagsWBJS').value;
-        var userTagsArray = userTags.split(",");
-        var enteredTag = userTagsArray[userTagsArray.length - 1]; // This is the tag that the user has entered
+    // Do not show anything if the user has not entered anything
+    if(enteredTag == "") {
+        document.getElementById('showTags').innerHTML = "";
+        return;
+    }
 
-        // Do not show anything if the user has not entered anything
-        if(enteredTag == "") {
-            document.getElementById('showTags').innerHTML = "";
-            return;
+    // Search through the tags in the database to see if anything matches
+    var tagsDB = WBJSTagsDB['tags'];
+    tagsHTML = "";
+    let tagsContainer = document.getElementById('showTags');
+    tagsContainer.innerHTML =  "";
+
+    tagsDB.forEach(function(tag) {
+        if (tag.includes(enteredTag)) {
+            let tagDiv = document.createElement('button');
+            tagDiv.className = 'tagWBJS';
+            tagDiv.textContent = tag;
+            tagDiv.addEventListener('click', function() {
+                let tags = document.getElementById('tagsWBJS').value;
+                let tagsArray = tags.split(",");
+                tagsArray[tagsArray.length - 1] = tag;
+                document.getElementById('tagsWBJS').value = tagsArray.join(",") + ",";
+                tagsContainer.innerHTML = "";
+            }); // onclick add tag and refresh the list
+            tagsContainer.appendChild(tagDiv);
         }
-
-        // Search through the tags in the database to see if anything matches
-        var tagsDB = data['tags'];
-        tagsHTML = "";
-        let tagsContainer = document.getElementById('showTags');
-        tagsContainer.innerHTML =  "";
-
-        tagsDB.forEach(function(tag) {
-            if (tag.includes(enteredTag)) {
-                let tagDiv = document.createElement('button');
-                tagDiv.className = 'tagWBJS';
-                tagDiv.textContent = tag;
-                tagDiv.addEventListener('click', function() {
-                    let tags = document.getElementById('tagsWBJS').value;
-                    let tagsArray = tags.split(",");
-                    tagsArray[tagsArray.length - 1] = tag;
-                    document.getElementById('tagsWBJS').value = tagsArray.join(",") + ",";
-                    tagsContainer.innerHTML = "";
-                }); // onclick add tag and refresh the list
-                tagsContainer.appendChild(tagDiv);
-            }
-        }); 
-
-    })
-    .catch(error => {
-        console.error('Error:', error);
-    });
+    }); 
 
 });
-
 
 // If user hovers on a link-autocomplete editorjs note, show the note as a tooltip 
 document.addEventListener('mouseover', function(event) {
