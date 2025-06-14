@@ -17,6 +17,14 @@ cd WebResearcherJS-extension/wbjs-server/
 npm install
 ```
 - **Registering extension with server**: Visit `about:debugging#/runtime/this-firefox` and grab the Manifest URL of the WBJS Sticky Notes extension (starts with moz-extension://) and paste it in wbjs-server/registeredUsers.json. If you install the extension in multiple browsers, add the manifest URL of all the installed extensions.
+  
+Here's an example how one such registeredUses.json file would look like for two firefox instances:
+
+```javascript
+["moz-extension://03cc1dfa-xxxx-aaaa-qqqq-8d4435yy948d/","moz-extension://f8c42426-yyyy-zzzz-rrrr-17a1231ee6fa/"]
+```
+
+Start the server
 
 ```shell
 node server.js
@@ -34,7 +42,12 @@ Multiple sqlite DBs will be created in the same folder which will contain all th
 3. **Add tags:** Add relevant tags to your note for easy organization.   
 <img height="200px" src="demo/demo2.gif">
 
-4. **Saving notes**: Save notes to server by pressing the save button. The notes will be automatically displayed the next time you visit the page.
+4. **Saving notes**: Save notes to server by pressing the save button (or Alt+S/Cmd+S). The notes will be automatically displayed the next time you visit the page.
+
+5. **Link notes**: Link to existing notes.
+
+<img width="70%" src="demo/link.gif">
+
 
 5. **View all notes** : Visit http://127.0.0.1:3000/notesViewer to view and search all the notes taken.
 
