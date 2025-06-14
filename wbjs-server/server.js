@@ -510,8 +510,15 @@ app.get('/video.html', (req, res) => {
   res.sendFile(__dirname + '/video.html');
 });
 
-app.get('/login', (req, res) => {
-  res.sendFile(__dirname + '/login.html');
+// app.get('/login', (req, res) => {
+//   res.sendFile(__dirname + '/login.html');
+// });
+
+
+app.get('/pingWBJS', (req,res) =>{
+  res.json({
+    message: "WBJSServer"
+  });
 });
 
 app.get('/pdfViewer', (req, res) => {

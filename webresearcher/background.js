@@ -91,12 +91,46 @@ function loadOtherModules(tabID,tabURL){
 }
 
 // Server variables
-let serverHost  = "http://127.0.0.1:3000";
-let fetchServer = serverHost + "/getData";
-let searchServer = serverHost + "/search";
-let postServer  = serverHost + `/data`;
-let tagsServer  = serverHost + `/getAllTags`;
-let readabilityServer  = serverHost + `/readability`;
+let portNumber = 0;
+var serverHost  = "";
+var authServer = "";
+var fetchServer = "";
+var searchServer = "";
+var postServer  = "";
+var tagsServer  = "";
+var readabilityServer  = "";
+
+async function getPortNumber() {
+  for(let port= 3000; port<3050; port++){
+    try {
+      const response = await fetch(`http://127.0.0.1:${port}/pingWBJS`);
+      if (response.ok) {
+        console.log(`Server is running on port ${port}`);
+        return port; // Return the first available port
+      }
+    } catch (error) {
+      console.error(`Error connecting to port ${port}: ${error}`);
+    }
+  }
+}
+getPortNumber().then((port) => {
+  portNumber = port;
+  serverHost  = "http://127.0.0.1:" + portNumber;
+  authServer = serverHost + "/authWBJS";
+  fetchServer = serverHost + "/getData";
+  searchServer = serverHost + "/search";
+  postServer  = serverHost + `/data`;
+  tagsServer  = serverHost + `/getAllTags`;
+  readabilityServer  = serverHost + `/readability`;
+
+  console.log("Server Host: " + serverHost);
+  console.log("Auth Server: " + authServer);
+  console.log("Fetch Server: " + fetchServer);
+  console.log("Search Server: " + searchServer);
+  console.log("Post Server: " + postServer);
+  console.log("Tags Server: " + tagsServer);
+  console.log("Readability Server: " + readabilityServer);
+});
 
 
 function handleMessage(request, sender, sendResponse) {
