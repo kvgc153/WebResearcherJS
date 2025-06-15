@@ -797,44 +797,54 @@ app.post('/search', (req, res) => {
 
 //End point for EDJS search
 app.get('/searchWBJS', (req, res) => {
-  const searchString = req.query.search
-  let key = "%" + searchString + " %";
-  // console.log("user from WBJS asked to search for : "+key);
+  // const searchString = req.query.search
+  var url = req.url;
+  url = url.replace('/searchWBJS?', ''); 
+  urlSplit = url.split('?search=');
+  const searchString = urlSplit[1];
+  const urlParams = new URLSearchParams(urlSplit[0]);
+  var token = urlParams.get('token');
+  token= token.replace('?search=' + searchString, '');
 
-  let sql = `SELECT key,title,tags,notesText FROM MyTable WHERE notesText LIKE ? OR key LIKE ? OR title LIKE ?`;
+  if(processToken(token)){
+    let key = "%" + searchString + " %";
+    // console.log("user from WBJS asked to search for : "+key);
 
-    dbClean.all(sql, [key, key, key], (err, rows) => {
-      if (err) {
-        throw err;
-      }
+    let sql = `SELECT key,title,tags,notesText FROM MyTable WHERE notesText LIKE ? OR key LIKE ? OR title LIKE ?`;
 
-      let itemsPacked = [];
-      rows.forEach((row, index) => {
-
-        try{
-          let resultFoo = {};
-          resultFoo["href"] = HOSTSTRING + "/notesViewer?q=" + row['key'];
-          resultFoo["name"] = row['title'];
-          resultFoo["description"] = row['tags']
-          resultFoo["notesText"] = row['notesText'];
-          resultFoo["key"] = row['key'];
-
-          itemsPacked.push(resultFoo);
-        }catch(e){
-          console.error(e);
+      dbClean.all(sql, [key, key, key], (err, rows) => {
+        if (err) {
+          throw err;
         }
 
-      });
-      const result = {
-        success: true,
-        items: itemsPacked
-      };
+        let itemsPacked = [];
+        rows.forEach((row, index) => {
 
-      // console.log(result);
-      res.setHeader('Content-Type', 'application/json');
-      res.json(result);
-    });
-  });
+          try{
+            let resultFoo = {};
+            resultFoo["href"] = HOSTSTRING + "/notesViewer?q=" + row['key'];
+            resultFoo["name"] = row['title'];
+            resultFoo["description"] = row['tags']
+            resultFoo["notesText"] = row['notesText'];
+            resultFoo["key"] = row['key'];
+
+            itemsPacked.push(resultFoo);
+          }catch(e){
+            console.error(e);
+          }
+
+        });
+        const result = {
+          success: true,
+          items: itemsPacked
+        };
+
+        // console.log(result);
+        res.setHeader('Content-Type', 'application/json');
+        res.json(result);
+      });
+    }
+});
 
 
 // Endpoint to get data from database
