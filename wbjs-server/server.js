@@ -9,13 +9,13 @@ const crypto = require('crypto');
 const { Readability } = require('@mozilla/readability');
 const { JSDOM } = require('jsdom');
 const { stdin: input, stdout: output } = require('node:process');
-const readline = require('readline');
+// const readline = require('readline');
 // const fetch = require("node-fetch");
 const logger = require('log-timestamp');
-const { add } = require('@neutralinojs/neu/src/plugins/pluginloader');
+// const { add } = require('@neutralinojs/neu/src/plugins/pluginloader');
 const { KeyObject } = require('node:crypto');
-const https = require('https');
-const { url } = require('node:inspector');
+// const https = require('https');
+// const { url } = require('node:inspector');
 
 HOSTSERVER = "127.0.0.1"
 HOSTPORT   = 3000
@@ -452,10 +452,7 @@ fs.readFile('registeredUsers.json', 'utf8', (err, data) => {
 app.get('/notesViewer', (req, res) => {
   const url = req.url.replace('/notesViewer?', ''); 
   const urlParams = new URLSearchParams(url);
-  if(urlParams.has('q')){
-      res.sendFile(__dirname + '/notes.html');
-  }
-  else if (urlParams.has('pdfs')) {
+  if (urlParams.has('pdfs')) {
   // glob pdf files from folder
   const folderPath = path.join(__dirname, 'notes', 'docs');
   fs.readdir(folderPath, (err, files) => {
@@ -621,6 +618,9 @@ app.get('/notesViewer', (req, res) => {
           }
           res.redirect(HOSTSTRING + `/notes/pages/${fileName}`);
       });
+  }
+  else{
+      res.sendFile(__dirname + '/notes.html');
   }
 
 });
