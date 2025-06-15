@@ -124,12 +124,6 @@ getPortNumber().then((port) => {
   readabilityServer  = serverHost + `/readability`;
 
   console.log("Server Host: " + serverHost);
-  console.log("Auth Server: " + authServer);
-  console.log("Fetch Server: " + fetchServer);
-  console.log("Search Server: " + searchServer);
-  console.log("Post Server: " + postServer);
-  console.log("Tags Server: " + tagsServer);
-  console.log("Readability Server: " + readabilityServer);
 });
 
 
