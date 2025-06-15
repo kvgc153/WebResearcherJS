@@ -103,12 +103,12 @@ function displaySearchNotes(data) {
                         shortcut: 'CMD+SHIFT+O'
                     },
                     code: CodeTool,
-                    attaches: {
-                      class: AttachesTool,
-                      config: {
-                        endpoint: 'http://127.0.0.1:3000/uploadFile'
-                      }
-                    }
+                    // attaches: {
+                    //   class: AttachesTool,
+                    //   config: {
+                    //     endpoint: 'http://127.0.0.1:3000/uploadFile'
+                    //   }
+                    // }
                 },
                 data: edjsData['JSON'][foo_loaded_keys[j]],
                 readOnly: true

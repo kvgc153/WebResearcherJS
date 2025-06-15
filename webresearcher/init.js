@@ -8,7 +8,7 @@ var pageTitle = document.title;
 pageTitle = pageTitle.replace(/\|/g, "");
 
 
-let WBJSConfig = {
+var WBJSConfig = {
     'note':{
         'color': "#E6E6FA",
         'fontsize': "13px",
@@ -36,6 +36,8 @@ var editorJSObjs = {};
 var WBJS_HTML = {};
 var WBJS_CSS = {};
 var WBJS_JSON = {};
+var tokenWBJS = "";
+var serverWBJS = "";
 
 // let LLMWBJSserver = WBJSConfig['LLM']['endpoint'];
 
@@ -77,21 +79,18 @@ var htmlAppend = $("html").append(`
 $("#userButtonPanelWBJS").draggable();
 
 
-// [TODO] This must be handled by the background script!! 
-
-let WBJSTagsDB = {};
+var WBJSTagsDB = {};
 function initTagsDB(message) {
     WBJSTagsDB = JSON.parse(message.response);// Initialize the tags database with the response from the background script
-    console.log("WBJS: Tags DB initialized");
+    tokenWBJS  = message.token;
+    serverWBJS = message.server;
+    console.log("WBJS: Tags DB, server and token initialized");
 }
 notifyBackgroundPage(
     greeting="getAllTags",
     data = JSON.stringify({}),
     respond = initTagsDB,
 );
-
-
-
 document.getElementById('tagsList').addEventListener('input', function() {
     var userTags = document.getElementById('tagsWBJS').value;
     var userTagsArray = userTags.split(",");

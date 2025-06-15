@@ -14,6 +14,8 @@ const readline = require('readline');
 const logger = require('log-timestamp');
 const { add } = require('@neutralinojs/neu/src/plugins/pluginloader');
 const { KeyObject } = require('node:crypto');
+const https = require('https');
+const { url } = require('node:inspector');
 
 HOSTSERVER = "127.0.0.1"
 HOSTPORT   = 3000
@@ -263,54 +265,6 @@ function processDB(key=""){
   }
 }
 
-// let suggestedReadingLLM = "";
-// function suggestReading(){
-//   console.log("Fetching suggested reading material based on notes...");
-//   sql = `SELECT key, tags FROM MyTable`;
-//   dbClean.all(sql, [], (err, rows) => {
-//     if (err) {
-//       throw err;
-//     }
-//     let result = {};
-//     rows.forEach((row, index) => {
-//       //Remove whitespaces 
-//       let tags = row['tags'].replace(/\s/g, '');
-//       //Now split the tags
-//       let tagsSplit = tags.split(",");
-//       tagsSplit.forEach((tag, index) => {
-//         if (!result[tag]) {
-//           result[tag] = [];
-//         }
-//         result[tag].push(row['key']);
-//       });
-//     });
-//     // Get all keys 
-//     let keys = Object.keys(result);
-//     let notesText = keys.join(", ");
-//     console.log("Notes text: \n" + notesText);
-
-//     var messages = [{
-//       "role":"user",
-//       "content": "Your job is to suggest ONLY 15 other unique and exciting topics I should read based on the tags I provide you. Answer me ONLY in HTML unordered lists and do not repeat. Print only the HTML for the lists. Here are the tags:" + notesText
-//     }]; 
-//     console.log("Sending request to LLM server for suggested reading...")
-//     fetch(LLMWBJSserver, {
-//       method: "POST",
-//       headers: {
-//         "Content-Type": "application/json",
-//       },
-//       body: JSON.stringify({
-//         "model": "llama3.2",
-//         "stream": false,
-//         "messages": messages,
-//       }),
-//     })
-//       .then((response) => response.json())
-//       .then((data) => {
-//         suggestedReadingLLM = data.message.content;
-//       })
-//     });
-//   }
 
 function addPDFannotations(){
   console.log("[ADDANNOTATIONS] Adding PDF annotations...");
@@ -496,25 +450,12 @@ fs.readFile('registeredUsers.json', 'utf8', (err, data) => {
 
 ///// Static webpages  //////
 app.get('/notesViewer', (req, res) => {
-  res.sendFile(__dirname + '/notes.html');
-});
-// app.get('/home', (req, res) => {
-//   res.sendFile(__dirname + '/home.html');
-// });
-
-app.get('/pdf.html', (req, res) => {
-  res.sendFile(__dirname + '/pdf.html');
-});
-
-app.get('/video.html', (req, res) => {
-  res.sendFile(__dirname + '/video.html');
-});
-
-app.get('/login', (req, res) => {
-  res.sendFile(__dirname + '/login.html');
-});
-
-app.get('/pdfViewer', (req, res) => {
+  const url = req.url.replace('/notesViewer?', ''); 
+  const urlParams = new URLSearchParams(url);
+  if(urlParams.has('q')){
+      res.sendFile(__dirname + '/notes.html');
+  }
+  else if (urlParams.has('pdfs')) {
   // glob pdf files from folder
   const folderPath = path.join(__dirname, 'notes', 'docs');
   fs.readdir(folderPath, (err, files) => {
@@ -579,114 +520,122 @@ app.get('/pdfViewer', (req, res) => {
       res.send(htmlContent);
   }
   );
-});
 
-app.get('/videoViewer', (req, res) => {
+  }
+  else if (urlParams.has('videos'))
+  {
   // glob video files from folder
-  const folderPath = path.join(__dirname, 'notes', 'videos');
-  fs.readdir(folderPath, (err, files) => {
-      if (err) {
-          console.error('Error reading folder:', err);
-      }
-      const videoFiles = files.filter(file => file.endsWith('.mp4') || file.endsWith('.webm') || file.endsWith('.ogg'));
+    const folderPath = path.join(__dirname, 'notes', 'videos');
+    fs.readdir(folderPath, (err, files) => {
+        if (err) {
+            console.error('Error reading folder:', err);
+        }
+        const videoFiles = files.filter(file => file.endsWith('.mp4') || file.endsWith('.webm') || file.endsWith('.ogg'));
 
-      // generate html content
+        // generate html content
+        const htmlContent = `
+        <!DOCTYPE html>
+        <html>
+        <head>
+            <meta charset="UTF-8">
+            <title>Saved Videos</title>
+            <style>
+                body {
+                    font-family: Arial, sans-serif;
+                    background-color: #f4f4f4;
+                    padding: 20px;
+                }
+                .video-container {
+                    display: flex;
+                    flex-wrap: wrap;
+                    justify-content: center;
+                    gap: 20px;
+                }
+                .video-item {
+                    width: 300px;
+                    text-align: center;
+                }
+                .thumbnail {
+                    width: 100%;
+                    height: auto;
+                    border: 1px solid #ccc;
+                    border-radius: 5px;
+                    cursor: pointer;
+                }
+                a {
+                    text-decoration: none;
+                    color: black;
+                }
+                a:hover {
+                    color: blue;
+                }
+            </style>
+        </head>
+        <body>
+            <h1 style="text-align:center">Saved Videos</h1>
+            <div class="video-container">
+              ${videoFiles.map(videoFile => `
+                <div class="video-item">
+                    <video src="/notes/videos/${encodeURI(videoFile)}" alt="${videoFile}" width=100%></video>
+                    <h4> <a href="/video.html?videoUrl=${encodeURI(`notes/videos/${videoFile}`)}" target="_blank">${videoFile}
+                    </a> </h4>
+                </div>
+              `).join('')}
+            </div>
+        </body>
+        </html>
+        `;
+        res.send(htmlContent);
+    });
+  }
+  else if (urlParams.has('canvas')){
+      const uniqueId = Date.now();
+      const fileName = `page_${uniqueId}.html`;
+      const filePath = path.join('notes','pages', fileName);
+
       const htmlContent = `
       <!DOCTYPE html>
       <html>
       <head>
           <meta charset="UTF-8">
-          <title>Saved Videos</title>
+          <meta name="viewport" content="width=device-width, initial-scale=1">
+          <title>WBJS canvas</title>
           <style>
               body {
-                  font-family: Arial, sans-serif;
-                  background-color: #f4f4f4;
-                  padding: 20px;
-              }
-              .video-container {
-                  display: flex;
-                  flex-wrap: wrap;
-                  justify-content: center;
-                  gap: 20px;
-              }
-              .video-item {
-                  width: 300px;
-                  text-align: center;
-              }
-              .thumbnail {
-                  width: 100%;
-                  height: auto;
-                  border: 1px solid #ccc;
-                  border-radius: 5px;
-                  cursor: pointer;
-              }
-              a {
-                  text-decoration: none;
-                  color: black;
-              }
-              a:hover {
-                  color: blue;
-              }
+                font-family: Arial, sans-serif;
+                background-color: #f4f4f4;
+                padding: 20px;
+            }
           </style>
       </head>
       <body>
-          <h1 style="text-align:center">Saved Videos</h1>
-          <div class="video-container">
-            ${videoFiles.map(videoFile => `
-              <div class="video-item">
-                  <video src="/notes/videos/${encodeURI(videoFile)}" alt="${videoFile}" width=100%></video>
-                  <h4> <a href="/video.html?videoUrl=${encodeURI(`notes/videos/${videoFile}`)}" target="_blank">${videoFile}
-                  </a> </h4>
-              </div>
-            `).join('')}
-          </div>
+          <div height="100000px" width="100%" id="wbjs-canvas" style="overflow-y:auto;background-color: #f4f4f4;">${"&nbsp;<br>".repeat(10000) }</div>
       </body>
       </html>
       `;
-      res.send(htmlContent);
-  });
-});
-// Blank canvas for user to take notes 
-app.get('/canvas', (req, res) => {
-
-  // require user to provide title
-  const title  = req.query.title;
-  if (!title) {
-      res.status(400).send('Error. Could not make canvas. Title is required. Try again with a title. Example:http://127.0.0.1:3000/canvas?title=MyNotes');
-      return;
+      fs.writeFile(filePath, htmlContent, (err) => {
+          if (err) {
+              console.error('Error writing file:', err);
+              res.status(500).send('Server Error');
+              return;
+          }
+          res.redirect(HOSTSTRING + `/notes/pages/${fileName}`);
+      });
   }
 
-  const uniqueId = Date.now();
-  const fileName = `page_${uniqueId}.html`;
-  const filePath = path.join('notes','pages', fileName);
+});
 
-  const htmlContent = `
-  <!DOCTYPE html>
-  <html>
-  <head>
-      <meta charset="UTF-8">
-      <meta name="viewport" content="width=device-width, initial-scale=1">
-      <title>${title}</title>
-      <style>
-          body {
-            font-family: Arial, sans-serif;
-            background-color: #f4f4f4;
-            padding: 20px;
-        }
-      </style>
-  </head>
-  <body>
-      <div height="100000px" width="100%" id="wbjs-canvas" style="overflow-y:auto;background-color: #f4f4f4;">${"&nbsp;<br>".repeat(10000) }</div>
-  </body>
-  </html>
-  `;
-  fs.writeFile(filePath, htmlContent, (err) => {
-      if (err) {
-          console.error('Error writing file:', err);
-          res.status(500).send('Server Error');
-          return;
-      }
-      res.redirect(HOSTSTRING + `/notes/pages/${fileName}`);
+app.get('/pdf.html', (req, res) => {
+  res.sendFile(__dirname + '/pdf.html');
+});
+
+app.get('/video.html', (req, res) => {
+  res.sendFile(__dirname + '/video.html');
+});
+
+app.get('/pingWBJS', (req,res) =>{
+  res.json({
+    message: "WBJSServer"
   });
 });
 ////////////////////////////
@@ -694,16 +643,6 @@ app.get('/canvas', (req, res) => {
 
 processDB(key="");
 addPDFannotations();
-// suggestReading();
-
-// app.post('/getSuggestedReading', (req, res) => {
-//   // Read the suggested reading file
-//     let dataPacket = {};
-//     dataPacket['suggestedReading'] = suggestedReadingLLM;
-//     res.json(JSON.stringify(dataPacket));
-
-// });
-
 
 
 app.post('/getAll', (req, res) => {
@@ -858,166 +797,54 @@ app.post('/search', (req, res) => {
 
 //End point for EDJS search
 app.get('/searchWBJS', (req, res) => {
-  const searchString = req.query.search
-  let key = "%" + searchString + " %";
-  // console.log("user from WBJS asked to search for : "+key);
+  // const searchString = req.query.search
+  var url = req.url;
+  url = url.replace('/searchWBJS?', ''); 
+  urlSplit = url.split('?search=');
+  const searchString = urlSplit[1];
+  const urlParams = new URLSearchParams(urlSplit[0]);
+  var token = urlParams.get('token');
+  token= token.replace('?search=' + searchString, '');
 
-  let sql = `SELECT key,title,tags,notesText FROM MyTable WHERE notesText LIKE ? OR key LIKE ? OR title LIKE ?`;
+  if(processToken(token)){
+    let key = "%" + searchString + " %";
+    // console.log("user from WBJS asked to search for : "+key);
 
-    dbClean.all(sql, [key, key, key], (err, rows) => {
-      if (err) {
-        throw err;
-      }
+    let sql = `SELECT key,title,tags,notesText FROM MyTable WHERE notesText LIKE ? OR key LIKE ? OR title LIKE ?`;
 
-      let itemsPacked = [];
-      rows.forEach((row, index) => {
-
-        try{
-          let resultFoo = {};
-          resultFoo["href"] = HOSTSTRING + "/notesViewer?q=" + row['key'];
-          resultFoo["name"] = row['title'];
-          resultFoo["description"] = row['tags']
-          resultFoo["notesText"] = row['notesText'];
-          resultFoo["key"] = row['key'];
-
-          itemsPacked.push(resultFoo);
-        }catch(e){
-          console.error(e);
+      dbClean.all(sql, [key, key, key], (err, rows) => {
+        if (err) {
+          throw err;
         }
 
+        let itemsPacked = [];
+        rows.forEach((row, index) => {
+
+          try{
+            let resultFoo = {};
+            resultFoo["href"] = HOSTSTRING + "/notesViewer?q=" + row['key'];
+            resultFoo["name"] = row['title'];
+            resultFoo["description"] = row['tags']
+            resultFoo["notesText"] = row['notesText'];
+            resultFoo["key"] = row['key'];
+
+            itemsPacked.push(resultFoo);
+          }catch(e){
+            console.error(e);
+          }
+
+        });
+        const result = {
+          success: true,
+          items: itemsPacked
+        };
+
+        // console.log(result);
+        res.setHeader('Content-Type', 'application/json');
+        res.json(result);
       });
-      const result = {
-        success: true,
-        items: itemsPacked
-      };
-
-      // console.log(result);
-      res.setHeader('Content-Type', 'application/json');
-      res.json(result);
-    });
-  });
-
-
-// Endpoint to attach files
-
-app.post('/uploadFile', (req, res) => {
-  const form = new formidable.IncomingForm();
-  form.uploadDir = path.join(__dirname, 'notes');
-  form.keepExtensions = true;
-
-  form.parse(req, (err, fields, files) => {
-    if (err) {
-      console.error('Uploading error', err);
-      return res.status(500).json({ success: 0 });
     }
-
-    const file = files['file'][0];
-    if (!file || !file.filepath || !file.originalFilename) {
-      console.error('[UPLOAD] File upload error: file, file.filepath, or file.originalFilename is undefined');
-      return res.status(400).json({ success: 0, message: 'File upload error' });
-    }
-
-
-    var responseJson = {};
-    //If file is a pdf, then we will show it in the pdf viewer
-    if (file.originalFilename.endsWith('.pdf') || file.originalFilename.endsWith('.epub') || file.originalFilename.endsWith('.mobi') || file.originalFilename.endsWith('.txt') || file.originalFilename.endsWith('.docx') || file.originalFilename.endsWith('.odt')) {
-      var oldPath = file.filepath;
-      var newPath = path.join(__dirname, 'notes','docs', file.originalFilename);
-      fs.rename(oldPath, newPath, (err) => {
-      if (err) {
-        console.error('[UPLOAD] Error renaming file:', err);
-        return res.status(500).send('Server Error');
-      }
-      });
-      responseJson = {
-        success: 1,
-        file: {
-          url: HOSTSTRING + "/pdf.html?pdfUrl=notes/docs/" + file.originalFilename,
-          name: file.originalFilename,
-          size: file.size,
-          title: file.originalFilename
-        }
-      };  
-    }
-    if (file.originalFilename.endsWith('.mp4') || file.originalFilename.endsWith('.webm') || file.originalFilename.endsWith('.ogg')) {
-      var oldPath = file.filepath;
-      var newPath = path.join(__dirname, 'notes', 'videos', file.originalFilename);
-
-      fs.rename(oldPath, newPath, (err) => {
-      if (err) {
-        console.error('[UPLOAD] Error renaming file:', err);
-        return res.status(500).send('Server Error');
-      }
-      });
-      responseJson = {
-        success: 1,
-        file: {
-            url: HOSTSTRING + "/video.html?videoUrl=notes/videos/" + file.originalFilename,
-            name: file.originalFilename,
-            size: file.size,
-            title: file.originalFilename
-        }
-      };  
-
-    }
-
-    if (file.originalFilename.endsWith('.jpg') || file.originalFilename.endsWith('.jpeg') || file.originalFilename.endsWith('.png') || file.originalFilename.endsWith('.gif')) {
-      var oldPath = file.filepath;
-      var newPath = path.join(__dirname, 'notes', 'images', file.originalFilename);
-
-      fs.rename(oldPath, newPath, (err) => {
-      if (err) {
-        console.error('[UPLOAD] Error renaming file:', err);
-        return res.status(500).send('Server Error');
-      }
-      });
-      responseJson = {
-        success: 1,
-        file: {
-            url: HOSTSTRING + "/notes/images/" + file.originalFilename,
-            name: file.originalFilename,
-            size: file.size,
-            title: file.originalFilename
-        }
-      };  
-
-    }
-    if (file.originalFilename.endsWith('.mp3') || file.originalFilename.endsWith('.wav')) {
-      var oldPath = file.filepath;
-      var newPath = path.join(__dirname, 'notes', 'audios', file.originalFilename);
-
-      fs.rename(oldPath, newPath, (err) => {
-      if (err) {
-        console.error('[UPLOAD] Error renaming file:', err);
-        return res.status(500).send('Server Error');
-      }
-      });
-      responseJson = {
-        success: 1,
-        file: {
-            url: HOSTSTRING + "/notes/audios/" + file.originalFilename,
-            name: file.originalFilename,
-            size: file.size,
-            title: file.originalFilename
-        }
-      };  
-
-    }
-    else{
-      var responseJson = {
-        success: 1,
-        file: {
-          url: HOSTSTRING + "/notes/" + file.originalFilename,
-          name: file.originalFilename,
-          size: file.size,
-          title: file.originalFilename
-        }
-      };
-    }
-      res.status(200).json(responseJson);
-  });
 });
-
 
 
 // Endpoint to get data from database
@@ -1084,7 +911,23 @@ app.post('/data', (req, res) => {
 
 
 
-// Start server
+// Start server -- HTTP
 app.listen(HOSTPORT,HOSTSERVER, () => {
   console.log('Server is running on port' + HOSTPORT);
 });
+
+
+// Base HTTPS implementation -- CHeckout - https://nodejs.org/api/https.html#httpscreateserveroptions-requestlistener
+// const options = {
+//   key: fs.readFileSync('private-key.pem'),
+//   cert: fs.readFileSync('certificate.pem'),
+// };
+// https.createServer(app).listen(HOSTPORT, HOSTSERVER, () => {
+//   console.log('Server is running on https://' + HOSTSERVER + ':' + HOSTPORT);
+//   console.log('To access the notes viewer, go to: https://' + HOSTSERVER + ':' + HOSTPORT + '/notesViewer');
+// });
+
+// https.createServer(options, (req, res) => {
+//   res.writeHead(200);
+//   res.end('hello world\n');
+// }).listen(HOSTPORT);

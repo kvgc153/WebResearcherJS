@@ -176,17 +176,17 @@ function displayNotes(parsedJSON){
           link: {
             class: LinkAutocomplete,
             config: {
-              endpoint: 'http://127.0.0.1:3000/searchWBJS',
+              endpoint: serverWBJS + '/searchWBJS' + '?token=' + tokenWBJS,
               queryParam: 'search'
             }
           },
           ask: Ask,
-          attaches: {
-            class: AttachesTool,
-            config: {
-              endpoint: 'http://127.0.0.1:3000/uploadFile'
-            }
-          }      
+          // attaches: {
+          //   class: AttachesTool,
+          //   config: {
+          //     endpoint: 'http://127.0.0.1:3000/uploadFile'
+          //   }
+          // }      
           },
         data:  foo_loaded['JSON'][foo_loaded_keys[k]],
         onReady: () =>{
