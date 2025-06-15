@@ -8,7 +8,7 @@ var pageTitle = document.title;
 pageTitle = pageTitle.replace(/\|/g, "");
 
 
-let WBJSConfig = {
+var WBJSConfig = {
     'note':{
         'color': "#E6E6FA",
         'fontsize': "13px",
@@ -37,7 +37,7 @@ var WBJS_HTML = {};
 var WBJS_CSS = {};
 var WBJS_JSON = {};
 var tokenWBJS = "";
-let serverWBJS = "";
+var serverWBJS = "";
 
 // let LLMWBJSserver = WBJSConfig['LLM']['endpoint'];
 
@@ -79,7 +79,7 @@ var htmlAppend = $("html").append(`
 $("#userButtonPanelWBJS").draggable();
 
 
-let WBJSTagsDB = {};
+var WBJSTagsDB = {};
 function initTagsDB(message) {
     WBJSTagsDB = JSON.parse(message.response);// Initialize the tags database with the response from the background script
     tokenWBJS  = message.token;
