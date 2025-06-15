@@ -37,6 +37,7 @@ var WBJS_HTML = {};
 var WBJS_CSS = {};
 var WBJS_JSON = {};
 var tokenWBJS = "";
+let serverWBJS = "";
 
 // let LLMWBJSserver = WBJSConfig['LLM']['endpoint'];
 
@@ -82,8 +83,8 @@ let WBJSTagsDB = {};
 function initTagsDB(message) {
     WBJSTagsDB = JSON.parse(message.response);// Initialize the tags database with the response from the background script
     tokenWBJS  = message.token;
-    console.log(tokenWBJS);
-    console.log("WBJS: Tags DB and token initialized");
+    serverWBJS = message.server;
+    console.log("WBJS: Tags DB, server and token initialized");
 }
 notifyBackgroundPage(
     greeting="getAllTags",

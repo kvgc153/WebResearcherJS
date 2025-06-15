@@ -186,7 +186,8 @@ function handleMessage(request, sender, sendResponse) {
         .then((data) => {
           return({ 
             response: JSON.stringify(data),
-            token: myAddonId
+            token: myAddonId,
+            server: serverHost
           }); 
         })
 
