@@ -1,7 +1,7 @@
 {
 	"manifest_version": 2,
 	"name": "WebResearcherJS",
-	"version": "8.0.8",
+	"version": "9.0.0",
 	"description": "https://github.com/kvgc153/WebResearcherJS",
 
 	"permissions": [
