@@ -177,6 +177,7 @@ function processDB(key=""){
                   label: linkUrl,
                   group: "link"
                 });
+                // Check if the node already exists in visjsNodes
                 visjsNodes[uid].push({
                   id: crypto.createHash('md5').update(linkUrl).digest('hex'),
                   label: linkUrl,
@@ -302,7 +303,7 @@ function processDB(key=""){
             var edges = [];
             nodes.push({
               id: uid,
-              label: key,
+              label: val['TITLE'] || key,
               group: "key"
             })
             for (let link=0; link < links.length; link++) {
@@ -732,7 +733,7 @@ app.get('/notesViewer', (req, res) => {
         ></script>
         <style type="text/css">
           #mynetwork {
-            width: 1000px;
+            width: 1600px;
             height:1000px;
             border: 1px solid lightgray;
           }
@@ -742,20 +743,48 @@ app.get('/notesViewer', (req, res) => {
         <div id="mynetwork"></div>
         <script type="text/javascript">
           // create an array with nodes
-          var nodes = new vis.DataSet(${JSON.stringify(visjsNodes['a157a5b6e0a07bfbabf6f6869d0bb2b8'])});
+          var nodes = ${JSON.stringify(visjsNodes)};
 
           // create an array with edges
-          var edges = new vis.DataSet(${JSON.stringify(visjsEdges['a157a5b6e0a07bfbabf6f6869d0bb2b8'])});
+          var edges = ${JSON.stringify(visjsEdges)};
 
+          var keys = Object.keys(nodes);
 
           // create a network
           var container = document.getElementById("mynetwork");
-          var data = {
-            nodes: nodes,
-            edges: edges,
-          };
-          var options = {};
-          var network = new vis.Network(container, data, options);
+
+          var network = new vis.Network(container, { nodes: [], edges: [] }, {});
+          // set the data
+          for (let i=0; i<keys.length; i++){
+            // First set the nodes
+            for (let j=0; j<nodes[keys[i]].length; j++){
+              var nodeFoo = nodes[keys[i]][j]
+              console.log(nodeFoo);
+              try{
+                  network.body.data.nodes.add(nodeFoo);
+              }
+              catch(e){
+                console.error("[GRAPH] Error setting node for key: " + keys[i]);
+                console.error(e);
+              }
+            } 
+          
+          }
+          // Now set the edges
+          for (let i=0; i<keys.length; i++){
+            try{
+              network.body.data.edges.add(edges[keys[i]]);
+            }
+            catch(e){
+              console.error("[GRAPH] Error setting data for key: " + keys[i]);
+            }
+          }
+          // var data = {
+          //   nodes: nodes,
+          //   edges: edges,
+          // };
+          // var options = {};
+          // var network = new vis.Network(container, data, options);
         </script>
       </body>
     </html>`;
