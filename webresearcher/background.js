@@ -100,32 +100,46 @@ var postServer  = "";
 var tagsServer  = "";
 var readabilityServer  = "";
 
-async function getPortNumber() {
-  for(let port= 3000; port<3050; port++){
-    try {
-      const response = await fetch(`http://127.0.0.1:${port}/pingWBJS`);
-      if (response.ok) {
-        console.log(`Server is running on port ${port}`);
-        return port; // Return the first available port
+
+async function assignPort(){
+  async function getPortNumber() {
+    console.log("calling getportnumber")
+    for(let port= 3000; port<3010; port++){
+      try {
+        const response = await fetch(`http://127.0.0.1:${port}/pingWBJS`);
+        if (response.ok) {
+          console.log(`Server is running on port ${port}`);
+          return port; // Return the first available port
+        }
+      } catch (error) {
+        // console.error(`Error connecting to port ${port}: ${error}`);
       }
-    } catch (error) {
-      console.error(`Error connecting to port ${port}: ${error}`);
     }
   }
+  getPortNumber().then((port) => {
+    if (port === undefined) {
+      console.error("No available port found in the range 3000-3010.");
+      console.error("Trying again 30 seconds later...");
+      setTimeout(assignPort, 30000);
+    }
+
+    else{
+      portNumber = port;
+      serverHost  = "http://127.0.0.1:" + portNumber;
+      authServer = serverHost + "/authWBJS";
+      fetchServer = serverHost + "/getData";
+      searchServer = serverHost + "/search";
+      postServer  = serverHost + `/data`;
+      tagsServer  = serverHost + `/getAllTags`;
+      readabilityServer  = serverHost + `/readability`;
+
+      console.log("Server Host: " + serverHost);
+      setTimeout(assignPort, 30000); // Come back after 300 seconds to check if server is still running and is on the same port
+
+    }
+  });
 }
-getPortNumber().then((port) => {
-  portNumber = port;
-  serverHost  = "http://127.0.0.1:" + portNumber;
-  authServer = serverHost + "/authWBJS";
-  fetchServer = serverHost + "/getData";
-  searchServer = serverHost + "/search";
-  postServer  = serverHost + `/data`;
-  tagsServer  = serverHost + `/getAllTags`;
-  readabilityServer  = serverHost + `/readability`;
-
-  console.log("Server Host: " + serverHost);
-});
-
+assignPort();
 
 function handleMessage(request, sender, sendResponse) {
 

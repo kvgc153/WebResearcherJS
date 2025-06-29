@@ -42,6 +42,7 @@ Multiple sqlite DBs will be created in the same folder which will contain all th
 3. **Add tags:** Add relevant tags to your note for easy organization.   
 <img height="200px" src="demo/demo2.gif">
 
+
 4. **Saving notes**: Save notes to server by pressing the save button (or Alt+S/Cmd+S). The notes will be automatically displayed the next time you visit the page.
 
 5. **Link notes**: Link to existing notes.
@@ -49,10 +50,14 @@ Multiple sqlite DBs will be created in the same folder which will contain all th
 <img width="70%" src="demo/link.gif">
 
 
-5. **View all notes** : Visit http://127.0.0.1:3000/notesViewer to view and search all the notes taken.
+5. **View all notes** : Visit [http://127.0.0.1:3000/notesViewer](http://127.0.0.1:3000/notesViewer) to view and search all the notes taken.
 
 
 <img width="100%" src="demo/homepage_WBJS.png">
+
+You can also view a graph network of your notes by clicking on the 'View graph' button 
+
+<img width="40%" src="demo/graph.png">
 
 
 The query string `q` can also be used to search the notes. 

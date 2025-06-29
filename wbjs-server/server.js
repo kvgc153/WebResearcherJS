@@ -144,66 +144,7 @@ function processDB(key=""){
 
 
               });
-            });
-
-
-            var doc = new JSDOM(notesText);
-            var links = doc.window.document.querySelectorAll('a');
-            // Extract the href attribute from each link
-            links = Array.from(links).map(link => link.href);
-            // Create a visjs dataset of links 
-
-            var nodes = [];
-            var edges = [];
-            nodes.push({
-              id: uid,
-              label: key,
-              group: "key"
-            });
-            visjsNodes[uid] = []
-            visjsEdges[uid] = [];
-
-            visjsNodes[uid].push({
-              id: uid,
-              label: key,
-              group: "key"
-            })
-            for (let link=0; link < links.length; link++) {
-              let linkUrl = links[link];
-              if(linkUrl.length > 0){
-                // Create a node for the link
-                nodes.push({
-                  id: crypto.createHash('md5').update(linkUrl).digest('hex'),
-                  label: linkUrl,
-                  group: "link"
-                });
-                // Check if the node already exists in visjsNodes
-                visjsNodes[uid].push({
-                  id: crypto.createHash('md5').update(linkUrl).digest('hex'),
-                  label: linkUrl,
-                  group: "link"
-                })
-                // Create an edge from the current key to the link
-                edges.push({
-                  from: uid,
-                  to: crypto.createHash('md5').update(linkUrl).digest('hex')
-                });
-                visjsEdges[uid].push({
-                  from: uid,
-                  to: crypto.createHash('md5').update(linkUrl).digest('hex')
-                });
-
-
-              }
-            };
-            let visjsData = JSON.stringify({
-              'uid': uid,
-              'nodes': nodes, 
-              'edges': edges,
-              'links': links
-            });
-            
-
+            });           
 
             // If key contains video, canvas or pdf , then we will use the notesText as the title 
             if(key.includes("127.0.0.1:3000/video.html?") || key.includes("127.0.0.1:3000/notes/") || key.includes("127.0.0.1:3000/pdf.html?")){
@@ -221,6 +162,65 @@ function processDB(key=""){
             let user = "root";
             let css =  JSON.stringify(val['CSS']) || ""; 
             let meta = JSON.stringify(val['META']) || "";
+
+            // Make Graph
+            var doc = new JSDOM(notesText);
+            var links = doc.window.document.querySelectorAll('a');
+            // Extract the href attribute from each link
+            links = Array.from(links).map(link => link.href);
+            // Create a visjs dataset of links 
+
+            visjsNodes[uid] = [];
+            visjsEdges[uid] = [];
+
+            // Add the current note
+            visjsNodes[uid].push({
+              id: uid,
+              label: title.slice(0,30) || key.slice(0,10),
+              group: "key"
+            })
+
+            // Add the tags of the current note and link to the current note
+            var tagSplit = tags.split(',');
+            for (let tagNode = 0 ; tagNode< tagSplit.length; tagNode++){
+              if(tagSplit[tagNode] !== ""){
+                visjsNodes[uid].push({
+                  id: crypto.createHash('md5').update(tagSplit[tagNode]).digest('hex'),
+                  label: tagSplit[tagNode],
+                  group: "tag"
+                })
+                visjsEdges[uid].push({
+                    from: uid,
+                    to: crypto.createHash('md5').update(tagSplit[tagNode]).digest('hex')
+                });
+              }
+            }
+            // Add the notes that are linked to the current note
+            for (let link=0; link < links.length; link++) {
+              let linkUrl = links[link];
+              if(linkUrl.length > 0 && linkUrl.includes(HOSTSERVER)){
+
+                visjsNodes[uid].push({
+                  id: crypto.createHash('md5').update(linkUrl).digest('hex'),
+                  label: linkUrl.slice(0,10),
+                  shape: "diamond",
+                  group: "link"
+                })
+                // Create an edge from the current key to the link
+                visjsEdges[uid].push({
+                  from: uid,
+                  to: crypto.createHash('md5').update(linkUrl).digest('hex')
+                });
+              }
+            };
+            let visjsData = JSON.stringify({
+              'uid': uid,
+              'nodes': visjsNodes[uid], 
+              'edges': visjsEdges[uid],
+              'links': links
+            });
+
+
             let sqlTags = `REPLACE INTO MyTable (key, uid, title, tags, notes, notesText, summary, user, css, meta, value) VALUES (?,?,?,?,?,?,?,?,?,?,?)`;
             dbClean.run(sqlTags, [key, visjsData, title, tags, notes, notesText, summary, user, css, meta, value], function(err) {
               if (err) {
@@ -301,18 +301,22 @@ function processDB(key=""){
 
             var nodes = [];
             var edges = [];
+            var linkUrlDisplay = `<a href="${key}" target="_blank">${val['TITLE']}</a>`;
             nodes.push({
               id: uid,
-              label: val['TITLE'] || key,
+              label: linkUrlDisplay,
               group: "key"
             })
             for (let link=0; link < links.length; link++) {
               let linkUrl = links[link];
               if(linkUrl.length > 0){
+                var linkUrlDisplay = `<a href="${linkUrl}" target="_blank">${linkUrl.slice(0,10)}</a>`;
+  
                 // Create a node for the link
                 nodes.push({
                   id: crypto.createHash('md5').update(linkUrl).digest('hex'),
-                  label: linkUrl,
+                  label: linkUrlDisplay,
+                  shape: "diamond",
                   group: "link"
                 });
                 // Create an edge from the current key to the link
@@ -752,8 +756,28 @@ app.get('/notesViewer', (req, res) => {
 
           // create a network
           var container = document.getElementById("mynetwork");
-
-          var network = new vis.Network(container, { nodes: [], edges: [] }, {});
+          var options = {
+            interaction: {
+                navigationButtons: true,
+                keyboard: true,
+              },
+            edges: {
+              font: {
+                size: 12,
+              },
+              widthConstraint: {
+                maximum: 90,
+              },
+            },
+            nodes: {
+              shape: "box",
+              margin: 10,
+              widthConstraint: {
+                maximum: 200,
+              },
+            } 
+          };
+          var network = new vis.Network(container, { nodes: [], edges: [] }, options);
           // set the data
           for (let i=0; i<keys.length; i++){
             // First set the nodes
@@ -779,12 +803,6 @@ app.get('/notesViewer', (req, res) => {
               console.error("[GRAPH] Error setting data for key: " + keys[i]);
             }
           }
-          // var data = {
-          //   nodes: nodes,
-          //   edges: edges,
-          // };
-          // var options = {};
-          // var network = new vis.Network(container, data, options);
         </script>
       </body>
     </html>`;
