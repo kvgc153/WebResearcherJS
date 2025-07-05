@@ -14,6 +14,7 @@ const { stdin: input, stdout: output } = require('node:process');
 const logger = require('log-timestamp');
 // const { add } = require('@neutralinojs/neu/src/plugins/pluginloader');
 const { KeyObject } = require('node:crypto');
+const { link } = require('node:fs');
 // const https = require('https');
 // const { url } = require('node:inspector');
 
@@ -87,6 +88,9 @@ function processToken(token){
   return false;
 }
 
+var visjsNodes = {};
+var visjsEdges = {};
+
 //Post process the database
 function processDB(key=""){
     if(key.length === 0){ 
@@ -99,12 +103,11 @@ function processDB(key=""){
             let val  = JSON.parse(row['value']);          
 
             let key = row['key'];
-
-            let uid = crypto.createHash('md5').update(row['key']).digest('hex');
               
             let title = val['TITLE'] || "";
             let tags = val['TAGS'] || "";
             let value  = row['value'] || "";
+            let uid = crypto.createHash('md5').update(row['key']).digest('hex');
 
             let notesText = "";
 
@@ -141,7 +144,8 @@ function processDB(key=""){
 
 
               });
-            });
+            });           
+
             // If key contains video, canvas or pdf , then we will use the notesText as the title 
             if(key.includes("127.0.0.1:3000/video.html?") || key.includes("127.0.0.1:3000/notes/") || key.includes("127.0.0.1:3000/pdf.html?")){
               title = notesText.slice(0, 120); // Take first 50 characters as title
@@ -158,8 +162,67 @@ function processDB(key=""){
             let user = "root";
             let css =  JSON.stringify(val['CSS']) || ""; 
             let meta = JSON.stringify(val['META']) || "";
+
+            // Make Graph
+            var doc = new JSDOM(notesText);
+            var links = doc.window.document.querySelectorAll('a');
+            // Extract the href attribute from each link
+            links = Array.from(links).map(link => link.href);
+            // Create a visjs dataset of links 
+
+            visjsNodes[uid] = [];
+            visjsEdges[uid] = [];
+
+            // Add the current note
+            visjsNodes[uid].push({
+              id: uid,
+              label: title.slice(0,30) || key.slice(0,10),
+              group: "key"
+            })
+
+            // Add the tags of the current note and link to the current note
+            var tagSplit = tags.split(',');
+            for (let tagNode = 0 ; tagNode< tagSplit.length; tagNode++){
+              if(tagSplit[tagNode] !== ""){
+                visjsNodes[uid].push({
+                  id: crypto.createHash('md5').update(tagSplit[tagNode]).digest('hex'),
+                  label: tagSplit[tagNode],
+                  group: "tag"
+                })
+                visjsEdges[uid].push({
+                    from: uid,
+                    to: crypto.createHash('md5').update(tagSplit[tagNode]).digest('hex')
+                });
+              }
+            }
+            // Add the notes that are linked to the current note
+            for (let link=0; link < links.length; link++) {
+              let linkUrl = links[link];
+              if(linkUrl.length > 0 && linkUrl.includes(HOSTSERVER)){
+
+                visjsNodes[uid].push({
+                  id: crypto.createHash('md5').update(linkUrl).digest('hex'),
+                  label: linkUrl.slice(0,10),
+                  shape: "diamond",
+                  group: "link"
+                })
+                // Create an edge from the current key to the link
+                visjsEdges[uid].push({
+                  from: uid,
+                  to: crypto.createHash('md5').update(linkUrl).digest('hex')
+                });
+              }
+            };
+            let visjsData = JSON.stringify({
+              'uid': uid,
+              'nodes': visjsNodes[uid], 
+              'edges': visjsEdges[uid],
+              'links': links
+            });
+
+
             let sqlTags = `REPLACE INTO MyTable (key, uid, title, tags, notes, notesText, summary, user, css, meta, value) VALUES (?,?,?,?,?,?,?,?,?,?,?)`;
-            dbClean.run(sqlTags, [key,uid, title, tags, notes, notesText, summary, user, css, meta, value], function(err) {
+            dbClean.run(sqlTags, [key, visjsData, title, tags, notes, notesText, summary, user, css, meta, value], function(err) {
               if (err) {
                 console.error(err.message);
               }
@@ -229,6 +292,48 @@ function processDB(key=""){
 
               });
             });
+
+            var doc = new JSDOM(notesText);
+            var links = doc.window.document.querySelectorAll('a');
+            // Extract the href attribute from each link
+            links = Array.from(links).map(link => link.href);
+            // Create a visjs dataset of links 
+
+            var nodes = [];
+            var edges = [];
+            var linkUrlDisplay = `<a href="${key}" target="_blank">${val['TITLE']}</a>`;
+            nodes.push({
+              id: uid,
+              label: linkUrlDisplay,
+              group: "key"
+            })
+            for (let link=0; link < links.length; link++) {
+              let linkUrl = links[link];
+              if(linkUrl.length > 0){
+                var linkUrlDisplay = `<a href="${linkUrl}" target="_blank">${linkUrl.slice(0,10)}</a>`;
+  
+                // Create a node for the link
+                nodes.push({
+                  id: crypto.createHash('md5').update(linkUrl).digest('hex'),
+                  label: linkUrlDisplay,
+                  shape: "diamond",
+                  group: "link"
+                });
+                // Create an edge from the current key to the link
+                edges.push({
+                  from: uid,
+                  to: crypto.createHash('md5').update(linkUrl).digest('hex')
+                });
+              }
+            };
+            let visjsData = JSON.stringify({
+              'uid': uid,
+              'nodes': nodes, 
+              'edges': edges,
+              'links': links
+            });
+            
+
             // If key contains video, canvas or pdf , then we will use the notesText as the title 
             if(key.includes("127.0.0.1:3000/video.html?") || key.includes("127.0.0.1:3000/notes/") || key.includes("127.0.0.1:3000/pdf.html?")){
               title = notesText.slice(0, 120); // Take first 50 characters as title
@@ -246,7 +351,7 @@ function processDB(key=""){
             let css =  JSON.stringify(val['CSS']) || ""; 
             let meta = JSON.stringify(val['META']) || "";
             let sqlTags = `REPLACE INTO MyTable (key, uid, title, tags, notes, notesText, summary, user, css, meta, value) VALUES (?,?,?,?,?,?,?,?,?,?,?)`;
-            dbClean.run(sqlTags, [key,uid, title, tags, notes, notesText, summary, user, css, meta, value], function(err) {
+            dbClean.run(sqlTags, [key, visjsData, title, tags, notes, notesText, summary, user, css, meta, value], function(err) {
               if (err) {
                 console.error(err.message);
               }
@@ -453,70 +558,70 @@ app.get('/notesViewer', (req, res) => {
   const url = req.url.replace('/notesViewer?', ''); 
   const urlParams = new URLSearchParams(url);
   if (urlParams.has('pdfs')) {
-  // glob pdf files from folder
-  const folderPath = path.join(__dirname, 'notes', 'docs');
-  fs.readdir(folderPath, (err, files) => {
-      if (err) {
-          console.error('Error reading folder:', err);
-      }
-      const pdfFiles = files.filter(file => file.endsWith('.pdf'));
+    // glob pdf files from folder
+    const folderPath = path.join(__dirname, 'notes', 'docs');
+    fs.readdir(folderPath, (err, files) => {
+        if (err) {
+            console.error('Error reading folder:', err);
+        }
+        const pdfFiles = files.filter(file => file.endsWith('.pdf'));
 
-      // generate html content
-      const htmlContent = `
-      <!DOCTYPE html>
-      <html>
-      <head>
-          <meta charset="UTF-8">
-          <title>Saved PDFs</title>
-          <style>
-              body {
-                  font-family: Arial, sans-serif;
-                  background-color: #f4f4f4;
-                  padding: 20px;
-              }
-              .pdf-container {
-                  display: flex;
-                  flex-wrap: wrap;
-                  justify-content: center;
-                  gap: 40px;
-              }
-              .pdf-item {
-                  width: 300px;
-                  text-align: center;
-                    overflow-wrap: break-word;
-              }
-              .thumbnail {
-                  width: 100%;
-                  height: auto;
-                  border: 1px solid #ccc;
-                  border-radius: 5px;
-                  cursor: pointer;
-              }
-              a {
-                  text-decoration: none;
-                  color: black;
-              }
-              a:hover {
-                  color: blue;
-              }
-          </style>
-      </head>
-      <body>
-          <h1 style="text-align:center">Saved PDFs</h1>
-          <div class="pdf-container">
-            ${pdfFiles.map(pdfFile => `
-              <div class="pdf-item">
-                  <h4> <a href="/pdf.html?pdfUrl=${encodeURI(`notes/docs/${pdfFile}`)}" target="_blank">${pdfFile}
-                  </a> </h4>
-              </div><br>
-            `).join('')}
-          </div>
-      </body>
-      </html>
-      `;
-      res.send(htmlContent);
-  }
-  );
+        // generate html content
+        const htmlContent = `
+        <!DOCTYPE html>
+        <html>
+        <head>
+            <meta charset="UTF-8">
+            <title>Saved PDFs</title>
+            <style>
+                body {
+                    font-family: Arial, sans-serif;
+                    background-color: #f4f4f4;
+                    padding: 20px;
+                }
+                .pdf-container {
+                    display: flex;
+                    flex-wrap: wrap;
+                    justify-content: center;
+                    gap: 40px;
+                }
+                .pdf-item {
+                    width: 300px;
+                    text-align: center;
+                      overflow-wrap: break-word;
+                }
+                .thumbnail {
+                    width: 100%;
+                    height: auto;
+                    border: 1px solid #ccc;
+                    border-radius: 5px;
+                    cursor: pointer;
+                }
+                a {
+                    text-decoration: none;
+                    color: black;
+                }
+                a:hover {
+                    color: blue;
+                }
+            </style>
+        </head>
+        <body>
+            <h1 style="text-align:center">Saved PDFs</h1>
+            <div class="pdf-container">
+              ${pdfFiles.map(pdfFile => `
+                <div class="pdf-item">
+                    <h4> <a href="/pdf.html?pdfUrl=${encodeURI(`notes/docs/${pdfFile}`)}" target="_blank">${pdfFile}
+                    </a> </h4>
+                </div><br>
+              `).join('')}
+            </div>
+        </body>
+        </html>
+        `;
+        res.send(htmlContent);
+    }
+    );
 
   }
   else if (urlParams.has('videos'))
@@ -619,6 +724,92 @@ app.get('/notesViewer', (req, res) => {
           res.redirect(HOSTSTRING + `/notes/pages/${fileName}`);
       });
   }
+  else if (urlParams.has('graph')){
+      // res.sendFile(__dirname + '/manipulationEditEdgeNoDrag.html');
+    const htmlContent = `
+    <!DOCTYPE html>
+    <html lang="en">
+      <head>
+        <title>Network</title>
+        <script
+          type="text/javascript"
+          src="https://unpkg.com/vis-network/standalone/umd/vis-network.min.js"
+        ></script>
+        <style type="text/css">
+          #mynetwork {
+            width: 1600px;
+            height:1000px;
+            border: 1px solid lightgray;
+          }
+        </style>
+      </head>
+      <body>
+        <div id="mynetwork"></div>
+        <script type="text/javascript">
+          // create an array with nodes
+          var nodes = ${JSON.stringify(visjsNodes)};
+
+          // create an array with edges
+          var edges = ${JSON.stringify(visjsEdges)};
+
+          var keys = Object.keys(nodes);
+
+          // create a network
+          var container = document.getElementById("mynetwork");
+          var options = {
+            interaction: {
+                navigationButtons: true,
+                keyboard: true,
+              },
+            edges: {
+              font: {
+                size: 12,
+              },
+              widthConstraint: {
+                maximum: 90,
+              },
+            },
+            nodes: {
+              shape: "box",
+              margin: 10,
+              widthConstraint: {
+                maximum: 200,
+              },
+            } 
+          };
+          var network = new vis.Network(container, { nodes: [], edges: [] }, options);
+          // set the data
+          for (let i=0; i<keys.length; i++){
+            // First set the nodes
+            for (let j=0; j<nodes[keys[i]].length; j++){
+              var nodeFoo = nodes[keys[i]][j]
+              console.log(nodeFoo);
+              try{
+                  network.body.data.nodes.add(nodeFoo);
+              }
+              catch(e){
+                console.error("[GRAPH] Error setting node for key: " + keys[i]);
+                console.error(e);
+              }
+            } 
+          
+          }
+          // Now set the edges
+          for (let i=0; i<keys.length; i++){
+            try{
+              network.body.data.edges.add(edges[keys[i]]);
+            }
+            catch(e){
+              console.error("[GRAPH] Error setting data for key: " + keys[i]);
+            }
+          }
+        </script>
+      </body>
+    </html>`;
+
+    res.send(htmlContent);
+
+  }
   else{
       res.sendFile(__dirname + '/notes.html');
   }
@@ -718,7 +909,7 @@ app.post('/readability', (req, res) => {
   if(isUrlInIgnoredWebsites(req.body.url)){
 
     let val = article;
-    dbReadability.run(sql, [req.body.url, bodyHTML, val['content'], val['textContent'], val['excerpt'], val['title'], val['length']], function(err) {
+    dbReadability.run(sql, [req.body.url, "", val['content'], val['textContent'], val['excerpt'], val['title'], val['length']], function(err) {
       if (err) {
         if(err.message.includes('UNIQUE constraint failed')){ 
           console.log('[READABILITY] Key already exists. Updating value.');
