@@ -129,28 +129,66 @@ document.getElementById('tagsList').addEventListener('input', function() {
 // If user hovers on a link-autocomplete editorjs note, show the note as a tooltip 
 document.addEventListener('mouseover', function(event) {
     const target = event.target;
+
+  
     if(target.tagName === 'A'){
-        const noteText = target.getAttribute('data-notes-text');
-        if (!noteText) return; // If no note text, do nothing
 
-        // Remove any existing tooltip
-        document.getElementById('WBJSNoteTextTooltip')?.remove();
-        // Create a tooltip element
-        let tooltip = document.createElement('div');
-        tooltip.className = 'WBJSNote';
-        tooltip.innerHTML = noteText;
-        tooltip.id = "WBJSNoteTextTooltip";
-        document.body.appendChild(tooltip);
-
-        // Position the tooltip
-        const rect = target.getBoundingClientRect();
-        tooltip.style.left = `${rect.left + window.scrollX}px`;
-        tooltip.style.top = `${rect.bottom + window.scrollY}px`;
-
-        // Remove the tooltip when mouse leaves the link
-        target.addEventListener('click', function() {
+        if(target.href.includes("/notes/docs/") & target.href.includes(".pdf") & target.href.includes("#page")){
+            // Remove any existing tooltip
             document.getElementById('WBJSNoteTextTooltip')?.remove();
-        }, { once: true });
+
+            const noteIframe = document.createElement('iframe')
+
+            // 2. Set attributes for the iframe
+            noteIframe.src = target.href;
+            noteIframe.width = "100%";
+            noteIframe.height = "100%";
+            noteIframe.setAttribute('allowTransparency', true); // Optional
         
+            // Create a tooltip element
+            let tooltip = document.createElement('div');
+            tooltip.className = 'WBJSNote';
+            tooltip.innerHTML = "Click here to close<br>" + noteIframe.outerHTML;
+            tooltip.id = "WBJSNoteTextTooltip";
+            document.body.appendChild(tooltip);
+
+            // Position the tooltip
+            const rect = target.getBoundingClientRect();
+            tooltip.style.left = `${rect.left + window.scrollX+300}px`;
+            tooltip.style.top = `${rect.bottom + window.scrollY-300}px`;
+            tooltip.style.width = '1000px';
+            tooltip.style.height = '600px';
+            // Remove the tooltip when mouse leaves the link
+            tooltip.addEventListener('click', function() {
+                document.getElementById('WBJSNoteTextTooltip')?.remove();
+            }, { once: true });
+            
+        }
+        
+        else{
+            const noteText = target.getAttribute('data-notes-text');
+            if (!noteText) return; // If no note text, do nothing
+
+            // Remove any existing tooltip
+            document.getElementById('WBJSNoteTextTooltip')?.remove();
+            // Create a tooltip element
+            let tooltip = document.createElement('div');
+            tooltip.className = 'WBJSNote';
+            tooltip.innerHTML = noteText;
+            tooltip.id = "WBJSNoteTextTooltip";
+            document.body.appendChild(tooltip);
+
+            // Position the tooltip
+            const rect = target.getBoundingClientRect();
+            tooltip.style.left = `${rect.left + window.scrollX}px`;
+            tooltip.style.top = `${rect.bottom + window.scrollY}px`;
+
+            // Remove the tooltip when mouse leaves the link
+            target.addEventListener('click', function() {
+                document.getElementById('WBJSNoteTextTooltip')?.remove();
+            }, { once: true });
+            
+        }
+
     }
 });
