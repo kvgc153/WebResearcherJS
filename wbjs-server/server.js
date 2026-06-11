@@ -965,22 +965,46 @@ app.post('/search', (req, res) => {
 
     }
     else{
-      key = "%" + req.body.key + "%";
+      searchTagsOnly = req.body.key.includes("::tag");
+      let sql = "";
+      let key = "";
 
-      let sql = `SELECT key,value,notesText FROM MyTable WHERE notesText LIKE ? OR key LIKE ? OR title LIKE ?`;
+      if(searchTagsOnly){
+        key = "%" + req.body.key.replace("::tag", "") + "%";
 
-      dbClean.all(sql, [key,key,key], (err, rows) => {
-        if (err) {
-          throw err;
-        }
+        sql = `SELECT key,value,notesText FROM MyTable WHERE tags LIKE ?`;
+        dbClean.all(sql, [key], (err, rows) => {
+          if (err) {
+            throw err;
+          }
 
-        let result = {};
-        rows.forEach((row, index) => {
-          result[row['key']] = row['value'];
+          let result = {};
+          rows.forEach((row, index) => {
+            result[row['key']] = row['value'];
+          });
+
+          res.json(result);
         });
+      }
+      else{
+        key = "%" + req.body.key + "%";
 
-        res.json(result);
-      });
+        sql = `SELECT key,value,notesText FROM MyTable WHERE notesText LIKE ? OR key LIKE ? OR title LIKE ? OR tags LIKE ?`;
+        dbClean.all(sql, [key,key,key,key], (err, rows) => {
+          if (err) {
+            throw err;
+          }
+
+          let result = {};
+          rows.forEach((row, index) => {
+            result[row['key']] = row['value'];
+          });
+
+          res.json(result);
+        });
+      }
+
+
     }
   }
 });
